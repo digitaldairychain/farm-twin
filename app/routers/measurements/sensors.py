@@ -1,0 +1,84 @@
+from fastapi import status, HTTPException, Response, APIRouter, Request
+from pydantic import BaseModel, Field
+from pydantic.functional_validators import BeforeValidator
+from typing import Optional, List
+from typing_extensions import Annotated
+from bson.objectid import ObjectId
+
+router = APIRouter(
+    prefix="/sensors",
+    tags=["measurements"],
+    responses={404: {"description": "Not found"}},
+)
+
+
+PyObjectId = Annotated[str, BeforeValidator(str)]
+
+
+class Sensor(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    device: PyObjectId
+    measurement: str
+
+
+class SensorCollection(BaseModel):
+    sensors: List[Sensor]
+
+
+@router.post(
+    "/",
+    response_description="Add new sensor",
+    response_model=Sensor,
+    status_code=status.HTTP_201_CREATED,
+    response_model_by_alias=False,
+)
+async def create_sensor(request: Request, sensor: Sensor):
+    new_sensor = await request.app.state.sensors.insert_one(
+        sensor.model_dump(by_alias=True, exclude=["id"])
+    )
+
+    if (
+        created_sensor := await
+        request.app.state.sensors.find_one({"_id": new_sensor.inserted_id})
+    ) is not None:
+        return created_sensor
+    raise HTTPException(status_code=404,
+                        detail=f"Sensor {id} not successfully added")
+
+
+@router.delete("/{id}", response_description="Delete a sensor")
+async def remove_sensor(request: Request, id: str):
+    delete_result = await request.app.state.sensors.delete_one(
+        {"_id": ObjectId(id)})
+
+    if delete_result.deleted_count == 1:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    raise HTTPException(status_code=404, detail=f"Sensor {id} not found")
+
+
+@router.get(
+    "/{id}",
+    response_description="Get a single sensor",
+    response_model=Sensor,
+    response_model_by_alias=False,
+)
+async def list_sensor_single(request: Request, id: str):
+    if (
+        sensor := await request.app.state.sensors.find_one(
+            {"_id": ObjectId(id)})
+    ) is not None:
+        return sensor
+
+    raise HTTPException(status_code=404, detail=f"Sensor {id} not found")
+
+
+@router.get(
+    "/",
+    response_description="List all sensors",
+    response_model=SensorCollection,
+    response_model_by_alias=False,
+)
+async def list_sensor_collection(request: Request):
+    return SensorCollection(sensors=await
+                            request.app.state.sensors.find().to_list(1000))
