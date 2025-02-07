@@ -19,6 +19,7 @@ class Machine(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     manufacturer: str
     model: str
+    type: list[str]
     registration: Optional[str] = Field(default=None)
 
 
