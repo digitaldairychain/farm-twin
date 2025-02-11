@@ -12,6 +12,8 @@ An on-farm example is a temperature sensor.
 This collection of endpoints allows for the addition, deletion
 and finding of those sensors.
 """
+import uuid
+
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import BeforeValidator
@@ -30,10 +32,18 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Sensor(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    device: PyObjectId
-    measurement: str
-    serial: Optional[str] = Field(default=None)
+    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
+        'description': 'UUID of sensor',
+        'example': str(uuid.uuid4())})
+    device: PyObjectId = Field(json_schema_extra={
+        'description': 'UUID of device to which the sensor is connected',
+        'example': str(uuid.uuid4())})
+    tag: Optional[str] = Field(json_schema_extra={
+        'description': 'ID tag or label on sensor',
+        'example': '12345'})
+    measurement: str = Field(json_schema_extra={
+        'description': 'Description or type of measurement',
+        'example': 'Soil Temperature'})
 
 
 class SensorCollection(BaseModel):

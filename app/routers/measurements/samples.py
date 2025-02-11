@@ -15,6 +15,7 @@ This collection of endpoints allows for the addition, deletion
 and finding of those samples.
 """
 import pymongo
+import uuid
 
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
@@ -35,11 +36,22 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Sample(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    sensor: PyObjectId
-    timestamp:  Optional[datetime] = Field(default=None)
-    value: float
-    predicted: Optional[bool] = Field(default=False)
+    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
+        'description': 'UUID of sensor',
+        'example': str(uuid.uuid4())})
+    sensor: PyObjectId = Field(json_schema_extra={
+        'description': 'UUID of sensor',
+        'example': str(uuid.uuid4())})
+    timestamp:  Optional[datetime] = Field(default=None, json_schema_extra={
+        'description': 'Time when sample recorded. Current time inserted'
+                       + ' if empty',
+        'example': str(datetime.now())})
+    value: float = Field(json_schema_extra={
+        'description': 'Value recorded by sensor',
+        'example': 4.3})
+    predicted: Optional[bool] = Field(default=False, json_schema_extra={
+        'description': 'Flag if the value is a predicted value or not',
+        'example': True})
 
 
 class SampleCollection(BaseModel):

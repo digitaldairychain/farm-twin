@@ -11,6 +11,7 @@ This collection of endpoints allows for the addition, update, deletion
 and finding of those devices.
 """
 import pymongo
+import uuid
 
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
@@ -29,10 +30,18 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Device(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    tag: str
-    vendor: str
-    model: str
+    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
+        'description': 'UUID of device',
+        'example': str(uuid.uuid4())})
+    tag: str = Field(json_schema_extra={
+        'description': 'ID tag or label on device',
+        'example': '12345'})
+    vendor: str = Field(json_schema_extra={
+        'description': 'Manufacturer of device',
+        'example': 'Acme Sensor Co.'})
+    model: str = Field(json_schema_extra={
+        'description': 'Model number or designation of device',
+        'example': 'Super Device 9000'})
 
 
 class DeviceCollection(BaseModel):
