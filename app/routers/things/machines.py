@@ -1,3 +1,15 @@
+"""
+Collects API calls related to machines.
+
+A machine is an item of equipment, a vehicle, an attachment, etc.
+
+A machine may have several devices attached to it.
+
+An on-farm example is a Tractor.
+
+This collection of endpoints allows for the addition, deletion
+and finding of those machines.
+"""
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import BeforeValidator

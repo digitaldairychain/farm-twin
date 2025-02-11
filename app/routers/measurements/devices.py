@@ -1,8 +1,11 @@
-"""Device API
+"""
+Collects API calls related to devices.
 
 Devices are physical devices, deployed in the real world.
 
 A device may have several sensors attached to it.
+
+An on-farm example would be an outdoor weather station.
 
 This collection of endpoints allows for the addition, update, deletion
 and finding of those devices.

@@ -1,4 +1,5 @@
-"""Sample API
+"""
+Collects API calls related to samples.
 
 Samples are single measurements, taken from a sensor.
 
@@ -7,6 +8,8 @@ A sensor will produce multiple samples over its lifetime.
 A sample includes the value recorded and the time at which it was recorded.
 
 A sample can also be real or predicted, and should be tagged as such.
+
+An on-farm example would be an outdoor temperature sample.
 
 This collection of endpoints allows for the addition, deletion
 and finding of those samples.

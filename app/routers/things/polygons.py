@@ -1,3 +1,17 @@
+"""
+Collects API calls related to polygons.
+
+A polygon is a series of static locations expressed in two dimensions.
+By drawing lines between each of these, a shape can be drawn which
+describes an area.
+
+An area may have several devices attached/within to it.
+
+An on-farm example is an animal pen within a shed.
+
+This collection of endpoints allows for the addition, deletion
+and finding of those points.
+"""
 import pymongo
 
 from fastapi import status, HTTPException, Response, APIRouter, Request
