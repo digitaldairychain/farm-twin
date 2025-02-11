@@ -1,15 +1,14 @@
-"""Collects API calls related to samples.
+"""
+Collects API calls related to animals.
 
-Samples are single measurements, taken from a sensor.
+Animals are living things present on the farm.
 
-A sensor will produce multiple samples over its lifetime.
+An animal may have several devices attached to it.
 
-A sample includes the value recorded and the time at which it was recorded.
-
-A sample can also be real or predicted, and should be tagged as such.
+An on-farm example is a single dairy cow, Hilda.
 
 This collection of endpoints allows for the addition, deletion
-and finding of those samples.
+and finding of those animals.
 """
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field

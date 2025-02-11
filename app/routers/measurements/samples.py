@@ -9,7 +9,7 @@ A sample includes the value recorded and the time at which it was recorded.
 
 A sample can also be real or predicted, and should be tagged as such.
 
-An on-farm example would be an outdoor temperature sample.
+An on-farm example is an outdoor temperature sample.
 
 This collection of endpoints allows for the addition, deletion
 and finding of those samples.

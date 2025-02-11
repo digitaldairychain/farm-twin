@@ -1,3 +1,18 @@
+"""
+Collects API calls related to attachments.
+
+An attachment is a physical linkage between a measurement device and a thing.
+
+A thing may have several devices attached to it.
+
+These attachments are temporal in that they can be permanently or temporarily
+attached.
+
+An on-farm example is a soil measurement device attached to a stake in a field.
+
+This collection of endpoints allows for the addition, deletion
+and finding of those attachments.
+"""
 import pymongo
 
 from fastapi import status, HTTPException, Response, APIRouter, Request

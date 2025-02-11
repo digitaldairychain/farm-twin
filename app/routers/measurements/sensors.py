@@ -1,10 +1,13 @@
-"""Sensor API
+"""
+Collects API calls related to sensors.
 
 Sensors are instruments which measure a specific attribute.
 
 A sensor will produce multiple samples over its lifetime.
 
 A device can have several sensors.
+
+An on-farm example is a temperature sensor.
 
 This collection of endpoints allows for the addition, deletion
 and finding of those sensors.

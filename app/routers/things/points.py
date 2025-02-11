@@ -5,7 +5,7 @@ A point is a single fixed static location expressed in two dimensions.
 
 A point may have several devices attached to it.
 
-An on-farm example would be a stake inserted into the ground in a field.
+An on-farm example is a stake inserted into the ground in a field.
 
 This collection of endpoints allows for the addition, deletion
 and finding of those points.
