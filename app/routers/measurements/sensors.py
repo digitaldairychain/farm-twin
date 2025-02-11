@@ -1,3 +1,14 @@
+"""Sensor API
+
+Sensors are instruments which measure a specific attribute.
+
+A sensor will produce multiple samples over its lifetime.
+
+A device can have several sensors.
+
+This collection of endpoints allows for the addition, deletion
+and finding of those sensors.
+"""
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import BeforeValidator
@@ -33,6 +44,11 @@ class SensorCollection(BaseModel):
     response_model_by_alias=False,
 )
 async def create_sensor(request: Request, sensor: Sensor):
+    """
+    Create a new sensor.
+
+    :param sensor: Sensor to be added.
+    """
     new_sensor = await request.app.state.sensors.insert_one(
         sensor.model_dump(by_alias=True, exclude=["id"])
     )
@@ -64,6 +80,11 @@ async def remove_sensor(request: Request, id: str):
     response_model_by_alias=False,
 )
 async def list_sensor_single(request: Request, id: str):
+    """
+    Delete a sensor.
+
+    :param sensor: UUID of the sensor to delete
+    """
     if (
         sensor := await request.app.state.sensors.find_one(
             {"_id": ObjectId(id)})
@@ -80,5 +101,10 @@ async def list_sensor_single(request: Request, id: str):
     response_model_by_alias=False,
 )
 async def list_sensor_collection(request: Request):
+    """
+    Fetch a single sensor given an ID.
+
+    :param id: UUID of the sensor to fetch
+    """
     return SensorCollection(sensors=await
                             request.app.state.sensors.find().to_list(1000))

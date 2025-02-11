@@ -1,3 +1,16 @@
+"""Sample API
+
+Samples are single measurements, taken from a sensor.
+
+A sensor will produce multiple samples over its lifetime.
+
+A sample includes the value recorded and the time at which it was recorded.
+
+A sample can also be real or predicted, and should be tagged as such.
+
+This collection of endpoints allows for the addition, deletion
+and finding of those samples.
+"""
 import pymongo
 
 from fastapi import status, HTTPException, Response, APIRouter, Request
@@ -33,12 +46,20 @@ class SampleCollection(BaseModel):
 
 @router.post(
     "/",
-    response_description="Add new samples",
+    response_description="Add new sample",
     response_model=Sample,
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
 async def create_samples(request: Request, samples: Sample):
+    """
+    Create a new sample if it does not already exist.
+
+    Adds a timestamp if one is not included (useful for devices without an
+    accurate clock).
+
+    :param sample: Sample to be added.
+    """
     model = samples.model_dump(by_alias=True, exclude=["id"])
     if model["timestamp"] is None:
         model["timestamp"] = datetime.now()
@@ -59,6 +80,11 @@ async def create_samples(request: Request, samples: Sample):
 
 @router.delete("/{id}", response_description="Delete a samples")
 async def remove_samples(request: Request, id: str):
+    """
+    Delete a sample.
+
+    :param id: UUID of the sample to delete
+    """
     delete_result = await request.app.state.samples.delete_one(
         {"_id": ObjectId(id)})
 
@@ -75,6 +101,11 @@ async def remove_samples(request: Request, id: str):
     response_model_by_alias=False,
 )
 async def list_samples_single(request: Request, id: str):
+    """
+    Fetch a single sample given an ID.
+
+    :param id: UUID of the sample to fetch
+    """
     if (
         samples := await request.app.state.samples.find_one(
             {"_id": ObjectId(id)})
@@ -91,6 +122,11 @@ async def list_samples_single(request: Request, id: str):
     response_model_by_alias=False,
 )
 async def list_samples_coordinates(request: Request, tag: str):
+    """
+    Fetch samples for a given sensor.
+
+    :param id: UUID of the sensor for which to fetch samples
+    """
     return SampleCollection(locations=await
                             request.app.state.samples.find(
                                 {"tag": tag}).to_list(1000))

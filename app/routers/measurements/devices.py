@@ -4,7 +4,8 @@ Devices are physical devices, deployed in the real world.
 
 A device may have several sensors attached to it.
 
-These allow for the addition, update, deletion and finding of those devices.
+This collection of endpoints allows for the addition, update, deletion
+and finding of those devices.
 """
 import pymongo
 
