@@ -33,7 +33,6 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 class Sample(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    device: str
     sensor: PyObjectId
     timestamp:  Optional[datetime] = Field(default=None)
     value: float

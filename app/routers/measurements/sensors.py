@@ -30,6 +30,7 @@ class Sensor(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     device: PyObjectId
     measurement: str
+    serial: Optional[str] = Field(default=None)
 
 
 class SensorCollection(BaseModel):
@@ -60,6 +61,34 @@ async def create_sensor(request: Request, sensor: Sensor):
         return created_sensor
     raise HTTPException(status_code=404,
                         detail=f"Sensor {id} not successfully added")
+
+
+@router.patch(
+        "/{id}",
+        response_description="Update a sensor",
+        response_model=Sensor,
+        status_code=status.HTTP_202_ACCEPTED
+    )
+async def update_sensor(request: Request, id: str, sensor: Sensor):
+    """
+    Update an existing sensor if it exists.
+
+    :param id: UUID of the sensor to update
+    :param sensor: Sensor to update this sensor with
+    """
+    await request.app.state.sensors.update_one(
+        {"_id": id},
+        {'$set': sensor.model_dump(by_alias=True, exclude=["id"])},
+        upsert=False
+    )
+
+    if (
+        updated_sensor := await
+        request.app.state.sensors.find_one({"tag": sensor.tag})
+    ) is not None:
+        return updated_sensor
+    raise HTTPException(status_code=404,
+                        detail=f"Sensor {sensor.tag} not successfully updated")
 
 
 @router.delete("/{id}", response_description="Delete a sensor")
