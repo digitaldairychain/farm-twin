@@ -13,6 +13,7 @@ This collection of endpoints allows for the addition, deletion
 and finding of those points.
 """
 import pymongo
+import uuid
 
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
@@ -34,8 +35,11 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Polygon(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    polygon: Polygon
+    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
+        'description': 'UUID of polygon',
+        'example': str(uuid.uuid4())})
+    polygon: Polygon = Field(json_schema_extra={
+        'description': 'GeoJSON Polygon, used to describe an enclosure or space, such as an animal pen'})
     tags: Optional[List[str]] = Field(default=[])
 
 

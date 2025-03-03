@@ -10,6 +10,8 @@ An on-farm example is a Tractor.
 This collection of endpoints allows for the addition, deletion
 and finding of those machines.
 """
+import uuid
+
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import BeforeValidator
@@ -28,11 +30,21 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Machine(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    manufacturer: str
-    model: str
-    type: list[str]
-    registration: Optional[str] = Field(default=None)
+    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
+        'description': 'UUID of machine',
+        'example': str(uuid.uuid4())})
+    manufacturer: str = Field(json_schema_extra={
+        'description': 'Manufacturer of machine',
+        'example': 'Acme Machine Co.'})
+    model: str = Field(json_schema_extra={
+        'description': 'Model number or product code of device',
+        'example': 'Machine 3000'})
+    type: list[str] = Field(json_schema_extra={
+        'description': 'List of categories to which this machine belongs',
+        'example': '["Tractor", "Utility"]'})
+    registration: Optional[str] = Field(default=None, json_schema_extra={
+        'description': 'Assigned vehicle registration number, if applicable',
+        'example': 'BD51 SMR'})
 
 
 class MachineCollection(BaseModel):
@@ -69,6 +81,34 @@ async def remove_machine(request: Request, id: str):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     raise HTTPException(status_code=404, detail=f"Machine {id} not found")
+
+
+@router.patch(
+        "/{id}",
+        response_description="Update an machine",
+        response_model=Machine,
+        status_code=status.HTTP_202_ACCEPTED
+    )
+async def update_machine(request: Request, id: str, machine: Machine):
+    """
+    Update an existing machine if it exists.
+
+    :param id: UUID of the machine to update
+    :param machine: Machine to update with
+    """
+    await request.app.state.machines.update_one(
+        {"_id": id},
+        {'$set': machine.model_dump(by_alias=True, exclude=["id"])},
+        upsert=False
+    )
+
+    if (
+        updated_machine := await
+        request.app.state.machines.find_one({"_id": id})
+    ) is not None:
+        return updated_machine
+    raise HTTPException(status_code=404,
+                        detail=f"Machine {id} not successfully updated")
 
 
 @router.get(

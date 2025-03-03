@@ -10,6 +10,8 @@ An on-farm example is a single dairy cow, Hilda.
 This collection of endpoints allows for the addition, deletion
 and finding of those animals.
 """
+import uuid
+
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import BeforeValidator
@@ -28,8 +30,12 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Animal(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    eid: Optional[str] = Field(default=None)
+    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
+        'description': 'UUID of animal',
+        'example': str(uuid.uuid4())})
+    eid: Optional[str] = Field(default=None, json_schema_extra={
+        'description': 'Electronic Identification (ID) tag of the animal',
+        'example': 'UK230011200123'})
 
 
 class AnimalCollection(BaseModel):
@@ -44,6 +50,11 @@ class AnimalCollection(BaseModel):
     response_model_by_alias=False,
 )
 async def create_animal(request: Request, animal: Animal):
+    """
+    Create a new animal.
+
+    :param animal: Animal to be added
+    """
     new_animal = await request.app.state.animals.insert_one(
         animal.model_dump(by_alias=True, exclude=["id"])
     )
@@ -59,6 +70,11 @@ async def create_animal(request: Request, animal: Animal):
 
 @router.delete("/{id}", response_description="Delete a animal")
 async def remove_animal(request: Request, id: str):
+    """
+    Delete an animal.
+
+    :param id: UUID of the animal to delete
+    """
     delete_result = await request.app.state.animals.delete_one(
         {"_id": ObjectId(id)})
 
@@ -66,6 +82,34 @@ async def remove_animal(request: Request, id: str):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     raise HTTPException(status_code=404, detail=f"Animal {id} not found")
+
+
+@router.patch(
+        "/{id}",
+        response_description="Update an animal",
+        response_model=Animal,
+        status_code=status.HTTP_202_ACCEPTED
+    )
+async def update_animal(request: Request, id: str, animal: Animal):
+    """
+    Update an existing animal if it exists.
+
+    :param id: UUID of the animal to update
+    :param animal: Animal to update with
+    """
+    await request.app.state.animals.update_one(
+        {"_id": id},
+        {'$set': animal.model_dump(by_alias=True, exclude=["id"])},
+        upsert=False
+    )
+
+    if (
+        updated_animal := await
+        request.app.state.animals.find_one({"_id": id})
+    ) is not None:
+        return updated_animal
+    raise HTTPException(status_code=404,
+                        detail=f"Animal {id} not successfully updated")
 
 
 @router.get(

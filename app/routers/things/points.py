@@ -11,6 +11,7 @@ This collection of endpoints allows for the addition, deletion
 and finding of those points.
 """
 import pymongo
+import uuid
 
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
@@ -32,9 +33,11 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Point(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    point: Point
-    tags: Optional[List[str]] = Field(default=[])
+    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
+        'description': 'UUID of point',
+        'example': str(uuid.uuid4())})
+    point: Point = Field(json_schema_extra={
+        'description': 'GeoJSON Point, used to describe a point on the ground, such as a fixed post in the ground'})
 
 
 class PointCollection(BaseModel):
