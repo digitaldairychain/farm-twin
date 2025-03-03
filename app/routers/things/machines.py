@@ -59,6 +59,11 @@ class MachineCollection(BaseModel):
     response_model_by_alias=False,
 )
 async def create_machine(request: Request, machine: Machine):
+    """
+    Create a new machine.
+
+    :param machine: Machine to be added
+    """
     new_machine = await request.app.state.machines.insert_one(
         machine.model_dump(by_alias=True, exclude=["id"])
     )
@@ -74,6 +79,11 @@ async def create_machine(request: Request, machine: Machine):
 
 @router.delete("/{id}", response_description="Delete a machine")
 async def remove_machine(request: Request, id: str):
+    """
+    Delete an machine.
+
+    :param id: UUID of the machine to delete
+    """
     delete_result = await request.app.state.machines.delete_one(
         {"_id": ObjectId(id)})
 
@@ -118,6 +128,11 @@ async def update_machine(request: Request, id: str, machine: Machine):
     response_model_by_alias=False,
 )
 async def list_machine_single(request: Request, id: str):
+    """
+    Fetch a single machine.
+
+    :param id: UUID of the machine to fetch details of
+    """
     if (
         machine := await request.app.state.machines.find_one(
             {"_id": ObjectId(id)})
@@ -134,5 +149,6 @@ async def list_machine_single(request: Request, id: str):
     response_model_by_alias=False,
 )
 async def list_machine_collection(request: Request):
+    """Fetch all current machines."""
     return MachineCollection(machines=await
                              request.app.state.machines.find().to_list(1000))

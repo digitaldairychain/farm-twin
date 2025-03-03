@@ -119,6 +119,11 @@ async def update_animal(request: Request, id: str, animal: Animal):
     response_model_by_alias=False,
 )
 async def list_animal_single(request: Request, id: str):
+    """
+    Fetch a single animal.
+
+    :param id: UUID of the animal to fetch details of
+    """
     if (
         animal := await request.app.state.animals.find_one(
             {"_id": ObjectId(id)})
@@ -135,5 +140,6 @@ async def list_animal_single(request: Request, id: str):
     response_model_by_alias=False,
 )
 async def list_animal_collection(request: Request):
+    """Fetch all current animals."""
     return AnimalCollection(animals=await
                             request.app.state.animals.find().to_list(1000))

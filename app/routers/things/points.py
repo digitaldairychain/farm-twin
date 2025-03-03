@@ -52,6 +52,11 @@ class PointCollection(BaseModel):
     response_model_by_alias=False,
 )
 async def create_point(request: Request, point: Point):
+    """
+    Create a new point.
+
+    :param point: Point to be added
+    """
     try:
         new_point = await request.app.state.points.insert_one(
             point.model_dump(by_alias=True, exclude=["id"])
@@ -70,6 +75,11 @@ async def create_point(request: Request, point: Point):
 
 @router.delete("/{id}", response_description="Delete a point")
 async def remove_point(request: Request, id: str):
+    """
+    Delete a point.
+
+    :param id: UUID of the point to delete
+    """
     delete_result = await request.app.state.points.delete_one(
         {"_id": ObjectId(id)})
 
@@ -86,6 +96,11 @@ async def remove_point(request: Request, id: str):
     response_model_by_alias=False,
 )
 async def list_point_single(request: Request, id: str):
+    """
+    Fetch a single point.
+
+    :param id: UUID of the point to fetch details of
+    """
     if (
         point := await request.app.state.points.find_one(
             {"_id": ObjectId(id)})
@@ -102,6 +117,12 @@ async def list_point_single(request: Request, id: str):
     response_model_by_alias=False,
 )
 async def list_point_coordinates(request: Request, lat: float, long: float):
+    """
+    Fetch a single point at a specific coordinate.
+
+    :param lat: Latititude of point
+    :param long: Longitude of point
+    """
     coordinate = {"bbox": None, "type": "Point", "coordinates": [lat, long]}
     if (
         point := await request.app.state.points.find_one(
@@ -120,5 +141,6 @@ async def list_point_coordinates(request: Request, lat: float, long: float):
     response_model_by_alias=False,
 )
 async def list_point_collection(request: Request, ):
+    """Fetch all current points."""
     return PointCollection(points=await
                            request.app.state.points.find().to_list(1000))

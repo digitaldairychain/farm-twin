@@ -106,6 +106,11 @@ async def update_sensor(request: Request, id: str, sensor: Sensor):
 
 @router.delete("/{id}", response_description="Delete a sensor")
 async def remove_sensor(request: Request, id: str):
+    """
+    Delete a sensor.
+
+    :param sensor: UUID of the sensor to delete
+    """
     delete_result = await request.app.state.sensors.delete_one(
         {"_id": ObjectId(id)})
 
@@ -123,9 +128,9 @@ async def remove_sensor(request: Request, id: str):
 )
 async def list_sensor_single(request: Request, id: str):
     """
-    Delete a sensor.
+    Fetch a single sensor given an ID.
 
-    :param sensor: UUID of the sensor to delete
+    :param id: UUID of the sensor to fetch
     """
     if (
         sensor := await request.app.state.sensors.find_one(
@@ -143,10 +148,6 @@ async def list_sensor_single(request: Request, id: str):
     response_model_by_alias=False,
 )
 async def list_sensor_collection(request: Request):
-    """
-    Fetch a single sensor given an ID.
-
-    :param id: UUID of the sensor to fetch
-    """
+    """Fetch all current devices."""
     return SensorCollection(sensors=await
                             request.app.state.sensors.find().to_list(1000))

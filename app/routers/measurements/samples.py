@@ -72,7 +72,7 @@ async def create_samples(request: Request, samples: Sample):
     Adds a timestamp if one is not included (useful for devices without an
     accurate clock).
 
-    :param sample: Sample to be added.
+    :param sample: Sample to be added
     """
     model = samples.model_dump(by_alias=True, exclude=["id"])
     if model["timestamp"] is None:
