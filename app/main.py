@@ -48,7 +48,7 @@ async def open_db() -> AsyncIOMotorClient:
 async def create_indexes():
     app.state.devices.create_index(["tag", "vendor"], unique=True)
     app.state.points.create_index({"point": "2dsphere"}, unique=True)
-    app.state.polygons.create_index({"polygon": "2dsphere"}, unique=True)
+    app.state.polygons.create_index(["polygon"], unique=True)
     app.state.sensors.create_index(["device", "measurement"], unique=True)
     _attachment_index = ["device", "thing", "start"]
     app.state.attachments.create_index(_attachment_index, unique=True)

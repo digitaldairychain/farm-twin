@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field
 from pydantic.functional_validators import BeforeValidator
 from typing import Optional, List
 from typing_extensions import Annotated
-from geojson_pydantic import Polygon
+from geojson_pydantic import MultiPolygon, FeatureCollection
 from bson.objectid import ObjectId
 
 
@@ -38,13 +38,9 @@ class Polygon(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
         'description': 'UUID of polygon',
         'example': str(uuid.uuid4())})
-    polygon: Polygon = Field(json_schema_extra={
-        'description': 'GeoJSON Polygon, used to describe an enclosure or space, such as an animal pen'})
+    polygon: MultiPolygon = Field(json_schema_extra={
+        'description': 'GeoJSON MultiPolygon, used to describe an enclosure or space, such as an animal pen'})
     tags: Optional[List[str]] = Field(default=[])
-
-
-class PolygonCollection(BaseModel):
-    polygons: List[Polygon]
 
 
 @router.post(
@@ -116,10 +112,21 @@ async def list_polygon_single(request: Request, id: str):
 @router.get(
     "/",
     response_description="List all polygons",
-    response_model=PolygonCollection,
+    response_model=FeatureCollection,
     response_model_by_alias=False,
 )
-async def list_polygon_collection(request: Request, ):
+async def list_polygon_collection(request: Request, response: Response):
     """Fetch all current polygons."""
-    return PolygonCollection(polygons=await
-                             request.app.state.polygons.find().to_list(1000))
+    fc = {"type": "FeatureCollection", "features": []}
+    polygons = await request.app.state.polygons.find().to_list(1000)
+    for polygon in polygons:
+        f = {
+             "type": "Feature",
+             "properties": {
+                 "objectid": str(polygon["_id"])
+             },
+             "geometry": polygon["polygon"]
+        }
+        fc["features"].append(f)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return fc
