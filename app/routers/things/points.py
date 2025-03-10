@@ -13,12 +13,12 @@ and finding of those points.
 import pymongo
 import uuid
 
-from fastapi import status, HTTPException, Response, APIRouter, Request
+from fastapi import status, HTTPException, Response, APIRouter, Request, Response
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import BeforeValidator
-from typing import Optional, List
+from typing import Optional
 from typing_extensions import Annotated
-from geojson_pydantic import Point
+from geojson_pydantic import Point, FeatureCollection
 from bson.objectid import ObjectId
 
 
@@ -38,10 +38,6 @@ class Point(BaseModel):
         'example': str(uuid.uuid4())})
     point: Point = Field(json_schema_extra={
         'description': 'GeoJSON Point, used to describe a point on the ground, such as a fixed post in the ground'})
-
-
-class PointCollection(BaseModel):
-    points: List[Point]
 
 
 @router.post(
@@ -137,10 +133,21 @@ async def list_point_coordinates(request: Request, lat: float, long: float):
 @router.get(
     "/",
     response_description="List all points",
-    response_model=PointCollection,
+    response_model=FeatureCollection,
     response_model_by_alias=False,
 )
-async def list_point_collection(request: Request, ):
+async def list_point_collection(request: Request, response: Response):
     """Fetch all current points."""
-    return PointCollection(points=await
-                           request.app.state.points.find().to_list(1000))
+    fc = {"type": "FeatureCollection", "features": []}
+    points = await request.app.state.points.find().to_list(1000)
+    for point in points:
+        f = {
+             "type": "Feature",
+             "properties": {
+                 "objectid": str(point["_id"])
+             },
+             "geometry": point["point"]
+            }
+        fc["features"].append(f)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return fc

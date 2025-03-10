@@ -67,7 +67,6 @@ async def create_machine(request: Request, machine: Machine):
     new_machine = await request.app.state.machines.insert_one(
         machine.model_dump(by_alias=True, exclude=["id"])
     )
-
     if (
         created_machine := await
         request.app.state.machines.find_one({"_id": new_machine.inserted_id})
