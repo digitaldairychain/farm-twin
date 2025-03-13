@@ -32,9 +32,13 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Sensor(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
-        'description': 'UUID of sensor',
-        'example': str(uuid.uuid4())})
+    id: Optional[PyObjectId] = Field(
+        alias="_id",
+        default=None,
+        json_schema_extra={
+            'description': 'UUID of sensor',
+            'example': str(uuid.uuid4())}
+    )
     device: PyObjectId = Field(json_schema_extra={
         'description': 'UUID of device to which the sensor is connected',
         'example': str(uuid.uuid4())})
@@ -121,53 +125,25 @@ async def remove_sensor(request: Request, id: str):
 
 
 @router.get(
-    "/{id}",
-    response_description="Get a single sensor",
-    response_model=Sensor,
-    response_model_by_alias=False,
-)
-async def list_sensor_single(request: Request, id: str):
-    """
-    Fetch a single sensor given an ID.
-
-    :param id: UUID of the sensor to fetch
-    """
-    if (
-        sensor := await request.app.state.sensors.find_one(
-            {"_id": ObjectId(id)})
-    ) is not None:
-        return sensor
-
-    raise HTTPException(status_code=404, detail=f"Sensor {id} not found")
-
-
-@router.get(
-    "/bydevice/{id}",
-    response_description="Get sensors associated with a device",
-    response_model=SensorCollection,
-    response_model_by_alias=False,
-)
-async def list_sensor_device(request: Request, id: str):
-    """
-    Fetch all sensors attached to a device.
-
-    :param id: UUID of the device to return the sensors for
-    """
-    if (
-        sensor_collection := SensorCollection(sensors=await request.app.state.sensors.find({"device": id}).to_list(1000))
-    ) is not None:
-        return sensor_collection
-
-    raise HTTPException(status_code=404, detail=f"Device {id} not found")
-
-
-@router.get(
     "/",
-    response_description="List all sensors",
+    response_description="Search for sensors",
     response_model=SensorCollection,
     response_model_by_alias=False,
 )
-async def list_sensor_collection(request: Request):
-    """Fetch all current devices."""
-    return SensorCollection(sensors=await
-                            request.app.state.sensors.find().to_list(1000))
+async def sensor_query(request: Request,
+                       id: str | None = None,
+                       device: str | None = None,
+                       tag: str | None = None,
+                       measurement: str | None = None):
+    query = {
+        "_id": id,
+        "device": device,
+        "tag": tag,
+        "measurement": measurement}
+    filtered_query = {k: v for k, v in query.items() if v is not None}
+    if (
+        result := await request.app.state.sensors.find(filtered_query)
+        .to_list(1000)
+    ) is not None:
+        return SensorCollection(sensors=result)
+    raise HTTPException(status_code=404, detail="No match found")

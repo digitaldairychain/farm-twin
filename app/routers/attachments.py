@@ -71,7 +71,7 @@ async def create_attachment(request: Request, attachment: Attachment):
                         f"{attachment._id} not successfully added")
 
 
-@router.delete("/{id}", response_description="Delete a attachment")
+@router.delete("/{id}", response_description="Delete an attachment")
 async def remove_attachment(request: Request, id: str):
     delete_result = await request.app.state.attachments.delete_one(
         {"_id": ObjectId(id)})
@@ -88,11 +88,16 @@ async def remove_attachment(request: Request, id: str):
     response_model=AttachmentCollection,
     response_model_by_alias=False,
 )
-async def list_attachment_query(request: Request, id: str | None = None, device: str | None = None, thing: str | None = None):
+async def attachment_query(request: Request,
+                           id: str | None = None,
+                           device: str | None = None,
+                           thing: str | None = None):
     query = {"_id": id, "thing": thing, "device": device}
     filtered_query = {k: v for k, v in query.items() if v is not None}
     if (
-        result := await request.app.state.attachments.find(filtered_query).to_list(1000)
+        result :=
+            await request.app.state.attachments.find(filtered_query)
+            .to_list(1000)
     ) is not None:
         return AttachmentCollection(attachments=result)
     raise HTTPException(status_code=404, detail="No match found")
