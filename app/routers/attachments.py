@@ -83,40 +83,16 @@ async def remove_attachment(request: Request, id: str):
 
 
 @router.get(
-    "/{id}",
-    response_description="Get a single attachment",
-    response_model=Attachment,
-    response_model_by_alias=False,
-)
-async def list_attachment_single(request: Request, id: str):
-    if (
-        attachment := await request.app.state.attachments.find_one(
-            {"_id": ObjectId(id)})
-    ) is not None:
-        return attachment
-
-    raise HTTPException(status_code=404, detail=f"Attachment {id} not found")
-
-
-@router.get(
-    "/bything/{id}",
-    response_description="Get devices attached to a thing",
-    response_model=AttachmentCollection,
-    response_model_by_alias=False,
-)
-async def list_attachment_thing(request: Request, id: str):
-    return AttachmentCollection(attachments=await
-                                request.app.state.attachments.find({"thing": id})
-                                .to_list(1000))
-
-
-@router.get(
     "/",
-    response_description="List all attachments",
+    response_description="Search for attachments",
     response_model=AttachmentCollection,
     response_model_by_alias=False,
 )
-async def list_attachment_collection(request: Request):
-    return AttachmentCollection(attachments=await
-                                request.app.state.attachments.find()
-                                .to_list(1000))
+async def list_attachment_query(request: Request, id: str | None = None, device: str | None = None, thing: str | None = None):
+    query = {"_id": id, "thing": thing, "device": device}
+    filtered_query = {k: v for k, v in query.items() if v is not None}
+    if (
+        result := await request.app.state.attachments.find(filtered_query).to_list(1000)
+    ) is not None:
+        return AttachmentCollection(attachments=result)
+    raise HTTPException(status_code=404, detail="No match found")
