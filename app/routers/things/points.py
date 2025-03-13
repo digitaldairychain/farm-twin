@@ -16,7 +16,7 @@ import uuid
 from fastapi import status, HTTPException, Response, APIRouter, Request, Response
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import BeforeValidator
-from typing import Optional
+from typing import Optional, List
 from typing_extensions import Annotated
 from geojson_pydantic import Point, FeatureCollection
 from bson.objectid import ObjectId
@@ -38,7 +38,7 @@ class Point(BaseModel):
         'example': str(uuid.uuid4())})
     point: Point = Field(json_schema_extra={
         'description': 'GeoJSON Point, used to describe a point on the ground, such as a fixed post in the ground'})
-
+    tags: Optional[List[str]] = Field(default=[])
 
 @router.post(
     "/",
@@ -144,7 +144,9 @@ async def list_point_collection(request: Request, response: Response):
         f = {
              "type": "Feature",
              "properties": {
-                 "objectid": str(point["_id"])
+                 "objectid": str(point["_id"]),
+                 "tags": point["tags"],
+                 "type": "point"
              },
              "geometry": point["point"]
             }

@@ -123,7 +123,9 @@ async def list_polygon_collection(request: Request, response: Response):
         f = {
              "type": "Feature",
              "properties": {
-                 "objectid": str(polygon["_id"])
+                 "objectid": str(polygon["_id"]),
+                 "tags": polygon["tags"],
+                 "type": "polygon"
              },
              "geometry": polygon["polygon"]
         }

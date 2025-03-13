@@ -99,6 +99,18 @@ async def list_attachment_single(request: Request, id: str):
 
 
 @router.get(
+    "/bything/{id}",
+    response_description="Get devices attached to a thing",
+    response_model=AttachmentCollection,
+    response_model_by_alias=False,
+)
+async def list_attachment_thing(request: Request, id: str):
+    return AttachmentCollection(attachments=await
+                                request.app.state.attachments.find({"thing": id})
+                                .to_list(1000))
+
+
+@router.get(
     "/",
     response_description="List all attachments",
     response_model=AttachmentCollection,

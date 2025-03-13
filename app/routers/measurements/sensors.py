@@ -142,6 +142,26 @@ async def list_sensor_single(request: Request, id: str):
 
 
 @router.get(
+    "/bydevice/{id}",
+    response_description="Get sensors associated with a device",
+    response_model=SensorCollection,
+    response_model_by_alias=False,
+)
+async def list_sensor_device(request: Request, id: str):
+    """
+    Fetch all sensors attached to a device.
+
+    :param id: UUID of the device to return the sensors for
+    """
+    if (
+        sensor_collection := SensorCollection(sensors=await request.app.state.sensors.find({"device": id}).to_list(1000))
+    ) is not None:
+        return sensor_collection
+
+    raise HTTPException(status_code=404, detail=f"Device {id} not found")
+
+
+@router.get(
     "/",
     response_description="List all sensors",
     response_model=SensorCollection,
