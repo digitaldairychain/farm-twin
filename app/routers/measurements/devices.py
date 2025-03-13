@@ -30,9 +30,13 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Device(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
-        'description': 'UUID of device',
-        'example': str(uuid.uuid4())})
+    id: Optional[PyObjectId] = Field(
+        alias="_id",
+        default=None,
+        json_schema_extra={
+            'description': 'UUID of device',
+            'example': str(uuid.uuid4())}
+    )
     tag: str = Field(json_schema_extra={
         'description': 'ID tag or label on device',
         'example': '12345'})
@@ -121,32 +125,25 @@ async def remove_device(request: Request, tag: str):
 
 
 @router.get(
-    "/{tag}",
-    response_description="Get a single device",
-    response_model=Device,
-    response_model_by_alias=False,
-)
-async def list_device_single(request: Request, tag: str):
-    """
-    Fetch a single device given a tag.
-
-    :param tag: Tag of the device to fetch details of
-    """
-    if (
-        device := await request.app.state.devices.find_one({"tag": tag})
-    ) is not None:
-        return device
-
-    raise HTTPException(status_code=404, detail=f"Device {tag} not found")
-
-
-@router.get(
     "/",
-    response_description="List all devices",
+    response_description="Search for devices",
     response_model=DeviceCollection,
     response_model_by_alias=False,
 )
-async def list_device_collection(request: Request):
-    """Fetch all current devices."""
-    return DeviceCollection(devices=await
-                            request.app.state.devices.find().to_list(1000))
+async def device_query(request: Request,
+                       id: str | None = None,
+                       tag: str | None = None,
+                       vendor: str | None = None,
+                       model: str | None = None,):
+    query = {
+        "_id": id,
+        "tag": tag,
+        "vendor": vendor,
+        "model": model}
+    filtered_query = {k: v for k, v in query.items() if v is not None}
+    if (
+        result := await request.app.state.devices.find(filtered_query)
+        .to_list(1000)
+    ) is not None:
+        return DeviceCollection(devices=result)
+    raise HTTPException(status_code=404, detail="No match found")
