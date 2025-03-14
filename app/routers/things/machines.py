@@ -154,9 +154,7 @@ async def machine_query(request: Request,
     filtered_query = {k: v for k, v in query.items() if v is not None}
     if type:
         filtered_query["type"] = {"$in": [type]}
-    if (
-        result := await request.app.state.machines.find(filtered_query)
-        .to_list(1000)
-    ) is not None:
+    result = await request.app.state.machines.find(filtered_query).to_list(1000)
+    if len(result) > 0:
         return MachineCollection(machines=result)
     raise HTTPException(status_code=404, detail="No match found")

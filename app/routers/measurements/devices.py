@@ -149,9 +149,7 @@ async def device_query(request: Request,
         "vendor": vendor,
         "model": model}
     filtered_query = {k: v for k, v in query.items() if v is not None}
-    if (
-        result := await request.app.state.devices.find(filtered_query)
-        .to_list(1000)
-    ) is not None:
+    result = await request.app.state.devices.find(filtered_query).to_list(1000)
+    if len(result) > 0:
         return DeviceCollection(devices=result)
     raise HTTPException(status_code=404, detail="No match found")

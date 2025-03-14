@@ -149,9 +149,7 @@ async def sensor_query(request: Request,
         "tag": tag,
         "measurement": measurement}
     filtered_query = {k: v for k, v in query.items() if v is not None}
-    if (
-        result := await request.app.state.sensors.find(filtered_query)
-        .to_list(1000)
-    ) is not None:
+    result = await request.app.state.sensors.find(filtered_query).to_list(1000)
+    if len(result) > 0:
         return SensorCollection(sensors=result)
     raise HTTPException(status_code=404, detail="No match found")

@@ -11,9 +11,9 @@ class TestDevices:
         assert response.status_code == 201
 
         response = test_client.get(
-            f"/measurements/devices/{device_payload['tag']}")
+            f"/measurements/devices/?tag={device_payload['tag']}")
         assert response.status_code == 200
-        response_json = response.json()
+        response_json = response.json()["devices"][0]  # Check the first returned result - should only be one
         assert response_json["tag"] == device_payload["tag"]
         assert response_json["vendor"] == "Acme Sensor Co."
         assert response_json["model"] == "Super Device 9000"
@@ -46,12 +46,12 @@ class TestDevices:
         assert response.status_code == 204
 
         response = test_client.get(
-            f"/measurements/devices/{device_payload['tag']}")
+            f"/measurements/devices/?tag={device_payload['tag']}")
         assert response.status_code == 404
 
     def test_get_device_not_found(self, test_client, device_tag):
         response = test_client.get(
-            f"/measurements/devices/{device_tag}")
+            f"/measurements/devices/?tag={device_tag}")
         assert response.status_code == 404
 
     def test_create_device_wrong_payload(self, test_client):
