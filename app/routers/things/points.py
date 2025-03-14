@@ -99,14 +99,17 @@ async def remove_point(request: Request, id: str):
     response_model_by_alias=False,
 )
 async def point_query(request: Request, response: Response,
-                        id: str | None = None,
-                        lat: float | None = None,
-                        long: float | None = None,
-                        tag: str | None = None,):
+                      id: str | None = None,
+                      lat: float | None = None,
+                      long: float | None = None,
+                      tag: str | None = None,):
     """
-    Search for a machine given the provided criteria.
+    Search for a point given the provided criteria.
 
-    :param id: Object ID of the machine
+    :param id: Object ID of the point
+    :param lat: Latitude of point
+    :param long: Longitude of point
+    :param tag: Tag of the point
     """
     query = {"_id": id}
     filtered_query = {k: v for k, v in query.items() if v is not None}
@@ -121,8 +124,7 @@ async def point_query(request: Request, response: Response,
     result = await request.app.state.points.find(filtered_query).to_list(1000)
     if len(result) > 0:
         fc = {"type": "FeatureCollection", "features": []}
-        points = await request.app.state.points.find().to_list(1000)
-        for point in points:
+        for point in result:
             f = {
                 "type": "Feature",
                 "properties": {
@@ -136,4 +138,4 @@ async def point_query(request: Request, response: Response,
         response.headers["Access-Control-Allow-Origin"] = "*"
         return fc
     raise HTTPException(status_code=404, detail="No match found")
-#TODO: Allow searching within a bounded box
+# TODO: Allow searching within a bounded box

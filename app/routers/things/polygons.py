@@ -93,46 +93,39 @@ async def remove_polygon(request: Request, id: str):
 
 
 @router.get(
-    "/{id}",
-    response_description="Get a single polygon",
-    response_model=Polygon,
-    response_model_by_alias=False,
-)
-async def list_polygon_single(request: Request, id: str):
-    """
-    Fetch a single polygon.
-
-    :param id: UUID of the polygon to fetch details of
-    """
-    if (
-        polygon := await request.app.state.polygons.find_one(
-            {"_id": ObjectId(id)})
-    ) is not None:
-        return polygon
-
-    raise HTTPException(status_code=404, detail=f"Polygon {id} not found")
-
-
-@router.get(
     "/",
-    response_description="List all polygons",
+    response_description="Search for polygon",
     response_model=FeatureCollection,
     response_model_by_alias=False,
 )
-async def list_polygon_collection(request: Request, response: Response):
-    """Fetch all current polygons."""
-    fc = {"type": "FeatureCollection", "features": []}
-    polygons = await request.app.state.polygons.find().to_list(1000)
-    for polygon in polygons:
-        f = {
-             "type": "Feature",
-             "properties": {
-                 "objectid": str(polygon["_id"]),
-                 "tags": polygon["tags"],
-                 "type": "polygon"
-             },
-             "geometry": polygon["polygon"]
-        }
-        fc["features"].append(f)
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    return fc
+async def polygon_query(request: Request, response: Response,
+                        id: str | None = None,
+                        tag: str | None = None):
+    """
+    Search for a polygon given the provided criteria.
+
+    :param id: Object ID of the polygon
+    :param tag: Tag of the polygon
+    """
+    query = {"_id": id}
+    filtered_query = {k: v for k, v in query.items() if v is not None}
+    if tag:
+        filtered_query["tags"] = {"$in": [tag]}
+    result = await request.app.state.polygons.find(filtered_query).to_list(1000)
+    if len(result) > 0:
+        fc = {"type": "FeatureCollection", "features": []}
+        for polygon in result:
+            f = {
+                "type": "Feature",
+                "properties": {
+                    "objectid": str(polygon["_id"]),
+                    "tags": polygon["tags"],
+                    "type": "polygon"
+                },
+                "geometry": polygon["polygon"]
+            }
+            fc["features"].append(f)
+            response.headers["Access-Control-Allow-Origin"] = "*"
+        return fc
+    raise HTTPException(status_code=404, detail="No match found")
+# TODO: Allow searching within a bounded box
