@@ -135,6 +135,14 @@ async def sensor_query(request: Request,
                        device: str | None = None,
                        tag: str | None = None,
                        measurement: str | None = None):
+    """
+    Search for a sensor given the provided criteria.
+
+    :param id: Object ID of the sensor
+    :param device: Object ID of the device to which the sensor(s) are attached
+    :param tag: Tag of the sensor(s)
+    :param measurement: Measurement type of the sensor(s)
+    """
     query = {
         "_id": id,
         "device": device,

@@ -135,6 +135,14 @@ async def device_query(request: Request,
                        tag: str | None = None,
                        vendor: str | None = None,
                        model: str | None = None,):
+    """
+    Search for a device given the provided criteria.
+
+    :param id: Object ID of the device
+    :param tag: Tag of the device(s)
+    :param vendor: Vendor of the device(s)
+    :param model: Model designation of the device(s)
+    """
     query = {
         "_id": id,
         "tag": tag,

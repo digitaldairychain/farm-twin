@@ -13,7 +13,7 @@ and finding of those points.
 import pymongo
 import uuid
 
-from fastapi import status, HTTPException, Response, APIRouter, Request, Response
+from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import BeforeValidator
 from typing import Optional, List
@@ -104,6 +104,8 @@ async def list_point_single(request: Request, id: str):
         return point
 
     raise HTTPException(status_code=404, detail=f"Point {id} not found")
+
+
 
 
 @router.get(

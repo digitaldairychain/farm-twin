@@ -109,39 +109,35 @@ async def remove_samples(request: Request, id: str):
 
 
 @router.get(
-    "/{id}",
-    response_description="Get a single samples point",
-    response_model=Sample,
-    response_model_by_alias=False,
-)
-async def list_samples_single(request: Request, id: str):
-    """
-    Fetch a single sample given an ID.
-
-    :param id: UUID of the sample to fetch
-    """
-    if (
-        samples := await request.app.state.samples.find_one(
-            {"_id": ObjectId(id)})
-    ) is not None:
-        return samples
-
-    raise HTTPException(status_code=404, detail=f"Sample {id} not found")
-
-
-@router.get(
-    "/bysensor/",
-    response_description="Get samples by sensor tag",
+    "/",
+    response_description="Search for samples",
     response_model=SampleCollection,
     response_model_by_alias=False,
 )
-async def list_samples_coordinates(request: Request, tag: str):
+async def sample_query(request: Request,
+                       id: str | None = None,
+                       sensor: str | None = None,
+                       start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
+                       end: datetime | None = datetime.now(),
+                       predicted: bool | None = False):
     """
-    Fetch samples for a given sensor.
+    Search for a sample given the provided criteria.
 
-    :param id: UUID of the sensor for which to fetch samples
+    :param id: Object ID of the sample
+    :param sensor: Object ID of the sensor which generated this sample
+    :param start: Timestamp from which to start the search
+    :param end: Timestamp from which to end the search
+    :param predicted: Whether or not the value is real or predicted
     """
-    return SampleCollection(locations=await
-                            request.app.state.samples.find(
-                                {"tag": tag}).to_list(1000))
-# TODO: Should allow queries for a date range
+    query = {
+        "_id": id,
+        "sensor": sensor,
+        "predicted": predicted}
+    filtered_query = {k: v for k, v in query.items() if v is not None}
+    filtered_query["timestamp"] = {"$gte": start, "$lte": end}
+    if (
+        result := await request.app.state.samples.find(filtered_query)
+        .to_list(1000)
+    ) is not None:
+        return SampleCollection(samples=result)
+    raise HTTPException(status_code=404, detail="No match found")
