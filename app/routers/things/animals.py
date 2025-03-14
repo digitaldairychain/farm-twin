@@ -117,33 +117,28 @@ async def update_animal(request: Request, id: str, animal: Animal):
 
 
 @router.get(
-    "/{id}",
-    response_description="Get a single animal",
-    response_model=Animal,
-    response_model_by_alias=False,
-)
-async def list_animal_single(request: Request, id: str):
-    """
-    Fetch a single animal.
-
-    :param id: UUID of the animal to fetch details of
-    """
-    if (
-        animal := await request.app.state.animals.find_one(
-            {"_id": ObjectId(id)})
-    ) is not None:
-        return animal
-
-    raise HTTPException(status_code=404, detail=f"Animal {id} not found")
-
-
-@router.get(
     "/",
-    response_description="List all animals",
+    response_description="Search for animals",
     response_model=AnimalCollection,
     response_model_by_alias=False,
 )
-async def list_animal_collection(request: Request):
-    """Fetch all current animals."""
-    return AnimalCollection(animals=await
-                            request.app.state.animals.find().to_list(1000))
+async def animal_query(request: Request,
+                       id: str | None = None,
+                       eid: str | None = None):
+    """
+    Search for an animal given the provided criteria.
+
+    :param id: Object ID of the animal
+    :param eid: Electronic identification tag number of animal
+    """
+    query = {
+        "_id": id,
+        "eid": eid,
+        }
+    filtered_query = {k: v for k, v in query.items() if v is not None}
+    if (
+        result := await request.app.state.animals.find(filtered_query)
+        .to_list(1000)
+    ) is not None:
+        return AnimalCollection(animals=result)
+    raise HTTPException(status_code=404, detail="No match found")
