@@ -40,7 +40,7 @@ async def open_db() -> AsyncIOMotorClient:
     app.state.points = _ft['things']['points']
     app.state.polygons = _ft['things']['polygons']
     app.state.animals = _ft['things']['animals']
-    app.state.animals = _ft['things']['machines']
+    app.state.machines = _ft['things']['machines']
 
     app.state.attachments = _ft['attachments']
 

@@ -125,33 +125,38 @@ async def update_machine(request: Request, id: str, machine: Machine):
 
 
 @router.get(
-    "/{id}",
-    response_description="Get a single machine",
-    response_model=Machine,
-    response_model_by_alias=False,
-)
-async def list_machine_single(request: Request, id: str):
-    """
-    Fetch a single machine.
-
-    :param id: UUID of the machine to fetch details of
-    """
-    if (
-        machine := await request.app.state.machines.find_one(
-            {"_id": ObjectId(id)})
-    ) is not None:
-        return machine
-
-    raise HTTPException(status_code=404, detail=f"Machine {id} not found")
-
-
-@router.get(
     "/",
-    response_description="List all machines",
+    response_description="Search for machines",
     response_model=MachineCollection,
     response_model_by_alias=False,
 )
-async def list_machine_collection(request: Request):
-    """Fetch all current machines."""
-    return MachineCollection(machines=await
-                             request.app.state.machines.find().to_list(1000))
+async def machine_query(request: Request,
+                        id: str | None = None,
+                        manufacturer: str | None = None,
+                        model: str | None = None,
+                        type: str | None = None,
+                        registration: str | None = None):
+    """
+    Search for a machine given the provided criteria.
+
+    :param id: Object ID of the machine
+    :param manufacturer: Manufacturer of the machine(s)
+    :param model: Model of the machine(s)
+    :param type: Type of the machine(s)
+    :param registration: Registration mark/number of the machine
+    """
+    query = {
+        "_id": id,
+        "manufacturer": manufacturer,
+        "model":  model,
+        "registration": registration
+        }
+    filtered_query = {k: v for k, v in query.items() if v is not None}
+    if type:
+        filtered_query["type"] = {"$in": [type]}
+    if (
+        result := await request.app.state.machines.find(filtered_query)
+        .to_list(1000)
+    ) is not None:
+        return MachineCollection(machines=result)
+    raise HTTPException(status_code=404, detail="No match found")
