@@ -33,12 +33,19 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Point(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
-        'description': 'UUID of point',
-        'example': str(uuid.uuid4())})
-    point: Point = Field(json_schema_extra={
-        'description': 'GeoJSON Point, used to describe a point on the ground, such as a fixed post in the ground'})
+    id: Optional[PyObjectId] = Field(
+        alias="_id",
+        default=None,
+        json_schema_extra={
+            'description': 'UUID of point',
+            'example': str(uuid.uuid4())
+        })
+    point: Point = Field(
+        json_schema_extra={
+            'description': 'GeoJSON Point, a fixed point on earth'
+        })
     tags: Optional[List[str]] = Field(default=[])
+
 
 @router.post(
     "/",
@@ -104,8 +111,6 @@ async def list_point_single(request: Request, id: str):
         return point
 
     raise HTTPException(status_code=404, detail=f"Point {id} not found")
-
-
 
 
 @router.get(
