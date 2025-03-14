@@ -35,11 +35,15 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Polygon(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
-        'description': 'UUID of polygon',
-        'example': str(uuid.uuid4())})
+    id: Optional[PyObjectId] = Field(
+        alias="_id",
+        default=None,
+        json_schema_extra={
+            'description': 'UUID of polygon',
+            'example': str(uuid.uuid4())
+        })
     polygon: MultiPolygon = Field(json_schema_extra={
-        'description': 'GeoJSON MultiPolygon, used to describe an enclosure or space, such as an animal pen'})
+        'description': 'GeoJSON MultiPolygon, a bounded shape on earth'})
     tags: Optional[List[str]] = Field(default=[])
 
 

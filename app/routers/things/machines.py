@@ -30,9 +30,13 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Machine(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
-        'description': 'UUID of machine',
-        'example': str(uuid.uuid4())})
+    id: Optional[PyObjectId] = Field(
+        alias="_id",
+        default=None,
+        json_schema_extra={
+            'description': 'UUID of machine',
+            'example': str(uuid.uuid4())
+        })
     manufacturer: str = Field(json_schema_extra={
         'description': 'Manufacturer of machine',
         'example': 'Acme Machine Co.'})

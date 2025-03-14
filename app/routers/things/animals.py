@@ -30,9 +30,13 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Animal(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None, json_schema_extra={
-        'description': 'UUID of animal',
-        'example': str(uuid.uuid4())})
+    id: Optional[PyObjectId] = Field(
+        alias="_id",
+        default=None,
+        json_schema_extra={
+            'description': 'UUID of animal',
+            'example': str(uuid.uuid4())
+        })
     eid: Optional[str] = Field(default=None, json_schema_extra={
         'description': 'Electronic Identification (ID) tag of the animal',
         'example': 'UK230011200123'})
