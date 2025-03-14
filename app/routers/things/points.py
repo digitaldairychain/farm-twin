@@ -93,70 +93,47 @@ async def remove_point(request: Request, id: str):
 
 
 @router.get(
-    "/{id}",
-    response_description="Get a single point",
-    response_model=Point,
-    response_model_by_alias=False,
-)
-async def list_point_single(request: Request, id: str):
-    """
-    Fetch a single point.
-
-    :param id: UUID of the point to fetch details of
-    """
-    if (
-        point := await request.app.state.points.find_one(
-            {"_id": ObjectId(id)})
-    ) is not None:
-        return point
-
-    raise HTTPException(status_code=404, detail=f"Point {id} not found")
-
-
-@router.get(
-    "/bycoordinate/",
-    response_description="Get a point by coordinates",
-    response_model=Point,
-    response_model_by_alias=False,
-)
-async def list_point_coordinates(request: Request, lat: float, long: float):
-    """
-    Fetch a single point at a specific coordinate.
-
-    :param lat: Latititude of point
-    :param long: Longitude of point
-    """
-    coordinate = {"bbox": None, "type": "Point", "coordinates": [lat, long]}
-    if (
-        point := await request.app.state.points.find_one(
-            {"point": coordinate})
-    ) is not None:
-        return point
-
-    raise HTTPException(status_code=404,
-                        detail=f"Point not found {coordinate}")
-
-
-@router.get(
     "/",
-    response_description="List all points",
+    response_description="Search for points",
     response_model=FeatureCollection,
     response_model_by_alias=False,
 )
-async def list_point_collection(request: Request, response: Response):
-    """Fetch all current points."""
-    fc = {"type": "FeatureCollection", "features": []}
-    points = await request.app.state.points.find().to_list(1000)
-    for point in points:
-        f = {
-             "type": "Feature",
-             "properties": {
-                 "objectid": str(point["_id"]),
-                 "tags": point["tags"],
-                 "type": "point"
-             },
-             "geometry": point["point"]
-            }
-        fc["features"].append(f)
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    return fc
+async def point_query(request: Request, response: Response,
+                        id: str | None = None,
+                        lat: float | None = None,
+                        long: float | None = None,
+                        tag: str | None = None,):
+    """
+    Search for a machine given the provided criteria.
+
+    :param id: Object ID of the machine
+    """
+    query = {"_id": id}
+    filtered_query = {k: v for k, v in query.items() if v is not None}
+    if lat is not None and long is not None:
+        filtered_query["point"] = {
+            "bbox": None,
+            "type": "Point",
+            "coordinates": [lat, long]
+        }
+    if tag:
+        filtered_query["tags"] = {"$in": [tag]}
+    result = await request.app.state.points.find(filtered_query).to_list(1000)
+    if len(result) > 0:
+        fc = {"type": "FeatureCollection", "features": []}
+        points = await request.app.state.points.find().to_list(1000)
+        for point in points:
+            f = {
+                "type": "Feature",
+                "properties": {
+                    "objectid": str(point["_id"]),
+                    "tags": point["tags"],
+                    "type": "point"
+                },
+                "geometry": point["point"]
+                }
+            fc["features"].append(f)
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        return fc
+    raise HTTPException(status_code=404, detail="No match found")
+#TODO: Allow searching within a bounded box
