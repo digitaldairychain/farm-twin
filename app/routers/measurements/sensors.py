@@ -12,7 +12,7 @@ An on-farm example is a temperature sensor.
 This collection of endpoints allows for the addition, deletion
 and finding of those sensors.
 """
-import uuid
+import pymongo
 
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
@@ -37,14 +37,17 @@ class Sensor(BaseModel):
         default=None,
         json_schema_extra={
             'description': 'UUID of sensor',
-            'example': str(uuid.uuid4())}
+            'example': str(ObjectId())}
     )
     device: PyObjectId = Field(json_schema_extra={
         'description': 'UUID of device to which the sensor is connected',
-        'example': str(uuid.uuid4())})
-    tag: Optional[str] = Field(json_schema_extra={
-        'description': 'ID tag or label on sensor',
-        'example': '12345'})
+        'example': str(ObjectId())})
+    tag: Optional[str] = Field(
+        default='',
+        json_schema_extra={
+            'description': 'ID tag or label on sensor',
+            'example': '12345'}
+    )
     measurement: str = Field(json_schema_extra={
         'description': 'Description or type of measurement',
         'example': 'Soil Temperature'})
@@ -67,17 +70,20 @@ async def create_sensor(request: Request, sensor: Sensor):
 
     :param sensor: Sensor to be added.
     """
-    new_sensor = await request.app.state.sensors.insert_one(
-        sensor.model_dump(by_alias=True, exclude=["id"])
-    )
-
+    try:
+        new_sensor = await request.app.state.sensors.insert_one(
+            sensor.model_dump(by_alias=True, exclude=["id"])
+        )
+    except pymongo.errors.DuplicateKeyError:
+        raise HTTPException(status_code=404,
+                            detail=f"Sensor {sensor.id} already exists")
     if (
         created_sensor := await
         request.app.state.sensors.find_one({"_id": new_sensor.inserted_id})
     ) is not None:
         return created_sensor
     raise HTTPException(status_code=404,
-                        detail=f"Sensor {id} not successfully added")
+                        detail=f"Sensor {sensor.id} not successfully added")
 
 
 @router.patch(
@@ -94,18 +100,18 @@ async def update_sensor(request: Request, id: str, sensor: Sensor):
     :param sensor: Sensor to update this sensor with
     """
     await request.app.state.sensors.update_one(
-        {"_id": id},
+        {"_id": ObjectId(id)},
         {'$set': sensor.model_dump(by_alias=True, exclude=["id"])},
         upsert=False
     )
 
     if (
         updated_sensor := await
-        request.app.state.sensors.find_one({"tag": sensor.tag})
+        request.app.state.sensors.find_one({"_id": ObjectId(id)})
     ) is not None:
         return updated_sensor
     raise HTTPException(status_code=404,
-                        detail=f"Sensor {sensor.tag} not successfully updated")
+                        detail=f"Sensor {id} not successfully updated")
 
 
 @router.delete("/{id}", response_description="Delete a sensor")
@@ -143,6 +149,9 @@ async def sensor_query(request: Request,
     :param tag: Tag of the sensor(s)
     :param measurement: Measurement type of the sensor(s)
     """
+    if id:
+        id = ObjectId(id)
+        print(id)
     query = {
         "_id": id,
         "device": device,

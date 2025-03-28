@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 from pydantic.functional_validators import BeforeValidator
 from typing import Optional, List
 from typing_extensions import Annotated
+from bson.objectid import ObjectId
 
 router = APIRouter(
     prefix="/devices",
@@ -143,6 +144,8 @@ async def device_query(request: Request,
     :param vendor: Vendor of the device(s)
     :param model: Model designation of the device(s)
     """
+    if id:
+        id = ObjectId(id)
     query = {
         "_id": id,
         "tag": tag,

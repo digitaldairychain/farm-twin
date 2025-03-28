@@ -1,4 +1,5 @@
 import pytest
+from bson.objectid import ObjectId
 
 
 from random import randint
@@ -14,26 +15,51 @@ def test_client():
 
 
 @pytest.fixture()
-def device_tag():
-    """Generate a random user id."""
+def tag():
+    """Generate a random tag number."""
     return str(randint(10000, 99999))
 
 
 @pytest.fixture()
-def device_payload(device_tag):
-    """Generate a user payload."""
+def device_payload(tag):
+    """Generate a device payload."""
     return {
-        "tag": device_tag,
+        "tag": tag,
         "vendor": "Acme Sensor Co.",
         "model": "Super Device 9000"
     }
 
 
 @pytest.fixture()
-def device_payload_updated(device_tag):
-    """Generate an updated user payload."""
+def device_payload_updated(tag):
+    """Generate an updated devuce payload."""
     return {
-        "tag": device_tag,
+        "tag": tag,
         "vendor": "Generic Sensing Ltd.",
         "model": "Fantastic Mystery Machine"
+    }
+
+
+@pytest.fixture()
+def object_id():
+    """Generate a random uuid."""
+    return str(ObjectId())
+
+
+@pytest.fixture()
+def sensor_payload(object_id, tag):
+    """Generate a sensor payload."""
+    return {
+        "device": object_id,
+        "measurement": "Air Temperature"
+    }
+
+
+@pytest.fixture()
+def sensor_payload_updated(object_id, tag):
+    """Generate an updated sensor payload."""
+    return {
+        "device": object_id,
+        "tag": tag,
+        "measurement": "Soil Temperature"
     }

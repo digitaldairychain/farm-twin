@@ -131,6 +131,8 @@ async def animal_query(request: Request,
     :param id: Object ID of the animal
     :param eid: Electronic identification tag number of animal
     """
+    if id:
+        id = ObjectId(id)
     query = {
         "_id": id,
         "eid": eid,

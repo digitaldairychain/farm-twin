@@ -145,6 +145,8 @@ async def machine_query(request: Request,
     :param type: Type of the machine(s)
     :param registration: Registration mark/number of the machine
     """
+    if id:
+        id = ObjectId(id)
     query = {
         "_id": id,
         "manufacturer": manufacturer,

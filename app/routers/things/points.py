@@ -111,17 +111,20 @@ async def point_query(request: Request, response: Response,
     :param long: Longitude of point
     :param tag: Tag of the point
     """
-    query = {"_id": id}
-    filtered_query = {k: v for k, v in query.items() if v is not None}
+    query = {}
+    if id:
+        query["_id"] = ObjectId(id)
+    if tag:
+        query["tags"] = {"$in": [tag]}
     if lat is not None and long is not None:
-        filtered_query["point"] = {
+        query["point"] = {
             "bbox": None,
             "type": "Point",
             "coordinates": [lat, long]
         }
     if tag:
-        filtered_query["tags"] = {"$in": [tag]}
-    result = await request.app.state.points.find(filtered_query).to_list(1000)
+        query["tags"] = {"$in": [tag]}
+    result = await request.app.state.points.find(query).to_list(1000)
     if len(result) > 0:
         fc = {"type": "FeatureCollection", "features": []}
         for point in result:

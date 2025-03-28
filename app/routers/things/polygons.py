@@ -107,11 +107,12 @@ async def polygon_query(request: Request, response: Response,
     :param id: Object ID of the polygon
     :param tag: Tag of the polygon
     """
-    query = {"_id": id}
-    filtered_query = {k: v for k, v in query.items() if v is not None}
+    query = {}
+    if id:
+        query["_id"] = ObjectId(id)
     if tag:
-        filtered_query["tags"] = {"$in": [tag]}
-    result = await request.app.state.polygons.find(filtered_query).to_list(1000)
+        query["tags"] = {"$in": [tag]}
+    result = await request.app.state.polygons.find(query).to_list(1000)
     if len(result) > 0:
         fc = {"type": "FeatureCollection", "features": []}
         for polygon in result:

@@ -15,7 +15,6 @@ This collection of endpoints allows for the addition, deletion
 and finding of those samples.
 """
 import pymongo
-import uuid
 
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
@@ -41,11 +40,11 @@ class Sample(BaseModel):
         default=None,
         json_schema_extra={
             'description': 'UUID of sensor',
-            'example': str(uuid.uuid4())
+            'example': str(ObjectId())
         })
     sensor: PyObjectId = Field(json_schema_extra={
         'description': 'UUID of sensor',
-        'example': str(uuid.uuid4())})
+        'example': str(ObjectId())})
     timestamp:  Optional[datetime] = Field(default=None, json_schema_extra={
         'description': 'Time when sample recorded. Current time inserted'
                        + ' if empty',
@@ -133,6 +132,8 @@ async def sample_query(request: Request,
     :param end: Timestamp from which to end the search
     :param predicted: Whether or not the value is real or predicted
     """
+    if id:
+        id = ObjectId(id)
     query = {
         "_id": id,
         "sensor": sensor,
