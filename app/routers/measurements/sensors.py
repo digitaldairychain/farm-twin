@@ -151,7 +151,6 @@ async def sensor_query(request: Request,
     """
     if id:
         id = ObjectId(id)
-        print(id)
     query = {
         "_id": id,
         "device": device,

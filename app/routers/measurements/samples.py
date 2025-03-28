@@ -80,7 +80,6 @@ async def create_samples(request: Request, samples: Sample):
     model = samples.model_dump(by_alias=True, exclude=["id"])
     if model["timestamp"] is None:
         model["timestamp"] = datetime.now()
-
     try:
         new_samples = await request.app.state.samples.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
@@ -121,7 +120,7 @@ async def sample_query(request: Request,
                        id: str | None = None,
                        sensor: str | None = None,
                        start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-                       end: datetime | None = datetime.now(),
+                       end: datetime | None = None,
                        predicted: bool | None = False):
     """
     Search for a sample given the provided criteria.
@@ -134,10 +133,13 @@ async def sample_query(request: Request,
     """
     if id:
         id = ObjectId(id)
+    if not end:
+        end = datetime.now()
     query = {
         "_id": id,
         "sensor": sensor,
-        "predicted": predicted}
+        "predicted": predicted
+        }
     filtered_query = {k: v for k, v in query.items() if v is not None}
     filtered_query["timestamp"] = {"$gte": start, "$lte": end}
     result = await request.app.state.samples.find(filtered_query).to_list(1000)
