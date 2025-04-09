@@ -42,7 +42,7 @@ The project uses [Semantic Versioning](https://semver.org/) across all component
 
 # License # 
 
-This software is licensed under the [GNU General Public License (GPL) v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
+This software is licensed under the [Foo License](http://foo.com).
 
 # Contact #
 
