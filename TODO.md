@@ -15,3 +15,6 @@ Compliance with ICAR: https://github.com/adewg/ICAR/wiki/Resource-entities
     - ration
     - embryo
     - sementstraw
+
+
+Adopt ICAR typing

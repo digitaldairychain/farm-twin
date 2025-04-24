@@ -10,7 +10,8 @@ An on-farm example is a single dairy cow, Hilda.
 This collection of endpoints allows for the addition, deletion
 and finding of those animals.
 
-Compliant with ICAR data standards: https://github.com/adewg/ICAR/tree/ADE-1
+Compliant with ICAR data standards:
+https://github.com/adewg/ICAR/blob/ADE-1/resources/icarAnimalCoreResource.json
 """
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
