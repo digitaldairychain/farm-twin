@@ -274,7 +274,25 @@ async def update_animal(request: Request, id: str, animal: Animal):
 )
 async def animal_query(request: Request,
                        id: str | None = None,
-                       eid: str | None = None):
+                       identifier: str | None = None,
+                       alternativeIdentifiers: str | None = None,
+                       specie: icarEnums.icarAnimalSpecieType | None = None,
+                       gender: icarEnums.icarAnimalGenderType | None = None,
+                       birthDateStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
+                       birthDateEnd: datetime | None = None,
+                       primaryBreed: str | None = None,
+                       coatColor: str | None = None,
+                       coatColorIdentifier: str | None = None,
+                       managementTag: str | None = None,
+                       name: str | None = None,
+                       officialName: str | None = None,
+                       productionPurpose: icarEnums.icarProductionPurposeType | None = None,
+                       status: icarEnums.icarAnimalStatusType | None = None,
+                       reproductionStatus: icarEnums.icarAnimalReproductionStatusType | None = None,
+                       lactationStatus: icarEnums.icarAnimalLactationStatusType | None = None,
+                       parentage: str | None = None,
+                       healthStatus: icarEnums.icarAnimalHealthStatusType | None = None,
+                       ):
     """
     Search for an animal given the provided criteria.
 
@@ -283,11 +301,30 @@ async def animal_query(request: Request,
     """
     if id:
         id = ObjectId(id)
+    if not birthDateEnd:
+        birthDateEnd = datetime.now()
     query = {
         "_id": id,
-        "eid": eid,
+        "identifier": identifier,
+        "specie": specie,
+        "gender": gender,
+        "primaryBreed": primaryBreed,
+        "coatColor": coatColor,
+        "coatColorIdentifier": coatColorIdentifier,
+        "managementTag": managementTag,
+        "name": name,
+        "officialName": officialName,
+        "productionPurpose": productionPurpose,
+        "status": status,
+        "reproductionStatus": reproductionStatus,
+        "lactationStatus": lactationStatus,
+        "parentage": parentage,
+        "healthStatus": healthStatus,
         }
+    if alternativeIdentifiers:
+        query["alternativeIdentifiers"] = {"$in": [alternativeIdentifiers]}
     filtered_query = {k: v for k, v in query.items() if v is not None}
+    filtered_query["birthDate"] = {"$gte": birthDateStart, "$lte": birthDateEnd}
     result = await request.app.state.animals.find(filtered_query).to_list(1000)
     if len(result) > 0:
         return AnimalCollection(animals=result)
