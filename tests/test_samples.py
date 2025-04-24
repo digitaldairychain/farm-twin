@@ -1,14 +1,5 @@
-from datetime import datetime
-
-
-def convert_timestamp(server, local):
-    server_ts = datetime.strptime(server[:-7], "%Y-%m-%dT%H:%M:%S")  # Cut last seven digits as we don't need that accuracy
-    local_ts = datetime.strptime(local[:-7], "%Y-%m-%d %H:%M:%S")
-    return server_ts, local_ts
-
-
 class TestSamples:
-    def test_create_get_sample(self, test_client, sample_payload):
+    def test_create_get_sample(self, test_client, sample_payload, convert_timestamp):
         response = test_client.post("/measurements/samples",
                                     json=sample_payload)
         response_json = response.json()

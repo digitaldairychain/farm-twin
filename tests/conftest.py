@@ -21,6 +21,48 @@ def tag():
 
 
 @pytest.fixture()
+def convert_timestamp():
+    """Cut last seven digits of timestamp as we don't need that accuracy"""
+    def inner_convert_timestamp(server, local):
+        server_ts = datetime.strptime(server[:-7], "%Y-%m-%dT%H:%M:%S")
+        local_ts = datetime.strptime(local[:-7], "%Y-%m-%d %H:%M:%S")
+        return server_ts, local_ts
+    return inner_convert_timestamp
+
+
+@pytest.fixture()
+def animal_payload():
+    """Generate an animal payload."""
+    return {
+        "identifier": "UK230011200123",
+        "specie": "Cattle",
+        "gender": "Female",
+        "birthDate": "2025-04-24 12:18:06.625573",
+        "productionPurpose": "Milk",
+        "status": "Alive",
+        "reproductionStatus": "Open",
+        "lactationStatus": "Fresh",
+        "healthStatus": "Healthy"
+        }
+
+
+@pytest.fixture()
+def animal_payload_updated():
+    """Generate an animal payload."""
+    return {
+        "identifier": "UK230011200123",
+        "specie": "Cattle",
+        "gender": "Male",
+        "birthDate": "2025-04-24 12:18:06.625573",
+        "productionPurpose": "Wool",
+        "status": "Alive",
+        "reproductionStatus": "Open",
+        "lactationStatus": "Fresh",
+        "healthStatus": "InTreatment"
+        }
+
+
+@pytest.fixture()
 def device_payload(tag):
     """Generate a device payload."""
     return {
