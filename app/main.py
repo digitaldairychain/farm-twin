@@ -81,10 +81,10 @@ async def open_db() -> AsyncIOMotorClient:
     app.state.departure = _ft['events']['movement']['departure']
 
     app.state.carcass = _ft['events']['observations']['carcass']
-    app.state.health = _ft['events']['observations']['health']
-    app.state.lactation = _ft['events']['observations']['lactation']
+    app.state.health_status = _ft['events']['observations']['health_status']
+    app.state.lactation_status = _ft['events']['observations']['lactation_status']
     app.state.position = _ft['events']['observations']['position']
-    app.state.reproduction = _ft['events']['observations']['reproduction']
+    app.state.repro_status = _ft['events']['observations']['repro_status']
 
     app.state.attachments = _ft['attachments']
 

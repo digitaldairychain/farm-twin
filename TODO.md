@@ -1,6 +1,7 @@
 # { farm-twin } TODO #
 
 Consisting checking when using objectids
+Modified field in objects that can be updated
 
 Add experiment endpoint as a collection of things and attachments
 Add treatment endpoint as to apply to a thing

@@ -181,6 +181,8 @@ class Animal(BaseModel):
         }
     )
 
+    
+
 
 class AnimalCollection(BaseModel):
     animals: List[Animal]
