@@ -17,5 +17,9 @@ Compliance with ICAR: https://github.com/adewg/ICAR/wiki/Resource-entities
     - embryo
     - sementstraw
 
+ICAR not implemented: 
+set join
+set leave
+groupevent(s)
 
 Adopt ICAR typing

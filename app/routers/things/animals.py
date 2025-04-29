@@ -20,7 +20,7 @@ from typing import Optional, List
 from typing_extensions import Annotated
 from bson.objectid import ObjectId
 from datetime import datetime
-from ..icar.icarEnums import icarEnums
+from ..icar import icarEnums
 
 router = APIRouter(
     prefix="/animals",

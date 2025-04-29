@@ -4,6 +4,10 @@ import os
 from fastapi import FastAPI
 from .routers.things import points, polygons, animals, machines
 from .routers.measurements import devices, sensors, samples
+from .routers.events import attention, conformation, feed_intake, weight, withdrawal
+from .routers.events.milking import drying_off, visit
+from .routers.events.movement import arrival, birth, death, departure
+from .routers.events.observations import carcass, health, lactation, position, reproduction
 from .routers import attachments
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
@@ -25,6 +29,26 @@ app.include_router(polygons.router, prefix='/things')
 app.include_router(animals.router, prefix='/things')
 app.include_router(machines.router, prefix='/things')
 
+app.include_router(attention.router, prefix='/events')
+app.include_router(conformation.router, prefix='/events')
+app.include_router(feed_intake.router, prefix='/events')
+app.include_router(weight.router, prefix='/events')
+app.include_router(withdrawal.router, prefix='/events')
+
+app.include_router(drying_off.router, prefix='/events/milking')
+app.include_router(visit.router, prefix='/events/milking')
+
+app.include_router(arrival.router, prefix='/events/movement')
+app.include_router(birth.router, prefix='/events/movement')
+app.include_router(death.router, prefix='/events/movement')
+app.include_router(departure.router, prefix='/events/movement')
+
+app.include_router(carcass.router, prefix='/events/observations')
+app.include_router(health.router, prefix='/events/observations')
+app.include_router(lactation.router, prefix='/events/observations')
+app.include_router(position.router, prefix='/events/observations')
+app.include_router(reproduction.router, prefix='/events/observations')
+
 app.include_router(attachments.router)
 
 
@@ -41,6 +65,26 @@ async def open_db() -> AsyncIOMotorClient:
     app.state.polygons = _ft['things']['polygons']
     app.state.animals = _ft['things']['animals']
     app.state.machines = _ft['things']['machines']
+
+    app.state.attention = _ft['events']['attention']
+    app.state.conformation = _ft['events']['conformation']
+    app.state.feed_intake = _ft['events']['feed_intake']
+    app.state.weight = _ft['events']['weight']
+    app.state.withdrawal = _ft['events']['withdrawal']
+
+    app.state.drying_off = _ft['events']['milking']['drying_off']
+    app.state.visit = _ft['events']['milking']['visit']
+
+    app.state.arrival = _ft['events']['movement']['arrival']
+    app.state.birth = _ft['events']['movement']['birth']
+    app.state.death = _ft['events']['movement']['death']
+    app.state.departure = _ft['events']['movement']['departure']
+
+    app.state.carcass = _ft['events']['observations']['carcass']
+    app.state.health = _ft['events']['observations']['health']
+    app.state.lactation = _ft['events']['observations']['lactation']
+    app.state.position = _ft['events']['observations']['position']
+    app.state.reproduction = _ft['events']['observations']['reproduction']
 
     app.state.attachments = _ft['attachments']
 
