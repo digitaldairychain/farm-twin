@@ -20,7 +20,7 @@ from typing import Optional, List
 from typing_extensions import Annotated
 from bson.objectid import ObjectId
 from datetime import datetime
-from . import icarEnums
+from ..icar.icarEnums import icarEnums
 
 router = APIRouter(
     prefix="/animals",
@@ -295,9 +295,6 @@ async def animal_query(request: Request,
                        ):
     """
     Search for an animal given the provided criteria.
-
-    :param id: Object ID of the animal
-    :param eid: Electronic identification tag number of animal
     """
     if id:
         id = ObjectId(id)

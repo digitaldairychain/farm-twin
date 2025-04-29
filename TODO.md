@@ -8,8 +8,9 @@ Interface for managing data - related object discovery?
 
 
 Compliance with ICAR: https://github.com/adewg/ICAR/wiki/Resource-entities
+    - devices/sensors? (align as best as possible)
     - (!) events
-    - animal set
+    - animal set/collections?
     - feed
     - medicine
     - ration
