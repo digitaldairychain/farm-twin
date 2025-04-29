@@ -20,7 +20,7 @@ from typing import Optional, List
 from typing_extensions import Annotated
 from bson.objectid import ObjectId
 from datetime import datetime
-from ..icar import icarEnums
+from ..icar import icarEnums, icarTypes
 
 router = APIRouter(
     prefix="/animals",
@@ -29,16 +29,6 @@ router = APIRouter(
 )
 
 PyObjectId = Annotated[str, BeforeValidator(str)]
-
-
-class Fraction(BaseModel):
-    breed: str
-    fraction: float
-
-
-class BreedFraction(BaseModel):
-    denominator: int
-    fractions: List[Fraction]
 
 
 class Animal(BaseModel):
@@ -97,7 +87,7 @@ class Animal(BaseModel):
         }
     )
 
-    breedFractions: Optional[BreedFraction] = Field(
+    breedFractions: Optional[icarTypes.icarBreedFractions] = Field(
         default=None,
         json_schema_extra={
             'description': 'Breed fractions for the animal.',

@@ -74,11 +74,27 @@ def device_payload(tag):
 
 @pytest.fixture()
 def device_payload_updated(tag):
-    """Generate an updated devuce payload."""
+    """Generate an updated device payload."""
     return {
         "tag": tag,
         "vendor": "Generic Sensing Ltd.",
         "model": "Fantastic Mystery Machine"
+    }
+
+
+@pytest.fixture()
+def weight_payload():
+    """Generate a weight event payload."""
+    return {
+        "animal": str(ObjectId()),
+        "weight": {
+            "measurement": float(randint(453, 816)),
+            "units": "KGM",
+            "method": "LoadCell",
+            "resolution": float(randint(1, 9)/10)
+        },
+        "device": str(ObjectId()),
+        "timeOffFeed": float(randint(1, 5)),
     }
 
 

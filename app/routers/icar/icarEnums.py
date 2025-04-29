@@ -64,3 +64,34 @@ class icarAnimalHealthStatusType(str, Enum):
     ill = "Ill"
     inTreatment = "InTreatment"
     toBeCulled = "ToBeCulled"
+
+
+class uncefactMassUnitsType(str, Enum):
+    kgm = "KGM",
+    grm = "GRM",
+    lbr = "LBR",
+    tne = "TNE",
+    mc = "MC",
+    mgm = "MGM",
+    onz = "ONZ",
+    pn = "PN"
+
+
+class icarWeightMethodType(str, Enum):
+    loadCell = "LoadCell",
+    girth = "Girth",
+    assessed = "Assessed",
+    walkover = "WalkOver",
+    predicted = "Predicted",
+    imaged = "Imaged",
+    frontEndCorrelated = "FrontEndCorrelated",
+    groupAverage = "GroupAverage"
+
+
+class icarAggregationType(str, Enum):
+    average = "Average",
+    sum = "Sum",
+    stDev = "StDev",
+    min = "Min",
+    max = "Max",
+    count = "Count"
