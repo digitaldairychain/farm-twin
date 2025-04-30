@@ -9,6 +9,9 @@ An on-farm example is an outdoor weather station.
 
 This collection of endpoints allows for the addition, update, deletion
 and finding of those devices.
+
+Compliant with ICAR data standards:
+https://github.com/adewg/ICAR/blob/ADE-1/resources/icarDeviceResource.json
 """
 import pymongo
 
@@ -18,6 +21,7 @@ from pydantic.functional_validators import BeforeValidator
 from typing import Optional, List
 from typing_extensions import Annotated
 from bson.objectid import ObjectId
+from ..icar import icarEnums, icarTypes
 
 router = APIRouter(
     prefix="/devices",
@@ -30,22 +34,83 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Device(BaseModel):
-    id: Optional[PyObjectId] = Field(
+    ft: Optional[PyObjectId] = Field(
         alias="_id",
         default=None,
         json_schema_extra={
             'description': 'ObjectID of device',
-            'example': str(ObjectId())}
+            'example': str(ObjectId())
+        }
+    ) #  TODO: Move all objects to a farm-twin ID
+
+    id: str = Field(
+        json_schema_extra={
+            'description': 'Unique identifier on location level in the source system for this device.',
+        }
     )
-    tag: str = Field(json_schema_extra={
-        'description': 'ID tag or label on device',
-        'example': '12345'})
-    vendor: str = Field(json_schema_extra={
-        'description': 'Manufacturer of device',
-        'example': 'Acme Sensor Co.'})
-    model: str = Field(json_schema_extra={
-        'description': 'Model number or designation of device',
-        'example': 'Super Device 9000'})
+
+    serial: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Optionally, the serial number of the device.',
+            'example': '12345'
+        }
+    )
+
+    name: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Name given to the device by the farmer.',
+        }
+    )
+
+    description: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Description of the device by the farmer.',
+        }
+    )
+    softwareVersion: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Version of the software installed on the device.',
+        }
+    )
+
+    hardwareVersion: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Version of the hardware installed in the device.',
+        }
+    )
+
+    isActive: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Indicates whether the device is active at this moment.',
+        }
+    )
+
+    supportedMessages: Optional[List[icarEnums.icarMessageType]] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Identifies message types supported for the device',
+        }
+    )
+
+    manufacturer: Optional[icarTypes.icarDeviceManufacturerType] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The device data as defined by the manufacturer.',
+        }
+    )
+
+    registration: Optional[icarTypes.icarDeviceRegistrationIdentifierType] = Field(
+        default=None,
+        json_schema_extra={
+            'description': ' registration identifier for the device (most devices should eventually have a registration issued by `org.icar` or other entity',
+        }
+    )
 
 
 class DeviceCollection(BaseModel):
@@ -67,7 +132,7 @@ async def create_device(request: Request, device: Device):
     """
     try:
         new_device = await request.app.state.devices.insert_one(
-            device.model_dump(by_alias=True, exclude=["id"])
+            device.model_dump(by_alias=True, exclude=["ft"])
         )
     except pymongo.errors.DuplicateKeyError:
         raise HTTPException(status_code=404,
@@ -82,12 +147,12 @@ async def create_device(request: Request, device: Device):
 
 
 @router.patch(
-        "/{id}",
+        "/{ft}",
         response_description="Update a device",
         response_model=Device,
         status_code=status.HTTP_202_ACCEPTED
     )
-async def update_device(request: Request, id: str, device: Device):
+async def update_device(request: Request, ft: str, device: Device):
     """
     Update an existing device if it exists.
 
@@ -95,33 +160,33 @@ async def update_device(request: Request, id: str, device: Device):
     :param device: Device to update this device with
     """
     await request.app.state.devices.update_one(
-        {"_id": ObjectId(id)},
-        {'$set': device.model_dump(by_alias=True, exclude=["id"])},
+        {"_id": ObjectId(ft)},
+        {'$set': device.model_dump(by_alias=True, exclude=["ft"])},
         upsert=False
     )
 
     if (
         updated_device := await
-        request.app.state.devices.find_one({"_id": ObjectId(id)})
+        request.app.state.devices.find_one({"_id": ObjectId(ft)})
     ) is not None:
         return updated_device
     raise HTTPException(status_code=404,
                         detail=f"Device {id} not successfully updated")
 
 
-@router.delete("/{id}", response_description="Delete a device")
-async def remove_device(request: Request, id: str):
+@router.delete("/{ft}", response_description="Delete a device")
+async def remove_device(request: Request, ft: str):
     """
     Delete a device.
 
-    :param id: ObjectID of the device to delete
+    :param ft: ObjectID of the device to delete
     """
-    delete_result = await request.app.state.devices.delete_one({"_id": ObjectId(id)})
+    delete_result = await request.app.state.devices.delete_one({"_id": ObjectId(ft)})
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(status_code=404, detail=f"Device {id} not found")
+    raise HTTPException(status_code=404, detail=f"Device {ft} not found")
 
 
 @router.get(
@@ -131,25 +196,38 @@ async def remove_device(request: Request, id: str):
     response_model_by_alias=False,
 )
 async def device_query(request: Request,
+                       ft: str | None = None,
                        id: str | None = None,
-                       tag: str | None = None,
-                       vendor: str | None = None,
-                       model: str | None = None,):
+                       serial: str | None = None,
+                       name: str | None = None,
+                       description: str | None = None,
+                       softwareVersion: str | None = None,
+                       hardwareVersion: str | None = None,
+                       isActive: bool | None = None,
+                       supportedMessages: icarEnums.icarMessageType | None = None,  # TODO: Should this be a list?
+                       manufacturer: icarTypes.icarDeviceManufacturerType | None = None,
+                       registration: icarTypes.icarDeviceRegistrationIdentifierType| None = None,
+                       ):
     """
     Search for a device given the provided criteria.
 
-    :param id: Object ID of the device
-    :param tag: Tag of the device(s)
-    :param vendor: Vendor of the device(s)
-    :param model: Model designation of the device(s)
     """
-    if id:
-        id = ObjectId(id)
+    if ft:
+        ft = ObjectId(ft)
     query = {
-        "_id": id,
-        "tag": tag,
-        "vendor": vendor,
-        "model": model}
+        "_id": ft,
+        "id": id,
+        "serial": serial,
+        "name": name,
+        "description": description,
+        "softwareVersion": softwareVersion,
+        "hardwareVersion": hardwareVersion,
+        "isActive": isActive,
+        "manufacturer": manufacturer,
+        "registration": registration
+    }
+    if supportedMessages:
+        query["supportedMessages"] = {"$in": [supportedMessages]}
     filtered_query = {k: v for k, v in query.items() if v is not None}
     result = await request.app.state.devices.find(filtered_query).to_list(1000)
     if len(result) > 0:

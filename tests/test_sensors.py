@@ -30,7 +30,7 @@ class TestSensors:
         )
         response_json = response.json()
         assert response.status_code == 202
-        assert response_json["tag"] == sensor_payload_updated["tag"]
+        assert response_json["serial"] == sensor_payload_updated["serial"]
         assert response_json["device"] == sensor_payload_updated["device"]
         assert response_json["measurement"] == sensor_payload_updated["measurement"]
 

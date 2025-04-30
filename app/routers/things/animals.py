@@ -36,7 +36,7 @@ class Animal(BaseModel):
         alias="_id",
         default=None,
         json_schema_extra={
-            'description': 'UUID of animal',
+            'description': 'ObjectID of animal',
             'example': str(ObjectId())
         }
     )
@@ -267,7 +267,7 @@ async def update_animal(request: Request, id: str, animal: Animal):
 async def animal_query(request: Request,
                        id: str | None = None,
                        identifier: str | None = None,
-                       alternativeIdentifiers: str | None = None,
+                       alternativeIdentifiers: str | None = None,  # TODO: Should this be a list?
                        specie: icarEnums.icarAnimalSpecieType | None = None,
                        gender: icarEnums.icarAnimalGenderType | None = None,
                        birthDateStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
@@ -282,7 +282,7 @@ async def animal_query(request: Request,
                        status: icarEnums.icarAnimalStatusType | None = None,
                        reproductionStatus: icarEnums.icarAnimalReproductionStatusType | None = None,
                        lactationStatus: icarEnums.icarAnimalLactationStatusType | None = None,
-                       parentage: str | None = None,
+                       parentage: str | None = None,  # TODO: Should this be a list?
                        healthStatus: icarEnums.icarAnimalHealthStatusType | None = None,
                        ):
     """

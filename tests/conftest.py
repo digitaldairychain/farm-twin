@@ -15,8 +15,8 @@ def test_client():
 
 
 @pytest.fixture()
-def tag():
-    """Generate a random tag number."""
+def serial():
+    """Generate a random serial number."""
     return str(randint(10000, 99999))
 
 
@@ -63,22 +63,32 @@ def animal_payload_updated():
 
 
 @pytest.fixture()
-def device_payload(tag):
+def device_payload(serial):
     """Generate a device payload."""
     return {
-        "tag": tag,
-        "vendor": "Acme Sensor Co.",
-        "model": "Super Device 9000"
+        "id": "Sample",
+        "serial": serial,
+        "softwareVersion": "1.3",
+        "manufacturer": {
+            "id": "Acme Sensor Co.",
+        },
+        "isActive": True,
     }
 
 
 @pytest.fixture()
-def device_payload_updated(tag):
+def device_payload_updated(serial):
     """Generate an updated device payload."""
     return {
-        "tag": tag,
-        "vendor": "Generic Sensing Ltd.",
-        "model": "Fantastic Mystery Machine"
+        "id": "Revised Sample",
+        "serial": serial,
+        "softwareVersion": "1.4",
+        "hardwareVersion": "1.0",
+        "manufacturer": {
+            "id": "Generic Sensing Ltd.",
+            "deviceType": "Fantastic Mystery Machine",
+        },
+        "isActive": False,
     }
 
 
@@ -105,7 +115,7 @@ def object_id():
 
 
 @pytest.fixture()
-def sensor_payload(object_id, tag):
+def sensor_payload(object_id, serial):
     """Generate a sensor payload."""
     return {
         "device": object_id,
@@ -114,11 +124,11 @@ def sensor_payload(object_id, tag):
 
 
 @pytest.fixture()
-def sensor_payload_updated(object_id, tag):
+def sensor_payload_updated(object_id, serial):
     """Generate an updated sensor payload."""
     return {
         "device": object_id,
-        "tag": tag,
+        "serial": serial,
         "measurement": "Soil Temperature"
     }
 

@@ -42,10 +42,10 @@ class Sensor(BaseModel):
     device: PyObjectId = Field(json_schema_extra={
         'description': 'UUID of device to which the sensor is connected',
         'example': str(ObjectId())})
-    tag: Optional[str] = Field(
+    serial: Optional[str] = Field(
         default='',
         json_schema_extra={
-            'description': 'ID tag or label on sensor',
+            'description': 'Serial or label on sensor',
             'example': '12345'}
     )
     measurement: str = Field(json_schema_extra={
@@ -139,14 +139,14 @@ async def remove_sensor(request: Request, id: str):
 async def sensor_query(request: Request,
                        id: str | None = None,
                        device: str | None = None,
-                       tag: str | None = None,
+                       serial: str | None = None,
                        measurement: str | None = None):
     """
     Search for a sensor given the provided criteria.
 
     :param id: Object ID of the sensor
     :param device: Object ID of the device to which the sensor(s) are attached
-    :param tag: Tag of the sensor(s)
+    :param serial: Serial of the sensor(s)
     :param measurement: Measurement type of the sensor(s)
     """
     if id:
@@ -154,7 +154,7 @@ async def sensor_query(request: Request,
     query = {
         "_id": id,
         "device": device,
-        "tag": tag,
+        "serial": serial,
         "measurement": measurement}
     filtered_query = {k: v for k, v in query.items() if v is not None}
     result = await request.app.state.sensors.find(filtered_query).to_list(1000)

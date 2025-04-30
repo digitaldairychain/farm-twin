@@ -70,3 +70,40 @@ class Fractions(BaseModel):
 class icarBreedFractions(BaseModel):
     denominator: int
     fractions: List[Fractions]
+
+
+class icarDeviceManufacturerType(BaseModel):
+    id: str = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Unique id of the manufacturer. Domain name/url --> lely.com, …',
+        }
+    )
+    deviceType: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'A device type registered within the database proposed by the Sensor Working Group. This could be a UUID but we prefer a meaningful string.',
+        }
+    )
+    deviceName: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Name given to the device by the manufacturer.',
+        }
+    )
+    deviceDescription: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Description of the device by the manufacturer.'
+        }
+    )
+    deviceConfiguration: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Configuration of the device.'
+        }
+    )
+
+
+class icarDeviceRegistrationIdentifierType(icarIdentifierType):
+    pass
