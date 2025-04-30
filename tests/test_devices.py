@@ -6,7 +6,7 @@ class TestDevices:
         assert response.status_code == 201
 
         response = test_client.get(
-            f"/measurements/devices/?tag={device_payload['tag']}")
+            f"/measurements/devices/?id={response_json['id']}")
         assert response.status_code == 200
         assert len(response.json()["devices"]) == 1
         response_json = response.json()["devices"][0]  # TODO: This assumes a single item returned, which also assumes it has been deleted in a later test
@@ -23,7 +23,7 @@ class TestDevices:
         assert response.status_code == 201
 
         response = test_client.patch(
-            f"/measurements/devices/{device_payload['tag']}",
+            f"/measurements/devices/{response_json['id']}",
             json=device_payload_updated,
         )
         response_json = response.json()
@@ -35,19 +35,22 @@ class TestDevices:
     def test_create_delete_device(self, test_client, device_payload):
         response = test_client.post("/measurements/devices",
                                     json=device_payload)
+        response_json = response.json()
         assert response.status_code == 201
 
+        device_id = response_json['id']
+
         response = test_client.delete(
-            f"/measurements/devices/{device_payload['tag']}")
+            f"/measurements/devices/{device_id}")
         assert response.status_code == 204
 
         response = test_client.get(
-            f"/measurements/devices/?tag={device_payload['tag']}")
+            f"/measurements/devices/?id={device_id}")
         assert response.status_code == 404
 
-    def test_get_device_not_found(self, test_client, tag):
+    def test_get_device_not_found(self, test_client, object_id):
         response = test_client.get(
-            f"/measurements/devices/?tag={tag}")
+            f"/measurements/devices/?id={object_id}")
         assert response.status_code == 404
 
     def test_create_device_wrong_payload(self, test_client):
@@ -55,7 +58,7 @@ class TestDevices:
         assert response.status_code == 422
 
     def test_create_update_device_wrong_payload(
-        self, test_client, tag, device_payload, device_payload_updated
+        self, test_client, object_id, device_payload, device_payload_updated
     ):
         response = test_client.post("/measurements/devices/",
                                     json=device_payload)
@@ -65,14 +68,14 @@ class TestDevices:
         )
 
         response = test_client.patch(
-            f"/measurements/devices/{tag}", json=device_payload_updated
+            f"/measurements/devices/{object_id}", json=device_payload_updated
         )
         assert response.status_code == 422
 
     def test_update_device_doesnt_exist(
-        self, test_client, tag, device_payload_updated
+        self, test_client, object_id, device_payload_updated
     ):
         response = test_client.patch(
-            f"/measurements/devices/{tag}", json=device_payload_updated
+            f"/measurements/devices/{object_id}", json=device_payload_updated
         )
         assert response.status_code == 404

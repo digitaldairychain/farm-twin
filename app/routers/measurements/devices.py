@@ -11,7 +11,6 @@ This collection of endpoints allows for the addition, update, deletion
 and finding of those devices.
 """
 import pymongo
-import uuid
 
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
@@ -35,8 +34,8 @@ class Device(BaseModel):
         alias="_id",
         default=None,
         json_schema_extra={
-            'description': 'UUID of device',
-            'example': str(uuid.uuid4())}
+            'description': 'ObjectID of device',
+            'example': str(ObjectId())}
     )
     tag: str = Field(json_schema_extra={
         'description': 'ID tag or label on device',
@@ -72,57 +71,57 @@ async def create_device(request: Request, device: Device):
         )
     except pymongo.errors.DuplicateKeyError:
         raise HTTPException(status_code=404,
-                            detail=f"Device {device.tag} already exists")
+                            detail="Device already exists")
     if (
         created_device := await
         request.app.state.devices.find_one({"_id": new_device.inserted_id})
     ) is not None:
         return created_device
     raise HTTPException(status_code=404,
-                        detail=f"Device {device.tag} not successfully added")
+                        detail="Device not successfully added")
 
 
 @router.patch(
-        "/{tag}",
+        "/{id}",
         response_description="Update a device",
         response_model=Device,
         status_code=status.HTTP_202_ACCEPTED
     )
-async def update_device(request: Request, tag: str, device: Device):
+async def update_device(request: Request, id: str, device: Device):
     """
     Update an existing device if it exists.
 
-    :param tag: Tag of the device to update
+    :param id: ObjectID of the device to update
     :param device: Device to update this device with
     """
     await request.app.state.devices.update_one(
-        {"tag": tag},
+        {"_id": ObjectId(id)},
         {'$set': device.model_dump(by_alias=True, exclude=["id"])},
         upsert=False
     )
 
     if (
         updated_device := await
-        request.app.state.devices.find_one({"tag": device.tag})
+        request.app.state.devices.find_one({"_id": ObjectId(id)})
     ) is not None:
         return updated_device
     raise HTTPException(status_code=404,
-                        detail=f"Device {device.tag} not successfully updated")
+                        detail=f"Device {id} not successfully updated")
 
 
-@router.delete("/{tag}", response_description="Delete a device")
-async def remove_device(request: Request, tag: str):
+@router.delete("/{id}", response_description="Delete a device")
+async def remove_device(request: Request, id: str):
     """
     Delete a device.
 
-    :param tag: Tag of the device to delete
+    :param id: ObjectID of the device to delete
     """
-    delete_result = await request.app.state.devices.delete_one({"tag": tag})
+    delete_result = await request.app.state.devices.delete_one({"_id": ObjectId(id)})
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(status_code=404, detail=f"Device {tag} not found")
+    raise HTTPException(status_code=404, detail=f"Device {id} not found")
 
 
 @router.get(

@@ -96,7 +96,7 @@ async def update_sensor(request: Request, id: str, sensor: Sensor):
     """
     Update an existing sensor if it exists.
 
-    :param id: UUID of the sensor to update
+    :param id: ObjectID of the sensor to update
     :param sensor: Sensor to update this sensor with
     """
     await request.app.state.sensors.update_one(
@@ -119,7 +119,7 @@ async def remove_sensor(request: Request, id: str):
     """
     Delete a sensor.
 
-    :param sensor: UUID of the sensor to delete
+    :param sensor: ObjectID of the sensor to delete
     """
     delete_result = await request.app.state.sensors.delete_one(
         {"_id": ObjectId(id)})

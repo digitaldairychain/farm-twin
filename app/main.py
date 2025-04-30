@@ -7,7 +7,7 @@ from .routers.measurements import devices, sensors, samples
 from .routers.events import attention, conformation, feed_intake, weight, withdrawal
 from .routers.events.milking import drying_off, visit
 from .routers.events.movement import arrival, birth, death, departure
-from .routers.events.observations import carcass, health, lactation, position, reproduction
+from .routers.events.observations import carcass, health_status, lactation_status, position, repro_status
 from .routers import attachments
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
@@ -44,10 +44,10 @@ app.include_router(death.router, prefix='/events/movement')
 app.include_router(departure.router, prefix='/events/movement')
 
 app.include_router(carcass.router, prefix='/events/observations')
-app.include_router(health.router, prefix='/events/observations')
-app.include_router(lactation.router, prefix='/events/observations')
+app.include_router(health_status.router, prefix='/events/observations')
+app.include_router(lactation_status.router, prefix='/events/observations')
 app.include_router(position.router, prefix='/events/observations')
-app.include_router(reproduction.router, prefix='/events/observations')
+app.include_router(repro_status.router, prefix='/events/observations')
 
 app.include_router(attachments.router)
 

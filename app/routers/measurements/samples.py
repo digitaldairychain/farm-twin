@@ -39,11 +39,11 @@ class Sample(BaseModel):
         alias="_id",
         default=None,
         json_schema_extra={
-            'description': 'UUID of sensor',
+            'description': 'ObjectID of sensor',
             'example': str(ObjectId())
         })
     sensor: PyObjectId = Field(json_schema_extra={
-        'description': 'UUID of sensor',
+        'description': 'ObjectID of sensor',
         'example': str(ObjectId())})
     timestamp:  Optional[datetime] = Field(default=None, json_schema_extra={
         'description': 'Time when sample recorded. Current time inserted'
@@ -99,7 +99,7 @@ async def remove_samples(request: Request, id: str):
     """
     Delete a sample.
 
-    :param id: UUID of the sample to delete
+    :param id: ObjectID of the sample to delete
     """
     delete_result = await request.app.state.samples.delete_one(
         {"_id": ObjectId(id)})
