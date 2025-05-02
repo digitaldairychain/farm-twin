@@ -94,7 +94,7 @@ async def create_sample(request: Request, sample: Sample):
         new_sample = await request.app.state.samples.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
         raise HTTPException(
-            status_code=404, detail=f"Sample {sample} already exists"
+            status_code=404, detail="Sample already exists"
         )
     if (
         created_sample := await request.app.state.samples.find_one(
@@ -104,7 +104,7 @@ async def create_sample(request: Request, sample: Sample):
         return created_sample
     raise HTTPException(
         status_code=404,
-        detail=f"Sample {sample._id}" + " not successfully added",
+        detail=f"Sample {new_sample.ft}" + " not successfully added",
     )
 
 

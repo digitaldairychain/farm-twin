@@ -7,8 +7,9 @@ class TestSensors:
         response_json = response.json()
         assert response.status_code == 201
 
+        print(response_json['ft'])
         response = test_client.get(
-            f"/measurements/sensors/?id={response_json['id']}")
+            f"/measurements/sensors/?ft={response_json['ft']}")
         assert response.status_code == 200
         assert len(response.json()["sensors"]) == 1
         response_json = response.json()["sensors"][0]
@@ -22,7 +23,7 @@ class TestSensors:
         response_json = response.json()
         assert response.status_code == 201
 
-        sensor_id = response_json['id']
+        sensor_id = response_json['ft']
 
         response = test_client.patch(
             f"/measurements/sensors/{sensor_id}",
@@ -40,19 +41,19 @@ class TestSensors:
         response_json = response.json()
         assert response.status_code == 201
 
-        sensor_id = response_json['id']
+        sensor_id = response_json['ft']
 
         response = test_client.delete(
             f"/measurements/sensors/{sensor_id}")
         assert response.status_code == 204
 
         response = test_client.get(
-            f"/measurements/sensors/?id={sensor_id}")
+            f"/measurements/sensors/?ft={sensor_id}")
         assert response.status_code == 404
 
     def test_get_sensor_not_found(self, test_client, object_id):
         response = test_client.get(
-            f"/measurements/sensors/?id={object_id}")
+            f"/measurements/sensors/?ft={object_id}")
         assert response.status_code == 404
 
     def test_create_sensor_wrong_payload(self, test_client):
@@ -67,7 +68,7 @@ class TestSensors:
         response_json = response.json()
         assert response.status_code == 201
 
-        sensor_id = response_json['id']
+        sensor_id = response_json['ft']
 
         sensor_payload_updated["measurement"] = (
             True
