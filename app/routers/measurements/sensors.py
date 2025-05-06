@@ -78,15 +78,16 @@ async def create_sensor(request: Request, sensor: Sensor):
     ) is not None:
         return created_sensor
     raise HTTPException(status_code=404,
-                        detail=f"Sensor {new_sensor.ft} not successfully added")
+                        detail=f"Sensor {new_sensor.ft} not "
+                        + "successfully added")
 
 
 @router.patch(
-        "/{ft}",
-        response_description="Update a sensor",
-        response_model=Sensor,
-        status_code=status.HTTP_202_ACCEPTED
-    )
+    "/{ft}",
+    response_description="Update a sensor",
+    response_model=Sensor,
+    status_code=status.HTTP_202_ACCEPTED
+)
 async def update_sensor(request: Request, ft: str, sensor: Sensor):
     """
     Update an existing sensor if it exists.
@@ -125,9 +126,6 @@ async def remove_sensor(request: Request, ft: str):
     raise HTTPException(status_code=404, detail=f"Sensor {ft} not found")
 
 
-
-
-
 @router.get(
     "/",
     response_description="Search for sensors",
@@ -135,15 +133,17 @@ async def remove_sensor(request: Request, ft: str):
     response_model_by_alias=False,
 )
 async def sensor_query(
-                       request: Request,
-                       ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
-                       device: Annotated[str | None, AfterValidator(checkObjectId)] = None,
-                       serial: str | None = None,
-                       measurement: str | None = None,
-                       createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-                       createdEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
-                       modifiedStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-                       modifiedEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None):
+        request: Request,
+        ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+        device: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+        serial: str | None = None,
+        measurement: str | None = None,
+        createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
+        createdEnd: Annotated[datetime, Query(
+            default_factory=datetime.now)] = None,
+        modifiedStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
+        modifiedEnd: Annotated[datetime, Query(
+            default_factory=datetime.now)] = None):
     """Search for a sensor given the provided criteria."""
     query = {
         "_id": ft,

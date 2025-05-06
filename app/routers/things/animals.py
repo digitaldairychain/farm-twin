@@ -221,11 +221,11 @@ async def remove_animal(request: Request, ft: str):
 
 
 @router.patch(
-        "/{ft}",
-        response_description="Update an animal",
-        response_model=Animal,
-        status_code=status.HTTP_202_ACCEPTED
-    )
+    "/{ft}",
+    response_description="Update an animal",
+    response_model=Animal,
+    status_code=status.HTTP_202_ACCEPTED
+)
 async def update_animal(request: Request, ft: str, animal: Animal):
     """
     Update an existing animal if it exists.
@@ -254,31 +254,40 @@ async def update_animal(request: Request, ft: str, animal: Animal):
     response_model=AnimalCollection,
     response_model_by_alias=False,
 )
-async def animal_query(request: Request,
-                       ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
-                       identifier: str | None = None,
-                       alternativeIdentifiers: str | None = None,  # TODO: Should this be a list?
-                       specie: icarEnums.icarAnimalSpecieType | None = None,
-                       gender: icarEnums.icarAnimalGenderType | None = None,
-                       birthDateStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-                       birthDateEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
-                       primaryBreed: str | None = None,
-                       coatColor: str | None = None,
-                       coatColorIdentifier: str | None = None,
-                       managementTag: str | None = None,
-                       name: str | None = None,
-                       officialName: str | None = None,
-                       productionPurpose: icarEnums.icarProductionPurposeType | None = None,
-                       status: icarEnums.icarAnimalStatusType | None = None,
-                       reproductionStatus: icarEnums.icarAnimalReproductionStatusType | None = None,
-                       lactationStatus: icarEnums.icarAnimalLactationStatusType | None = None,
-                       parentage: str | None = None,  # TODO: Should this be a list?
-                       healthStatus: icarEnums.icarAnimalHealthStatusType | None = None,
-                       createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-                       createdEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
-                       modifiedStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-                       modifiedEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None
-                       ):
+async def animal_query(
+    request: Request,
+    ft: Annotated[str | None, AfterValidator(
+        checkObjectId)] = None,
+    identifier: str | None = None,
+    alternativeIdentifiers: str | None = None,
+    # TODO: Should this be a list?
+    specie: icarEnums.icarAnimalSpecieType | None = None,
+    gender: icarEnums.icarAnimalGenderType | None = None,
+    birthDateStart: datetime | None = datetime(
+        1970, 1, 1, 0, 0, 0),
+    birthDateEnd: Annotated[datetime, Query(
+        default_factory=datetime.now)] = None,
+    primaryBreed: str | None = None,
+    coatColor: str | None = None,
+    coatColorIdentifier: str | None = None,
+    managementTag: str | None = None,
+    name: str | None = None,
+    officialName: str | None = None,
+    productionPurpose: icarEnums.icarProductionPurposeType | None = None,
+    status: icarEnums.icarAnimalStatusType | None = None,
+    reproductionStatus: icarEnums.icarAnimalReproductionStatusType | None = None,
+    lactationStatus: icarEnums.icarAnimalLactationStatusType | None = None,
+    parentage: str | None = None,  # TODO: Should this be a list?
+    healthStatus: icarEnums.icarAnimalHealthStatusType | None = None,
+    createdStart: datetime | None = datetime(
+        1970, 1, 1, 0, 0, 0),
+    createdEnd: Annotated[datetime, Query(
+        default_factory=datetime.now)] = None,
+    modifiedStart: datetime | None = datetime(
+        1970, 1, 1, 0, 0, 0),
+    modifiedEnd: Annotated[datetime, Query(
+        default_factory=datetime.now)] = None
+):
     """
     Search for an animal given the provided criteria.
     """
@@ -303,7 +312,7 @@ async def animal_query(request: Request,
         "healthStatus": healthStatus,
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": modifiedStart, "$lte": modifiedEnd}
-        }
+    }
     if alternativeIdentifiers:
         query["alternativeIdentifiers"] = {"$in": [alternativeIdentifiers]}
     filtered_query = {k: v for k, v in query.items() if v is not None}

@@ -1,5 +1,6 @@
 class TestSamples:
-    def test_create_get_sample(self, test_client, sample_payload, convert_timestamp):
+    def test_create_get_sample(self, test_client, sample_payload,
+                               convert_timestamp):
         response = test_client.post("/measurements/samples",
                                     json=sample_payload)
         response_json = response.json()

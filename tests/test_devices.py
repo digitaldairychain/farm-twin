@@ -1,5 +1,6 @@
 import time
 
+
 class TestDevices:
     def test_create_get_device(self, test_client, device_payload):
         response = test_client.post("/measurements/devices",
@@ -11,7 +12,9 @@ class TestDevices:
             f"/measurements/devices/?ft={response_json['ft']}")
         assert response.status_code == 200
         assert len(response.json()["devices"]) == 1
-        response_json = response.json()["devices"][0]  # TODO: This assumes a single item returned, which also assumes it has been deleted in a later test
+        # TODO: This assumes a single item returned, which also assumes it has
+        # been deleted in a later test
+        response_json = response.json()["devices"][0]
         assert response_json["id"] == device_payload["id"]
         assert response_json["softwareVersion"] == device_payload["softwareVersion"]
         assert response_json["serial"] == device_payload["serial"]

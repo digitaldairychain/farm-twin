@@ -139,7 +139,7 @@ async def sample_query(
     predicted: bool | None = False,
     createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
     createdEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None
-):    
+):
     """Search for a sample given the provided criteria."""
     query = {
         "_id": ft,

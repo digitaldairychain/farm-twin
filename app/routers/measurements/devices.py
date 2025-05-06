@@ -210,9 +210,11 @@ async def device_query(
     manufacturer: icarTypes.icarDeviceManufacturerType | None = None,
     registration: icarTypes.icarDeviceRegistrationIdentifierType | None = None,
     createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    createdEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+    createdEnd: Annotated[datetime, Query(
+        default_factory=datetime.now)] = None,
     modifiedStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    modifiedEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None
+    modifiedEnd: Annotated[datetime, Query(
+        default_factory=datetime.now)] = None
 ):
     """Search for a device given the provided criteria."""
     query = {
