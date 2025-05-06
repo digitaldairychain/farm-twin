@@ -1,53 +1,47 @@
 # Duplicate key test
 
 class TestAnimals:
-    def test_create_get_animal(self, test_client, animal_payload):
+    def test_create_get_animal(self, test_client, animal_payload,
+                               convert_timestamp,
+                               check_object_similarity):
         response = test_client.post("/things/animals",
                                     json=animal_payload)
         response_json = response.json()
         assert response.status_code == 201
-
         response = test_client.get(
             f"/things/animals/?ft={response_json['ft']}")
         assert response.status_code == 200
         assert len(response.json()["animals"]) == 1
         response_json = response.json()["animals"][0]
-        assert response_json['identifier'] == animal_payload['identifier']
-        assert response_json['gender'] == animal_payload['gender']
-        assert response_json['specie'] == animal_payload['specie']
+        check_object_similarity(animal_payload, response_json)
 
     def test_create_update_animal(
-        self, test_client, animal_payload, animal_payload_updated
+        self, test_client, animal_payload, animal_payload_updated,
+        check_object_similarity
     ):
         response = test_client.post("/things/animals/",
                                     json=animal_payload)
         response_json = response.json()
         assert response.status_code == 201
-
+        check_object_similarity(animal_payload, response_json)
         animal_id = response_json['ft']
-        print(animal_id)
         response = test_client.patch(
             f"/things/animals/{animal_id}",
             json=animal_payload_updated,
         )
         response_json = response.json()
         assert response.status_code == 202
-        assert response_json['identifier'] == animal_payload_updated['identifier']
-        assert response_json['gender'] == animal_payload_updated['gender']
-        assert response_json['specie'] == animal_payload_updated['specie']
+        check_object_similarity(animal_payload_updated, response_json)
 
     def test_create_delete_animal(self, test_client, animal_payload):
         response = test_client.post("/things/animals",
                                     json=animal_payload)
         response_json = response.json()
         assert response.status_code == 201
-
         animal_id = response_json['ft']
-
         response = test_client.delete(
             f"/things/animals/{animal_id}")
         assert response.status_code == 204
-
         response = test_client.get(
             f"/things/animals/?ft={animal_id}")
         assert response.status_code == 404
@@ -68,13 +62,10 @@ class TestAnimals:
                                     json=animal_payload)
         response_json = response.json()
         assert response.status_code == 201
-
         animal_id = response_json['ft']
-
         animal_payload_updated["gender"] = (
             True
         )
-
         response = test_client.patch(
             f"/things/animals/{animal_id}", json=animal_payload_updated
         )

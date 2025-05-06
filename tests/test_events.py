@@ -1,18 +1,15 @@
 class TestEvents:
 
     class TestWeight:
-        def test_create_weight_event(self, test_client, weight_payload):
+        def test_create_weight_event(self, test_client, weight_payload, check_object_similarity):
             response = test_client.post("/events/weight",
                                         json=weight_payload)
             response_json = response.json()
             assert response.status_code == 201
-            print(response_json)
             response = test_client.get(
                 f"/events/weight/?ft={response_json['ft']}")
             assert response.status_code == 200
-            assert response_json["animal"] == weight_payload["animal"]
-            assert response_json["device"] == weight_payload["device"]
-            assert response_json["timeOffFeed"] == weight_payload["timeOffFeed"]
+            check_object_similarity(weight_payload, response_json)
 
         def test_create_delete_weight_event(self, test_client, weight_payload):
             response = test_client.post("/events/weight",

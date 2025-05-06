@@ -2,7 +2,8 @@ import time
 
 
 class TestDevices:
-    def test_create_get_device(self, test_client, device_payload):
+    def test_create_get_device(self, test_client, device_payload,
+                               check_object_similarity):
         response = test_client.post("/measurements/devices",
                                     json=device_payload)
         response_json = response.json()
@@ -15,18 +16,17 @@ class TestDevices:
         # TODO: This assumes a single item returned, which also assumes it has
         # been deleted in a later test
         response_json = response.json()["devices"][0]
-        assert response_json["id"] == device_payload["id"]
-        assert response_json["softwareVersion"] == device_payload["softwareVersion"]
-        assert response_json["serial"] == device_payload["serial"]
-        assert response_json["isActive"] == device_payload["isActive"]
+        check_object_similarity(device_payload, response_json)
 
     def test_create_update_device(
-        self, test_client, device_payload, device_payload_updated
+        self, test_client, device_payload, device_payload_updated,
+        check_object_similarity
     ):
         response = test_client.post("/measurements/devices/",
                                     json=device_payload)
         response_json = response.json()
         assert response.status_code == 201
+        check_object_similarity(device_payload, response_json)
         time.sleep(1)
         response = test_client.patch(
             f"/measurements/devices/{response_json['ft']}",
@@ -34,11 +34,7 @@ class TestDevices:
         )
         response_json = response.json()
         assert response.status_code == 202
-        assert response_json["id"] == device_payload_updated["id"]
-        assert response_json["softwareVersion"] == device_payload_updated["softwareVersion"]
-        assert response_json["hardwareVersion"] == device_payload_updated["hardwareVersion"]
-        assert response_json["serial"] == device_payload_updated["serial"]
-        assert response_json["isActive"] == device_payload_updated["isActive"]
+        check_object_similarity(device_payload_updated, response_json)
 
     def test_create_delete_device(self, test_client, device_payload):
         response = test_client.post("/measurements/devices",
