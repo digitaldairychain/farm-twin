@@ -8,7 +8,7 @@ class TestEvents:
             assert response.status_code == 201
             print(response_json)
             response = test_client.get(
-                f"/events/weight/?id={response_json['id']}")
+                f"/events/weight/?ft={response_json['ft']}")
             assert response.status_code == 200
             assert response_json["animal"] == weight_payload["animal"]
             assert response_json["device"] == weight_payload["device"]
@@ -20,19 +20,19 @@ class TestEvents:
             response_json = response.json()
             assert response.status_code == 201
 
-            weight_event_id = response_json['id']
+            weight_event_id = response_json['ft']
 
             response = test_client.delete(
                 f"/events/weight/{weight_event_id}")
             assert response.status_code == 204
 
             response = test_client.get(
-                f"/events/weight?id={weight_event_id}")
+                f"/events/weight?ft={weight_event_id}")
             assert response.status_code == 404
 
         def test_get_weight_event_not_found(self, test_client, object_id):
             response = test_client.get(
-                f"/events/weight/?id={object_id}")
+                f"/events/weight/?ft={object_id}")
             assert response.status_code == 404
 
         def test_create_weight_event_wrong_payload(self, test_client):

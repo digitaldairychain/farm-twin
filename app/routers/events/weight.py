@@ -20,6 +20,7 @@ from typing_extensions import Annotated
 from datetime import datetime
 from bson.objectid import ObjectId
 from ..icar import icarTypes
+from ..ftCommon import FTModel, modifiedFilter
 
 router = APIRouter(
     prefix="/weight",
@@ -30,14 +31,7 @@ router = APIRouter(
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
-class Weight(BaseModel):
-    id: Optional[PyObjectId] = Field(
-        alias="_id",
-        default=None,
-        json_schema_extra={
-            'description': 'ObjectID of weight measurement event',
-            'example': str(ObjectId())
-        })
+class Weight(FTModel):
     weight: icarTypes.icarMassMeasureType = Field(
         json_schema_extra={
             'description': "The weight measurement, including units and "
@@ -89,7 +83,8 @@ async def create_weight_event(request: Request, weight: Weight):
 
     :param weight: Weight to be added
     """
-    model = weight.model_dump(by_alias=True, exclude=["id"])
+    weight.created = datetime.now()
+    model = weight.model_dump(by_alias=True, exclude=["ft"])
     if model["timestamp"] is None:
         model["timestamp"] = datetime.now()
     try:
@@ -106,20 +101,20 @@ async def create_weight_event(request: Request, weight: Weight):
                                                 + " added")
 
 
-@router.delete("/{id}", response_description="Delete a weight event")
-async def remove_weight_event(request: Request, id: str):
+@router.delete("/{ft}", response_description="Delete a weight event")
+async def remove_weight_event(request: Request, ft: str):
     """
     Delete a weight event.
 
-    :param id: UUID of the weight event to delete
+    :param ft: UUID of the weight event to delete
     """
     delete_result = await request.app.state.weight.delete_one(
-        {"_id": ObjectId(id)})
+        {"_id": ObjectId(ft)})
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(status_code=404, detail=f"Weight event {id} not found")
+    raise HTTPException(status_code=404, detail=f"Weight event {ft} not found")
 
 
 @router.get(
@@ -130,33 +125,31 @@ async def remove_weight_event(request: Request, id: str):
 )
 async def weight_event_query(
         request: Request,
-        id: str | None = None,
+        ft: str | None = None,
         device: str | None = None,
         start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
         end: datetime | None = None,
-        predicted: bool | None = None):
-    """
-    Search for a weight event given the provided criteria.
-
-    :param id: Object ID of the weight event
-    :param device: Object ID of the device which generated this weight event
-    :param start: Timestamp from which to start the search
-    :param end: Timestamp from which to end the search
-    :param predicted: Whether or not the value is real or predicted
-    """
-    if id:
-        id = ObjectId(id)
+        predicted: bool | None = None,
+        createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
+        createdEnd: datetime | None = None):
+    """Search for a weight event given the provided criteria."""
+    if ft:
+        ft = ObjectId(ft)
+    if not createdEnd:
+        createdEnd = datetime.now()
     if device:
         device = ObjectId(device)
     if not end:
         end = datetime.now()
     query = {
-        "_id": id,
+        "_id": ft,
         "device": device,
         "predicted": predicted
         }
     filtered_query = {k: v for k, v in query.items() if v is not None}
     filtered_query["timestamp"] = {"$gte": start, "$lte": end}
+    filtered_query["created"] = {"$gte": createdStart, "$lte": createdEnd}
+    print(filtered_query)
     result = await request.app.state.weight.find(filtered_query).to_list(1000)
     if len(result) > 0:
         return WeightCollection(weights=result)
