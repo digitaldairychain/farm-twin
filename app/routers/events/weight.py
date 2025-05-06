@@ -12,15 +12,15 @@ https://github.com/adewg/ICAR/blob/ADE-1/resources/icarWeightEventResource.json
 """
 import pymongo
 
-from fastapi import status, HTTPException, Response, APIRouter, Request
-from pydantic import BaseModel, Field
+from fastapi import status, HTTPException, Response, APIRouter, Request, Query
+from pydantic import BaseModel, Field, AfterValidator
 from pydantic.functional_validators import BeforeValidator
 from typing import Optional, List
 from typing_extensions import Annotated
 from datetime import datetime
 from bson.objectid import ObjectId
 from ..icar import icarTypes
-from ..ftCommon import FTModel, modifiedFilter
+from ..ftCommon import FTModel, checkObjectId
 
 router = APIRouter(
     prefix="/weight",
@@ -83,7 +83,6 @@ async def create_weight_event(request: Request, weight: Weight):
 
     :param weight: Weight to be added
     """
-    weight.created = datetime.now()
     model = weight.model_dump(by_alias=True, exclude=["ft"])
     if model["timestamp"] is None:
         model["timestamp"] = datetime.now()
@@ -125,31 +124,21 @@ async def remove_weight_event(request: Request, ft: str):
 )
 async def weight_event_query(
         request: Request,
-        ft: str | None = None,
-        device: str | None = None,
+        ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+        device: Annotated[str | None, AfterValidator(checkObjectId)] = None,
         start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-        end: datetime | None = None,
-        predicted: bool | None = None,
+        end: Annotated[datetime, Query(default_factory=datetime.now)] = None,
         createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-        createdEnd: datetime | None = None):
+        createdEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None):
     """Search for a weight event given the provided criteria."""
-    if ft:
-        ft = ObjectId(ft)
-    if not createdEnd:
-        createdEnd = datetime.now()
-    if device:
-        device = ObjectId(device)
-    if not end:
-        end = datetime.now()
     query = {
         "_id": ft,
         "device": device,
-        "predicted": predicted
+        "timestamp": {"$gte": start, "$lte": end},
+        "created": {"$gte": createdStart, "$lte": createdEnd},
+        "modified": {"$gte": createdStart, "$lte": createdEnd}
         }
     filtered_query = {k: v for k, v in query.items() if v is not None}
-    filtered_query["timestamp"] = {"$gte": start, "$lte": end}
-    filtered_query["created"] = {"$gte": createdStart, "$lte": createdEnd}
-    print(filtered_query)
     result = await request.app.state.weight.find(filtered_query).to_list(1000)
     if len(result) > 0:
         return WeightCollection(weights=result)

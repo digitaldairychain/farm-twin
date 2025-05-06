@@ -1,5 +1,8 @@
 # Duplicate key test
 
+import time
+
+
 class TestSensors:
     def test_create_get_sensor(self, test_client, sensor_payload):
         response = test_client.post("/measurements/sensors",
@@ -24,7 +27,7 @@ class TestSensors:
         assert response.status_code == 201
 
         sensor_id = response_json['ft']
-
+        time.sleep(1)
         response = test_client.patch(
             f"/measurements/sensors/{sensor_id}",
             json=sensor_payload_updated,

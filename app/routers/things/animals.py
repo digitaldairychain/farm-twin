@@ -13,14 +13,15 @@ and finding of those animals.
 Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarAnimalCoreResource.json
 """
-from fastapi import status, HTTPException, Response, APIRouter, Request
-from pydantic import BaseModel, Field
+from fastapi import status, HTTPException, Response, APIRouter, Request, Query
+from pydantic import BaseModel, Field, AfterValidator
 from pydantic.functional_validators import BeforeValidator
 from typing import Optional, List
 from typing_extensions import Annotated
 from bson.objectid import ObjectId
 from datetime import datetime
 from ..icar import icarEnums, icarTypes
+from ..ftCommon import FTModel, checkObjectId
 
 router = APIRouter(
     prefix="/animals",
@@ -31,16 +32,7 @@ router = APIRouter(
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
-class Animal(BaseModel):
-    id: Optional[PyObjectId] = Field(
-        alias="_id",
-        default=None,
-        json_schema_extra={
-            'description': 'ObjectID of animal',
-            'example': str(ObjectId())
-        }
-    )
-
+class Animal(FTModel):
     identifier: str = Field(
         json_schema_extra={
             'description': 'Unique animal scheme and identifier combination.',
@@ -181,8 +173,6 @@ class Animal(BaseModel):
         }
     )
 
-    
-
 
 class AnimalCollection(BaseModel):
     animals: List[Animal]
@@ -202,7 +192,7 @@ async def create_animal(request: Request, animal: Animal):
     :param animal: Animal to be added
     """
     new_animal = await request.app.state.animals.insert_one(
-        animal.model_dump(by_alias=True, exclude=["id"])
+        animal.model_dump(by_alias=True, exclude=["ft"])
     )
 
     if (
@@ -214,29 +204,29 @@ async def create_animal(request: Request, animal: Animal):
                         detail=f"Animal {id} not successfully added")
 
 
-@router.delete("/{id}", response_description="Delete an animal")
-async def remove_animal(request: Request, id: str):
+@router.delete("/{ft}", response_description="Delete an animal")
+async def remove_animal(request: Request, ft: str):
     """
     Delete an animal.
 
     :param id: UUID of the animal to delete
     """
     delete_result = await request.app.state.animals.delete_one(
-        {"_id": ObjectId(id)})
+        {"_id": ObjectId(ft)})
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(status_code=404, detail=f"Animal {id} not found")
+    raise HTTPException(status_code=404, detail=f"Animal {ft} not found")
 
 
 @router.patch(
-        "/{id}",
+        "/{ft}",
         response_description="Update an animal",
         response_model=Animal,
         status_code=status.HTTP_202_ACCEPTED
     )
-async def update_animal(request: Request, id: str, animal: Animal):
+async def update_animal(request: Request, ft: str, animal: Animal):
     """
     Update an existing animal if it exists.
 
@@ -244,18 +234,18 @@ async def update_animal(request: Request, id: str, animal: Animal):
     :param animal: Animal to update with
     """
     await request.app.state.animals.update_one(
-        {"_id": ObjectId(id)},
-        {'$set': animal.model_dump(by_alias=True, exclude=["id"])},
+        {"_id": ObjectId(ft)},
+        {'$set': animal.model_dump(by_alias=True, exclude=["ft", "created"])},
         upsert=False
     )
 
     if (
         updated_animal := await
-        request.app.state.animals.find_one({"_id": ObjectId(id)})
+        request.app.state.animals.find_one({"_id": ObjectId(ft)})
     ) is not None:
         return updated_animal
     raise HTTPException(status_code=404,
-                        detail=f"Animal {id} not successfully updated")
+                        detail=f"Animal {ft} not successfully updated")
 
 
 @router.get(
@@ -265,13 +255,13 @@ async def update_animal(request: Request, id: str, animal: Animal):
     response_model_by_alias=False,
 )
 async def animal_query(request: Request,
-                       id: str | None = None,
+                       ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
                        identifier: str | None = None,
                        alternativeIdentifiers: str | None = None,  # TODO: Should this be a list?
                        specie: icarEnums.icarAnimalSpecieType | None = None,
                        gender: icarEnums.icarAnimalGenderType | None = None,
                        birthDateStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-                       birthDateEnd: datetime | None = None,
+                       birthDateEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
                        primaryBreed: str | None = None,
                        coatColor: str | None = None,
                        coatColorIdentifier: str | None = None,
@@ -284,16 +274,16 @@ async def animal_query(request: Request,
                        lactationStatus: icarEnums.icarAnimalLactationStatusType | None = None,
                        parentage: str | None = None,  # TODO: Should this be a list?
                        healthStatus: icarEnums.icarAnimalHealthStatusType | None = None,
+                       createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
+                       createdEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+                       modifiedStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
+                       modifiedEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None
                        ):
     """
     Search for an animal given the provided criteria.
     """
-    if id:
-        id = ObjectId(id)
-    if not birthDateEnd:
-        birthDateEnd = datetime.now()
     query = {
-        "_id": id,
+        "_id": ft,
         "identifier": identifier,
         "specie": specie,
         "gender": gender,
@@ -301,19 +291,22 @@ async def animal_query(request: Request,
         "coatColor": coatColor,
         "coatColorIdentifier": coatColorIdentifier,
         "managementTag": managementTag,
+        "birthDate": {"$gte": birthDateStart, "$lte": birthDateEnd},
         "name": name,
         "officialName": officialName,
         "productionPurpose": productionPurpose,
+        # "alternativeIdentifiers": {"$in": [alternativeIdentifiers]},
         "status": status,
         "reproductionStatus": reproductionStatus,
         "lactationStatus": lactationStatus,
         "parentage": parentage,
         "healthStatus": healthStatus,
+        "created": {"$gte": createdStart, "$lte": createdEnd},
+        "modified": {"$gte": modifiedStart, "$lte": modifiedEnd}
         }
     if alternativeIdentifiers:
         query["alternativeIdentifiers"] = {"$in": [alternativeIdentifiers]}
     filtered_query = {k: v for k, v in query.items() if v is not None}
-    filtered_query["birthDate"] = {"$gte": birthDateStart, "$lte": birthDateEnd}
     result = await request.app.state.animals.find(filtered_query).to_list(1000)
     if len(result) > 0:
         return AnimalCollection(animals=result)

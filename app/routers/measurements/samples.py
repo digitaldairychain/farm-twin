@@ -17,14 +17,14 @@ and finding of those samples.
 
 import pymongo
 
-from fastapi import status, HTTPException, Response, APIRouter, Request
-from pydantic import BaseModel, Field
+from fastapi import status, HTTPException, Response, APIRouter, Request, Query
+from pydantic import BaseModel, Field, AfterValidator
 from pydantic.functional_validators import BeforeValidator
 from typing import Optional, List
 from typing_extensions import Annotated
 from datetime import datetime
 from bson.objectid import ObjectId
-from ..ftCommon import FTModel, modifiedFilter
+from ..ftCommon import FTModel, checkObjectId
 
 router = APIRouter(
     prefix="/samples",
@@ -86,8 +86,7 @@ async def create_sample(request: Request, sample: Sample):
 
     :param sample: Sample to be added
     """
-    sample.created = datetime.now()
-    model = sample.model_dump(by_alias=True, exclude=["ft", "modified"])
+    model = sample.model_dump(by_alias=True, exclude=["ft"])
     if model["timestamp"] is None:
         model["timestamp"] = datetime.now()
     try:
@@ -133,30 +132,25 @@ async def remove_samples(request: Request, ft: str):
 )
 async def sample_query(
     request: Request,
-    ft: str | None = None,
-    sensor: str | None = None,
+    ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+    sensor: Annotated[str | None, AfterValidator(checkObjectId)] = None,
     start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    end: datetime | None = None,
+    end: Annotated[datetime, Query(default_factory=datetime.now)] = None,
     predicted: bool | None = False,
     createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    createdEnd: datetime | None = None,
-    modifiedStart: datetime | None = None,
-    modifiedEnd: datetime | None = None,
-):
+    createdEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None
+):    
     """Search for a sample given the provided criteria."""
-    if ft:
-        ft = ObjectId(ft)
-    if not createdEnd:
-        createdEnd = datetime.now()
-    mod = modifiedFilter(modifiedStart, modifiedEnd)
-    if not end:
-        end = datetime.now()
-    query = {"_id": ft, "sensor": sensor, "predicted": predicted}
+    query = {
+        "_id": ft,
+        "sensor": sensor,
+        "predicted": predicted,
+        "timestamp": {"$gte": start, "$lte": end},
+        "created": {"$gte": createdStart, "$lte": createdEnd},
+        "modified": {"$gte": createdStart, "$lte": createdEnd}
+    }
+    print(query)
     filtered_query = {k: v for k, v in query.items() if v is not None}
-    filtered_query["timestamp"] = {"$gte": start, "$lte": end}
-    filtered_query["created"] = {"$gte": createdStart, "$lte": createdEnd}
-    if mod.search:
-        filtered_query["modified"] = {"$gte": mod.start, "$lte": mod.end}
     result = await request.app.state.samples.find(filtered_query).to_list(1000)
     if len(result) > 0:
         return SampleCollection(samples=result)

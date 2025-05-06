@@ -16,13 +16,13 @@ https://github.com/adewg/ICAR/blob/ADE-1/resources/icarDeviceResource.json
 
 import pymongo
 
-from fastapi import status, HTTPException, Response, APIRouter, Request
-from pydantic import BaseModel, Field
-from typing import Optional, List
+from fastapi import status, HTTPException, Response, APIRouter, Request, Query
+from pydantic import BaseModel, Field, AfterValidator
+from typing import Optional, List, Annotated
 from bson.objectid import ObjectId
 from ..icar import icarEnums, icarTypes
 from datetime import datetime
-from ..ftCommon import FTModel, modifiedFilter
+from ..ftCommon import FTModel, checkObjectId
 
 router = APIRouter(
     prefix="/devices",
@@ -125,10 +125,9 @@ async def create_device(request: Request, device: Device):
 
     :param device: Device to be added
     """
-    device.created = datetime.now()
     try:
         new_device = await request.app.state.devices.insert_one(
-            device.model_dump(by_alias=True, exclude=["ft", "modified"])
+            device.model_dump(by_alias=True, exclude=["ft"])
         )
     except pymongo.errors.DuplicateKeyError:
         raise HTTPException(status_code=404, detail="Device already exists")
@@ -156,7 +155,6 @@ async def update_device(request: Request, ft: str, device: Device):
     :param id: ObjectID of the device to update
     :param device: Device to update this device with
     """
-    device.modified = datetime.now()
     await request.app.state.devices.update_one(
         {"_id": ObjectId(ft)},
         {"$set": device.model_dump(by_alias=True, exclude=["ft", "created"])},
@@ -198,7 +196,7 @@ async def remove_device(request: Request, ft: str):
 )
 async def device_query(
     request: Request,
-    ft: str | None = None,
+    ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
     id: str | None = None,
     serial: str | None = None,
     name: str | None = None,
@@ -212,16 +210,11 @@ async def device_query(
     manufacturer: icarTypes.icarDeviceManufacturerType | None = None,
     registration: icarTypes.icarDeviceRegistrationIdentifierType | None = None,
     createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    createdEnd: datetime | None = None,
-    modifiedStart: datetime | None = None,
-    modifiedEnd: datetime | None = None,
+    createdEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+    modifiedStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
+    modifiedEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None
 ):
     """Search for a device given the provided criteria."""
-    if ft:
-        ft = ObjectId(ft)
-    if not createdEnd:
-        createdEnd = datetime.now()
-    mod = modifiedFilter(modifiedStart, modifiedEnd)
     query = {
         "_id": ft,
         "id": id,
@@ -233,13 +226,13 @@ async def device_query(
         "isActive": isActive,
         "manufacturer": manufacturer,
         "registration": registration,
+        # "supportedMessages": {"$in": [supportedMessages]},
+        "created": {"$gte": createdStart, "$lte": createdEnd},
+        "modified": {"$gte": modifiedStart, "$lte": modifiedEnd}
     }
     if supportedMessages:
         query["supportedMessages"] = {"$in": [supportedMessages]}
     filtered_query = {k: v for k, v in query.items() if v is not None}
-    filtered_query["created"] = {"$gte": createdStart, "$lte": createdEnd}
-    if mod.search:
-        filtered_query["modified"] = {"$gte": mod.start, "$lte": mod.end}
     result = await request.app.state.devices.find(filtered_query).to_list(1000)
     if len(result) > 0:
         return DeviceCollection(devices=result)

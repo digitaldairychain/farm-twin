@@ -8,7 +8,7 @@ class TestAnimals:
         assert response.status_code == 201
 
         response = test_client.get(
-            f"/things/animals/?id={response_json['id']}")
+            f"/things/animals/?ft={response_json['ft']}")
         assert response.status_code == 200
         assert len(response.json()["animals"]) == 1
         response_json = response.json()["animals"][0]
@@ -24,7 +24,7 @@ class TestAnimals:
         response_json = response.json()
         assert response.status_code == 201
 
-        animal_id = response_json['id']
+        animal_id = response_json['ft']
         print(animal_id)
         response = test_client.patch(
             f"/things/animals/{animal_id}",
@@ -42,19 +42,19 @@ class TestAnimals:
         response_json = response.json()
         assert response.status_code == 201
 
-        animal_id = response_json['id']
+        animal_id = response_json['ft']
 
         response = test_client.delete(
             f"/things/animals/{animal_id}")
         assert response.status_code == 204
 
         response = test_client.get(
-            f"/things/animals/?id={animal_id}")
+            f"/things/animals/?ft={animal_id}")
         assert response.status_code == 404
 
     def test_get_animal_not_found(self, test_client, object_id):
         response = test_client.get(
-            f"/things/animals/?id={object_id}")
+            f"/things/animals/?ft={object_id}")
         assert response.status_code == 404
 
     def test_create_animal_wrong_payload(self, test_client):
@@ -69,7 +69,7 @@ class TestAnimals:
         response_json = response.json()
         assert response.status_code == 201
 
-        animal_id = response_json['id']
+        animal_id = response_json['ft']
 
         animal_payload_updated["gender"] = (
             True

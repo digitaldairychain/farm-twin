@@ -14,13 +14,13 @@ and finding of those sensors.
 """
 import pymongo
 
-from fastapi import status, HTTPException, Response, APIRouter, Request
-from pydantic import BaseModel, Field
+from fastapi import status, HTTPException, Response, APIRouter, Request, Query
+from pydantic import BaseModel, Field, AfterValidator
 from pydantic.functional_validators import BeforeValidator
 from typing import Optional, List
 from typing_extensions import Annotated
 from bson.objectid import ObjectId
-from ..ftCommon import FTModel, modifiedFilter
+from ..ftCommon import FTModel, checkObjectId
 from datetime import datetime
 
 router = APIRouter(
@@ -65,10 +65,9 @@ async def create_sensor(request: Request, sensor: Sensor):
 
     :param sensor: Sensor to be added.
     """
-    sensor.created = datetime.now()
     try:
         new_sensor = await request.app.state.sensors.insert_one(
-            sensor.model_dump(by_alias=True, exclude=["ft", "modified"])
+            sensor.model_dump(by_alias=True, exclude=["ft"])
         )
     except pymongo.errors.DuplicateKeyError:
         raise HTTPException(status_code=404,
@@ -126,6 +125,9 @@ async def remove_sensor(request: Request, ft: str):
     raise HTTPException(status_code=404, detail=f"Sensor {ft} not found")
 
 
+
+
+
 @router.get(
     "/",
     response_description="Search for sensors",
@@ -134,29 +136,24 @@ async def remove_sensor(request: Request, ft: str):
 )
 async def sensor_query(
                        request: Request,
-                       ft: str | None = None,
-                       device: str | None = None,
+                       ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+                       device: Annotated[str | None, AfterValidator(checkObjectId)] = None,
                        serial: str | None = None,
                        measurement: str | None = None,
                        createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-                       createdEnd: datetime | None = None,
-                       modifiedStart: datetime | None = None,
-                       modifiedEnd: datetime | None = None,):
+                       createdEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+                       modifiedStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
+                       modifiedEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None):
     """Search for a sensor given the provided criteria."""
-    if ft:
-        ft = ObjectId(ft)
-    if not createdEnd:
-        createdEnd = datetime.now()
-    mod = modifiedFilter(modifiedStart, modifiedEnd)
     query = {
         "_id": ft,
         "device": device,
         "serial": serial,
-        "measurement": measurement}
+        "measurement": measurement,
+        "created": {"$gte": createdStart, "$lte": createdEnd},
+        "modified": {"$gte": modifiedStart, "$lte": modifiedEnd}
+    }
     filtered_query = {k: v for k, v in query.items() if v is not None}
-    filtered_query["created"] = {"$gte": createdStart, "$lte": createdEnd}
-    if mod.search:
-        filtered_query["modified"] = {"$gte": mod.start, "$lte": mod.end}
     result = await request.app.state.sensors.find(filtered_query).to_list(1000)
     if len(result) > 0:
         return SensorCollection(sensors=result)

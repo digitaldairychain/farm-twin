@@ -1,3 +1,5 @@
+import time
+
 class TestDevices:
     def test_create_get_device(self, test_client, device_payload):
         response = test_client.post("/measurements/devices",
@@ -22,7 +24,7 @@ class TestDevices:
                                     json=device_payload)
         response_json = response.json()
         assert response.status_code == 201
-
+        time.sleep(1)
         response = test_client.patch(
             f"/measurements/devices/{response_json['ft']}",
             json=device_payload_updated,
