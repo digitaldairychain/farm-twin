@@ -20,7 +20,7 @@ from typing_extensions import Annotated
 from datetime import datetime
 from bson.objectid import ObjectId
 from ..icar import icarTypes
-from ..ftCommon import FTModel, checkObjectId
+from ..ftCommon import FTModel, checkObjectId, filterQuery
 
 router = APIRouter(
     prefix="/weight",
@@ -154,8 +154,7 @@ async def weight_event_query(
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": createdStart, "$lte": createdEnd},
     }
-    filtered_query = {k: v for k, v in query.items() if v is not None}
-    result = await request.app.state.weight.find(filtered_query).to_list(1000)
+    result = await request.app.state.weight.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return WeightCollection(weights=result)
     raise HTTPException(status_code=404, detail="No match found")

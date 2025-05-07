@@ -21,7 +21,7 @@ from typing_extensions import Annotated
 from bson.objectid import ObjectId
 from datetime import datetime
 from ..icar import icarEnums, icarTypes
-from ..ftCommon import FTModel, checkObjectId
+from ..ftCommon import FTModel, checkObjectId, filterQuery
 
 router = APIRouter(
     prefix="/animals",
@@ -259,8 +259,7 @@ async def animal_query(
     ft: Annotated[str | None, AfterValidator(
         checkObjectId)] = None,
     identifier: str | None = None,
-    alternativeIdentifiers: str | None = None,
-    # TODO: Should this be a list?
+    alternativeIdentifiers: Annotated[list[str] | None, Query()] = [],
     specie: icarEnums.icarAnimalSpecieType | None = None,
     gender: icarEnums.icarAnimalGenderType | None = None,
     birthDateStart: datetime | None = datetime(
@@ -277,7 +276,7 @@ async def animal_query(
     status: icarEnums.icarAnimalStatusType | None = None,
     reproductionStatus: icarEnums.icarAnimalReproductionStatusType | None = None,
     lactationStatus: icarEnums.icarAnimalLactationStatusType | None = None,
-    parentage: str | None = None,  # TODO: Should this be a list?
+    parentage: Annotated[list[str] | None, Query()] = [],
     healthStatus: icarEnums.icarAnimalHealthStatusType | None = None,
     createdStart: datetime | None = datetime(
         1970, 1, 1, 0, 0, 0),
@@ -304,19 +303,17 @@ async def animal_query(
         "name": name,
         "officialName": officialName,
         "productionPurpose": productionPurpose,
-        # "alternativeIdentifiers": {"$in": [alternativeIdentifiers]},
+        "alternativeIdentifiers": {"$in": alternativeIdentifiers},
         "status": status,
         "reproductionStatus": reproductionStatus,
         "lactationStatus": lactationStatus,
-        "parentage": parentage,
+        "parentage": {"$in": parentage},
         "healthStatus": healthStatus,
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": modifiedStart, "$lte": modifiedEnd}
     }
-    if alternativeIdentifiers:
-        query["alternativeIdentifiers"] = {"$in": [alternativeIdentifiers]}
-    filtered_query = {k: v for k, v in query.items() if v is not None}
-    result = await request.app.state.animals.find(filtered_query).to_list(1000)
+    result = await request.app.state.animals.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return AnimalCollection(animals=result)
-    raise HTTPException(status_code=404, detail="No match found")
+    else:
+        raise HTTPException(status_code=404, detail="No match found")

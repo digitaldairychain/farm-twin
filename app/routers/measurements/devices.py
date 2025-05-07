@@ -22,7 +22,7 @@ from typing import Optional, List, Annotated
 from bson.objectid import ObjectId
 from ..icar import icarEnums, icarTypes
 from datetime import datetime
-from ..ftCommon import FTModel, checkObjectId
+from ..ftCommon import FTModel, checkObjectId, filterQuery
 
 router = APIRouter(
     prefix="/devices",
@@ -204,9 +204,7 @@ async def device_query(
     softwareVersion: str | None = None,
     hardwareVersion: str | None = None,
     isActive: bool | None = None,
-    supportedMessages: (
-        icarEnums.icarMessageType | None
-    ) = None,  # TODO: Should this be a list?
+    supportedMessages: Annotated[list[str] | None, Query()] = [],
     manufacturer: icarTypes.icarDeviceManufacturerType | None = None,
     registration: icarTypes.icarDeviceRegistrationIdentifierType | None = None,
     createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
@@ -228,14 +226,11 @@ async def device_query(
         "isActive": isActive,
         "manufacturer": manufacturer,
         "registration": registration,
-        # "supportedMessages": {"$in": [supportedMessages]},
+        "supportedMessages": {"$in": supportedMessages},
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": modifiedStart, "$lte": modifiedEnd}
     }
-    if supportedMessages:
-        query["supportedMessages"] = {"$in": [supportedMessages]}
-    filtered_query = {k: v for k, v in query.items() if v is not None}
-    result = await request.app.state.devices.find(filtered_query).to_list(1000)
+    result = await request.app.state.devices.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return DeviceCollection(devices=result)
     raise HTTPException(status_code=404, detail="No match found")

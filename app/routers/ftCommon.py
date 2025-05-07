@@ -47,3 +47,14 @@ def checkObjectId(ft: str):
             return ObjectId(ft)
     except (InvalidId, TypeError) as e:
         raise e
+
+
+def filterQuery(query: dict):
+    filtered_query = {}
+    for k, v in query.items():
+        if v is not None:
+            if isinstance(v, dict):
+                v = filterQuery(v)
+            if v:
+                filtered_query[k] = v
+    return filtered_query

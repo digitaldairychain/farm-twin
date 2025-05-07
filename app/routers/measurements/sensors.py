@@ -20,7 +20,7 @@ from pydantic.functional_validators import BeforeValidator
 from typing import Optional, List
 from typing_extensions import Annotated
 from bson.objectid import ObjectId
-from ..ftCommon import FTModel, checkObjectId
+from ..ftCommon import FTModel, checkObjectId, filterQuery
 from datetime import datetime
 
 router = APIRouter(
@@ -153,8 +153,7 @@ async def sensor_query(
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": modifiedStart, "$lte": modifiedEnd}
     }
-    filtered_query = {k: v for k, v in query.items() if v is not None}
-    result = await request.app.state.sensors.find(filtered_query).to_list(1000)
+    result = await request.app.state.sensors.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return SensorCollection(sensors=result)
     raise HTTPException(status_code=404, detail="No match found")
