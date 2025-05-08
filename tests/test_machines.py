@@ -1,4 +1,3 @@
-import time
 from . import common
 
 ROOT = 'things'

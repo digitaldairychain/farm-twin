@@ -1,4 +1,3 @@
-import time
 from . import common
 
 
@@ -40,3 +39,6 @@ class TestDevices:
     ):
         common.update_doesnt_exist(
             test_client, PATH, device_payload_updated, object_id)
+
+    def test_create_duplicate_device(self, test_client, device_payload):
+        common.create_duplicate(test_client, PATH, device_payload, KEY)

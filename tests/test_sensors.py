@@ -1,5 +1,3 @@
-# Duplicate key test
-
 from . import common
 
 ROOT = 'measurements'
@@ -40,3 +38,6 @@ class TestSensors:
     ):
         common.update_doesnt_exist(
             test_client, PATH, sensor_payload_updated, object_id)
+
+    def test_create_duplicate_sensor(self, test_client, sensor_payload):
+        common.create_duplicate(test_client, PATH, sensor_payload, KEY)

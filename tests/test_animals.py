@@ -1,4 +1,3 @@
-# TODO: Duplicate key test
 from . import common
 
 ROOT = 'things'

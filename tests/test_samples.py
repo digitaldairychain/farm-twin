@@ -19,3 +19,6 @@ class TestSamples:
 
     def test_create_sample_wrong_payload(self, test_client):
         common.create_wrong_payload(test_client, PATH)
+
+    def test_create_duplicate_sample(self, test_client, sample_payload):
+        common.create_duplicate(test_client, PATH, sample_payload, KEY)
