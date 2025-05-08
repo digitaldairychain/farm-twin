@@ -23,7 +23,7 @@ from ..icar import icarTypes
 from ..ftCommon import FTModel, checkObjectId, filterQuery
 
 router = APIRouter(
-    prefix="/weight",
+    prefix="/weights",
     tags=["events"],
     responses={404: {"description": "Not found"}},
 )
@@ -99,12 +99,12 @@ async def create_weight_event(request: Request, weight: Weight):
     if model["timestamp"] is None:
         model["timestamp"] = datetime.now()
     try:
-        new_we = await request.app.state.weight.insert_one(model)
+        new_we = await request.app.state.weights.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
         raise HTTPException(status_code=404,
                             detail=f"Weight {weight} already exists")
     if (
-        created_weight_event := await request.app.state.weight.find_one(
+        created_weight_event := await request.app.state.weights.find_one(
             {"_id": new_we.inserted_id}
         )
     ) is not None:
@@ -121,7 +121,7 @@ async def remove_weight_event(request: Request, ft: str):
 
     :param ft: UUID of the weight event to delete
     """
-    delete_result = await request.app.state.weight.delete_one(
+    delete_result = await request.app.state.weights.delete_one(
         {"_id": ObjectId(ft)})
 
     if delete_result.deleted_count == 1:
@@ -154,7 +154,7 @@ async def weight_event_query(
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": createdStart, "$lte": createdEnd},
     }
-    result = await request.app.state.weight.find(filterQuery(query)).to_list(1000)
+    result = await request.app.state.weights.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return WeightCollection(weights=result)
     raise HTTPException(status_code=404, detail="No match found")

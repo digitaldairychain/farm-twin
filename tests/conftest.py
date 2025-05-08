@@ -175,3 +175,24 @@ def sample_payload(object_id):
         "value": float(randint(10000, 99999)),
         "predicted": False
     }
+
+
+@pytest.fixture()
+def machine_payload():
+    """Generate a machine payload."""
+    return {
+        "manufacturer": "Acme Machine Co.",
+        "model": "Machine 3000",
+        "type": ["Vehicle", "Off-Road", "Utility"],
+        "registration": "BD51 SMR"
+    }
+
+
+@pytest.fixture()
+def machine_payload_updated():
+    """Generate an updated machine payload."""
+    return {
+        "manufacturer": "Generic Machine Ltd.",
+        "model": "IronHorse XT-450",
+        "type": ["Vehicle", "Tractor"]
+    }

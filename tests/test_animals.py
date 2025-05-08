@@ -1,19 +1,15 @@
-# Duplicate key test
+# TODO: Duplicate key test
+from . import common
+
+ROOT = 'things'
+KEY = 'animals'
+PATH = '/' + ROOT + '/' + KEY
+
 
 class TestAnimals:
-    def test_create_get_animal(self, test_client, animal_payload,
-                               convert_timestamp,
-                               check_object_similarity):
-        response = test_client.post("/things/animals",
-                                    json=animal_payload)
-        response_json = response.json()
-        assert response.status_code == 201
-        response = test_client.get(
-            f"/things/animals/?ft={response_json['ft']}")
-        assert response.status_code == 200
-        assert len(response.json()["animals"]) == 1
-        response_json = response.json()["animals"][0]
-        check_object_similarity(animal_payload, response_json)
+    def test_create_get_animal(self, test_client, animal_payload):
+        common.create_get(test_client, PATH,
+                          animal_payload, KEY)
 
     def test_create_update_animal(
         self, test_client, animal_payload, animal_payload_updated,

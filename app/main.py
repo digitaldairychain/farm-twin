@@ -4,7 +4,7 @@ import os
 from fastapi import FastAPI
 from .routers.things import points, polygons, animals, machines
 from .routers.measurements import devices, sensors, samples
-from .routers.events import attention, conformation, feed_intake, weight, withdrawal
+from .routers.events import attention, conformation, feed_intake, weights, withdrawal
 from .routers.events.milking import drying_off, visit
 from .routers.events.movement import arrival, birth, death, departure
 from .routers.events.observations import carcass, health_status, lactation_status, position, repro_status
@@ -32,7 +32,7 @@ app.include_router(machines.router, prefix='/things')
 app.include_router(attention.router, prefix='/events')
 app.include_router(conformation.router, prefix='/events')
 app.include_router(feed_intake.router, prefix='/events')
-app.include_router(weight.router, prefix='/events')
+app.include_router(weights.router, prefix='/events')
 app.include_router(withdrawal.router, prefix='/events')
 
 app.include_router(drying_off.router, prefix='/events/milking')
@@ -69,7 +69,7 @@ async def open_db() -> AsyncIOMotorClient:
     app.state.attention = _ft['events']['attention']
     app.state.conformation = _ft['events']['conformation']
     app.state.feed_intake = _ft['events']['feed_intake']
-    app.state.weight = _ft['events']['weight']
+    app.state.weights = _ft['events']['weights']
     app.state.withdrawal = _ft['events']['withdrawal']
 
     app.state.drying_off = _ft['events']['milking']['drying_off']
@@ -93,7 +93,8 @@ async def create_indexes():
     app.state.devices.create_index(["serial", "manufacturer"], unique=True)
     app.state.points.create_index({"point": "2dsphere"}, unique=True)
     app.state.polygons.create_index(["polygon"], unique=True)
-    app.state.sensors.create_index(["device", "serial", "measurement"], unique=True)
+    app.state.sensors.create_index(
+        ["device", "serial", "measurement"], unique=True)
     _attachment_index = ["device", "thing", "start"]
     app.state.attachments.create_index(_attachment_index, unique=True)
     _sample_index = ["device", "sensor", "timestamp", "predicted"]

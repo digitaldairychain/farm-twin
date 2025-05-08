@@ -1,21 +1,17 @@
 # Duplicate key test
 
 import time
+from . import common
+
+ROOT = 'measurements'
+KEY = 'sensors'
+PATH = '/' + ROOT + '/' + KEY
 
 
 class TestSensors:
-    def test_create_get_sensor(self, test_client, sensor_payload,
-                               check_object_similarity):
-        response = test_client.post("/measurements/sensors",
-                                    json=sensor_payload)
-        response_json = response.json()
-        assert response.status_code == 201
-        response = test_client.get(
-            f"/measurements/sensors/?ft={response_json['ft']}")
-        assert response.status_code == 200
-        assert len(response.json()["sensors"]) == 1
-        response_json = response.json()["sensors"][0]
-        check_object_similarity(sensor_payload, response_json)
+    def test_create_get_sensor(self, test_client, sensor_payload):
+        common.create_get(test_client, PATH,
+                          sensor_payload, KEY)
 
     def test_create_update_sensor(
         self, test_client, sensor_payload, sensor_payload_updated,
