@@ -5,7 +5,6 @@ from bson.objectid import ObjectId
 from random import randint
 from app.main import app
 from fastapi.testclient import TestClient
-from dateutil.parser import parse
 
 
 @pytest.fixture()
@@ -18,50 +17,6 @@ def test_client():
 def serial():
     """Generate a random serial number."""
     return str(randint(10000, 99999))
-
-
-@pytest.fixture()
-def convert_timestamp():
-    """Cut last seven digits of timestamp as we don't need that accuracy"""
-    def inner_convert_timestamp(server, local):
-        server_ts = datetime.strptime(server[:-7], "%Y-%m-%dT%H:%M:%S")
-        local_ts = datetime.strptime(local[:-7], "%Y-%m-%d %H:%M:%S")
-        return server_ts, local_ts
-    return inner_convert_timestamp
-
-
-def is_date(string, fuzzy=False):
-    """
-    Return whether the string can be interpreted as a date.
-
-    :param string: str, string to check for date
-    :param fuzzy: bool, ignore unknown tokens in string if True
-    """
-    try:
-        parse(string, fuzzy=fuzzy)
-        return True
-
-    except ValueError:
-        return False
-
-
-@pytest.fixture()
-def check_object_similarity():
-    def inner_check_object_similarity(payload, response):
-        """Check response contains at least the payload data."""
-        for k in payload.keys():
-            try:
-                assert response[k] == payload[k]
-            except AssertionError as e:
-                # Handle inaccurate date matching - ignore
-                if is_date(str(response[k])) or is_date(str(payload[k])):
-                    return
-                # Handle nested dicts
-                if isinstance(response[k], dict) or isinstance(payload[k], dict):
-                    inner_check_object_similarity(payload[k], response[k])
-                else:
-                    raise e
-    return inner_check_object_similarity
 
 
 @pytest.fixture()

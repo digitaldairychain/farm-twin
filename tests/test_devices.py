@@ -34,6 +34,11 @@ class TestDevices:
                                  device_payload_updated, KEY,
                                  expected_code=422)
 
+    def test_create_device_incorrect_enum(self, test_client, device_payload):
+        device_payload["supportedMessages"] = "TCP/IP"
+        common.create_get(test_client, PATH, device_payload, KEY,
+                          expected_code=422)
+
     def test_update_device_doesnt_exist(
         self, test_client, object_id, device_payload_updated
     ):
