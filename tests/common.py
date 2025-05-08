@@ -20,7 +20,7 @@ def check_object_similarity(payload, response):
     """Check response contains at least the payload data."""
     for k in payload.keys():
         try:
-            assert response[k] == payload[k]
+            assert payload[k] == response[k]
         except AssertionError as e:
             # Handle inaccurate date matching - ignore
             if is_date(str(response[k])) or is_date(str(payload[k])):
@@ -42,3 +42,47 @@ def create_get(test_client, path, payload, key):
     assert len(response.json()[key]) == 1
     response_json = response.json()[key][0]
     check_object_similarity(payload, response_json)
+    return response_json
+
+
+def create_get_update(test_client, path, payload, payload_updated, key,
+                      expected_code=202):
+    response_json = create_get(test_client, path, payload, key)
+    _id = response_json['ft']
+    response = test_client.patch(
+        path + f"/{_id}",
+        json=payload_updated,
+    )
+    response_json = response.json()
+    assert response.status_code == expected_code
+    if expected_code == 202:
+        check_object_similarity(payload_updated, response_json)
+
+
+def create_delete(test_client, path, payload, key):
+    response_json = create_get(test_client, path, payload, key)
+    _id = response_json['ft']
+    response = test_client.delete(
+        path + f"/{_id}")
+    assert response.status_code == 204
+    response = test_client.get(
+        path + f"/?ft={_id}")
+    assert response.status_code == 404
+
+
+def get_not_found(test_client, path, object_id):
+    response = test_client.get(
+        path + f"/?ft={object_id}")
+    assert response.status_code == 404
+
+
+def create_wrong_payload(test_client, path):
+    response = test_client.post(path, json={})
+    assert response.status_code == 422
+
+
+def update_doesnt_exist(test_client, path, payload, object_id):
+    response = test_client.patch(
+        path + f"/{object_id}", json=payload
+    )
+    assert response.status_code == 404
