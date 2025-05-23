@@ -97,6 +97,11 @@ class icarAggregationType(str, Enum):
     count = "Count"
 
 
+class uncefactTimeUnitsType(str, Enum):
+    sec = "SEC",
+    min = "MIN"
+
+
 class icarMessageType(str, Enum):
     milkingVisits = "MilkingVisits",
     testDayResults = "TestDayResults",
@@ -149,4 +154,3 @@ class icarMessageType(str, Enum):
     groupDeaths = "GroupDeaths",
     groupWeights = "GroupWeights",
     other = "Other"
-

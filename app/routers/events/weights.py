@@ -20,10 +20,11 @@ from typing_extensions import Annotated
 from datetime import datetime
 from bson.objectid import ObjectId
 from ..icar import icarTypes
-from ..ftCommon import FTModel, checkObjectId, filterQuery
+from ..ftCommon import checkObjectId, filterQuery
+from .eventCommon import AnimalEventModel
 
 router = APIRouter(
-    prefix="/weights",
+    prefix="/weight",
     tags=["events"],
     responses={404: {"description": "Not found"}},
 )
@@ -31,23 +32,17 @@ router = APIRouter(
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
-class Weight(FTModel):
+class Weight(AnimalEventModel):
     weight: icarTypes.icarMassMeasureType = Field(
         json_schema_extra={
             "description": "The weight measurement, including units and "
             + "resolution.",
         }
     )
-    animal: PyObjectId = Field(
-        json_schema_extra={
-            "description": "ObjectID of animal.",
-            "example": str(ObjectId()),
-        }
-    )
     device: Optional[PyObjectId] = Field(
         default=None,
         json_schema_extra={
-            "description": "ObjectID of device.",
+            "description": "ObjectID of weighing device.",
             "example": str(ObjectId()),
         },
     )
@@ -66,17 +61,10 @@ class Weight(FTModel):
             + " weighing to standardise gut fill.",
         },
     )
-    predicted: Optional[bool] = Field(
-        default=False,
-        json_schema_extra={
-            "description": "Flag if the value is a predicted value or not",
-            "example": True,
-        },
-    )
 
 
 class WeightCollection(BaseModel):
-    weights: List[Weight]
+    weight: List[Weight]
 
 
 @router.post(
@@ -156,5 +144,5 @@ async def weight_event_query(
     }
     result = await request.app.state.weights.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
-        return WeightCollection(weights=result)
+        return WeightCollection(weight=result)
     raise HTTPException(status_code=404, detail="No match found")

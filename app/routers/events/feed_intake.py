@@ -1,8 +1,148 @@
-from fastapi import status, HTTPException, Response, APIRouter, Request
+"""
+Collects API calls related to animal feed intake events.
 
+The duration and consumption of feed by animals may be periodically recorded across
+a farm.
+
+This collection of endpoints allows for the addition, deletion
+and finding of those events.
+
+Compliant with ICAR data standards:
+https://github.com/adewg/ICAR/blob/ADE-1/resources/icarFeedIntakeEventResource.json
+"""
+import pymongo
+
+from fastapi import status, HTTPException, Response, APIRouter, Request, Query
+from pydantic import BaseModel, Field, AfterValidator
+from pydantic.functional_validators import BeforeValidator
+from typing import Optional, List
+from typing_extensions import Annotated
+from datetime import datetime
+from bson.objectid import ObjectId
+from ..icar import icarTypes
+from ..ftCommon import checkObjectId, filterQuery
+from .eventCommon import AnimalEventModel
 
 router = APIRouter(
     prefix="/feed_intake",
     tags=["events"],
     responses={404: {"description": "Not found"}},
 )
+
+PyObjectId = Annotated[str, BeforeValidator(str)]
+
+
+class FeedIntake(AnimalEventModel):
+    feedingStartingDateTime: datetime = Field(
+        json_schema_extra={
+            "description": "The RFC3339 UTC moment the feeding started (see" +
+            "https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
+        }
+    )
+    feedVisitDuration: icarTypes.icarFeedDurationType = Field()
+    consumedFeed: Optional[List[icarTypes.icarConsumedFeedType]] = Field(
+        default=None
+    )
+    consumedRation: Optional[icarTypes.icarConsumedRationType] = Field(
+        default=None,
+        json_schema_extra={
+            "description": "The eventual ration that has been consumed",
+        }
+    )
+    device: Optional[PyObjectId] = Field(
+        default=None,
+        json_schema_extra={
+            "description": "ObjectID of device used for the feeding.",
+            "example": str(ObjectId()),
+        },
+    )
+
+
+class FeedIntakeCollection(BaseModel):
+    feed_intake: List[FeedIntake]
+
+
+@router.post(
+    "/",
+    response_description="Add feedintake event",
+    response_model=FeedIntake,
+    status_code=status.HTTP_201_CREATED,
+    response_model_by_alias=False,
+)
+async def create_feed_intake_event(request: Request, feedintake: FeedIntake):
+    """
+    Create a new feed intake event.
+
+    Adds a timestamp if one is not included (useful for devices without an
+    accurate clock).
+
+    :param feedintake: Feed intake to be added
+    """
+    model = feedintake.model_dump(by_alias=True, exclude=["ft"])
+    try:
+        new_fie = await request.app.state.feed_intake.insert_one(model)
+    except pymongo.errors.DuplicateKeyError:
+        raise HTTPException(status_code=404,
+                            detail="Feed intake already exists")
+    if (
+        created_feedintake_event := await request.app.state.feed_intake.find_one(
+            {"_id": new_fie.inserted_id}
+        )
+    ) is not None:
+        return created_feedintake_event
+    raise HTTPException(
+        status_code=404, detail="Feed intake event not successfully" + " added"
+    )
+
+
+@router.delete("/{ft}", response_description="Delete a feed intake event")
+async def remove_feed_intake_event(request: Request, ft: str):
+    """
+    Delete a feed intake event.
+
+    :param ft: UUID of the feed intake event to delete
+    """
+    delete_result = await request.app.state.feed_intake.delete_one(
+        {"_id": ObjectId(ft)})
+
+    if delete_result.deleted_count == 1:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    raise HTTPException(
+        status_code=404, detail=f"Feed intake event {ft} not found")
+
+
+@router.get(
+    "/",
+    response_description="Search for feed intake event",
+    response_model=FeedIntakeCollection,
+    response_model_by_alias=False,
+)
+async def feed_intake_event_query(
+    request: Request,
+    ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+    animal: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+    device: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+    feedID: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+    rationID: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+    start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
+    end: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+    createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
+    createdEnd: Annotated[datetime, Query(
+        default_factory=datetime.now)] = None,
+):
+    """Search for a feed intake event given the provided criteria."""
+    query = {
+        "_id": ft,
+        "animal": animal,
+        "device": device,
+        "feedID": {"$in": feedID},
+        "rationID": {"$in": rationID},
+        "feedingStartingDateTime": {"$gte": start, "$lte": end},
+        "created": {"$gte": createdStart, "$lte": createdEnd},
+        "modified": {"$gte": createdStart, "$lte": createdEnd},
+    }
+    result = await request.app.state.feed_intake.find(filterQuery(query)).to_list(1000)
+    if len(result) > 0:
+        return FeedIntakeCollection(feed_intake=result)
+    raise HTTPException(status_code=404, detail="No match found")

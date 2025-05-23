@@ -19,6 +19,13 @@ class FTModel(BaseModel):
     )
     created: PastDatetime = Path(default_factory=datetime.now, frozen=True)
     modified:  PastDatetime = Path(default_factory=datetime.now)
+    predicted: Optional[bool] = Field(
+        default=False,
+        json_schema_extra={
+            "description": "Flag if the value is a predicted value or not",
+            "example": True,
+        },
+    )
 
 
 class modified():

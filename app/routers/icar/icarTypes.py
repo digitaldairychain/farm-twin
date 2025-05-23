@@ -8,6 +8,7 @@ from pydantic.functional_validators import BeforeValidator
 from typing_extensions import Annotated
 from typing import List, Optional
 from . import icarEnums
+from bson.objectid import ObjectId
 
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
@@ -107,3 +108,104 @@ class icarDeviceManufacturerType(BaseModel):
 
 class icarDeviceRegistrationIdentifierType(icarIdentifierType):
     pass
+
+
+class icarFeedDurationType(BaseModel):
+    unitCode: icarEnums.uncefactTimeUnitsType = Field(
+        json_schema_extra={
+            'description': 'UN/CEFACT Common Code for Units of Measurement.',
+            'example': 'MIN'
+        }
+    )
+    value: float = Field(
+        json_schema_extra={
+            'description': 'The duration of the feeding in the units ' +
+            'specified.'
+        }
+    )
+
+
+class icarFeedQuantityType(BaseModel):
+    unitCode: icarEnums.uncefactMassUnitsType = Field(
+        default="KGM",
+        json_schema_extra={
+            'description': 'Units specified in UN/CEFACT 3-letter form.',
+            'example': 'KGMs'
+        }
+    )
+    value: float = Field(
+        json_schema_extra={
+            'description': 'The feed quantity in the units specified.'
+        }
+    )
+
+
+class icarCostType(BaseModel):
+    currency: str = Field(
+        json_schema_extra={
+            'description': 'The currency of the cost expressed using the ' +
+            'ISO 4217 3-character code (such as AUD, GBP, USD, EUR).',
+            'example': 'USD'
+        }
+    )
+    value: float = Field(
+        json_schema_extra={
+            'description': 'The costs in the units specified.'
+        }
+    )
+
+
+class NutritionModel(BaseModel):
+    entitlement: Optional[icarFeedQuantityType] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The amount of feed the animal/group was ' +
+            'entitled to receive'
+        }
+    )
+    delivered: Optional[icarFeedQuantityType] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The amount of feed the animal/group received. ' +
+            'If not present, it can be assumed that the delivered will be ' +
+            'equal to entitlement'
+        }
+    )
+    feedConsumption: Optional[icarFeedQuantityType] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The amount of feed the animal/group has consumed'
+        }
+    )
+    dryMatterPercentage: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The dry matter content of the ration provided or ' +
+            'consumed, expressed as a percentage.'
+        }
+    )
+    totalCost: Optional[icarCostType] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Total cost applied to this feeding. Based on ' +
+            'the delivered or entitled amount'
+        }
+    )
+
+
+class icarConsumedFeedType(NutritionModel):
+    feedID: PyObjectId = Field(
+        json_schema_extra={
+            "description": "ObjectID the feed consumed",
+            "example": str(ObjectId()),
+        }
+    )
+
+
+class icarConsumedRationType(NutritionModel):
+    rationID: PyObjectId = Field(
+        json_schema_extra={
+            "description": "ObjectID the ration consumed",
+            "example": str(ObjectId()),
+        }
+    )

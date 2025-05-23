@@ -1,6 +1,6 @@
 import pytest
 
-from datetime import datetime
+from datetime import datetime, timezone
 from bson.objectid import ObjectId
 from random import randint
 from app.main import app
@@ -93,6 +93,25 @@ def weight_payload():
         },
         "device": str(ObjectId()),
         "timeOffFeed": float(randint(1, 5)),
+    }
+
+
+@pytest.fixture()
+def feed_intake_payload():
+    """Generate a feed intake event payload."""
+    return {
+        "animal": str(ObjectId()),
+        "feedingStartingDateTime": datetime.now(timezone.utc).isoformat(),
+        "feedVisitDuration": {
+            "unitCode": "MIN",
+            "value": 10
+        },
+        "consumedFeed": [
+            {
+                "feedID": str(ObjectId()),
+                "dryMatterPercentage": 10
+            }
+        ]
     }
 
 
