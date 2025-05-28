@@ -18,7 +18,7 @@ and finding of those samples.
 import pymongo
 
 from fastapi import status, HTTPException, Response, APIRouter, Request, Query
-from pydantic import BaseModel, Field, AfterValidator
+from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing import Optional, List
 from typing_extensions import Annotated
