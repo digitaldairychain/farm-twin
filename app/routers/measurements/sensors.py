@@ -16,11 +16,11 @@ import pymongo
 
 from fastapi import status, HTTPException, Response, APIRouter, Request, Query
 from pydantic import BaseModel, Field, AfterValidator
-from pydantic.functional_validators import BeforeValidator
+from pydantic_extra_types import mongo_object_id
 from typing import Optional, List
 from typing_extensions import Annotated
 from bson.objectid import ObjectId
-from ..ftCommon import FTModel, checkObjectId, filterQuery
+from ..ftCommon import FTModel, filterQuery
 from datetime import datetime
 
 router = APIRouter(
@@ -30,11 +30,8 @@ router = APIRouter(
 )
 
 
-PyObjectId = Annotated[str, BeforeValidator(str)]
-
-
 class Sensor(FTModel):
-    device: PyObjectId = Field(json_schema_extra={
+    device: mongo_object_id.MongoObjectId = Field(json_schema_extra={
         'description': 'UUID of device to which the sensor is connected',
         'example': str(ObjectId())})
     serial: Optional[str] = Field(
@@ -134,8 +131,8 @@ async def remove_sensor(request: Request, ft: str):
 )
 async def sensor_query(
         request: Request,
-        ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
-        device: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+        ft: mongo_object_id.MongoObjectId | None = None,
+        device: mongo_object_id.MongoObjectId | None = None,
         serial: str | None = None,
         measurement: str | None = None,
         createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),

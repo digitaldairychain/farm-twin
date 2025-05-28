@@ -4,17 +4,15 @@ Collection of types used in ICAR data standards.
 See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/types
 """
 from pydantic import BaseModel, Field
-from pydantic.functional_validators import BeforeValidator
-from typing_extensions import Annotated
+from pydantic_extra_types import mongo_object_id
+
 from typing import List, Optional
 from . import icarEnums
 from bson.objectid import ObjectId
 
-PyObjectId = Annotated[str, BeforeValidator(str)]
-
 
 class icarIndividualWeightType(BaseModel):
-    animal: PyObjectId
+    animal: mongo_object_id.MongoObjectId
     weight: float
 
 
@@ -194,7 +192,7 @@ class NutritionModel(BaseModel):
 
 
 class icarConsumedFeedType(NutritionModel):
-    feedID: PyObjectId = Field(
+    feedID: mongo_object_id.MongoObjectId = Field(
         json_schema_extra={
             "description": "ObjectID the feed consumed",
             "example": str(ObjectId()),
@@ -203,7 +201,7 @@ class icarConsumedFeedType(NutritionModel):
 
 
 class icarConsumedRationType(NutritionModel):
-    rationID: PyObjectId = Field(
+    rationID: mongo_object_id.MongoObjectId = Field(
         json_schema_extra={
             "description": "ObjectID the ration consumed",
             "example": str(ObjectId()),

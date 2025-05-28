@@ -14,22 +14,20 @@ Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarAnimalCoreResource.json
 """
 from fastapi import status, HTTPException, Response, APIRouter, Request, Query
-from pydantic import BaseModel, Field, AfterValidator
-from pydantic.functional_validators import BeforeValidator
+from pydantic import BaseModel, Field
 from typing import Optional, List
-from typing_extensions import Annotated
 from bson.objectid import ObjectId
+from typing_extensions import Annotated
+from pydantic_extra_types import mongo_object_id
 from datetime import datetime
 from ..icar import icarEnums, icarTypes
-from ..ftCommon import FTModel, checkObjectId, filterQuery
+from ..ftCommon import FTModel, filterQuery
 
 router = APIRouter(
     prefix="/animals",
     tags=["things"],
     responses={404: {"description": "Not found"}},
 )
-
-PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Animal(FTModel):
@@ -256,8 +254,7 @@ async def update_animal(request: Request, ft: str, animal: Animal):
 )
 async def animal_query(
     request: Request,
-    ft: Annotated[str | None, AfterValidator(
-        checkObjectId)] = None,
+    ft: mongo_object_id.MongoObjectId | None = None,
     identifier: str | None = None,
     alternativeIdentifiers: Annotated[list[str] | None, Query()] = [],
     specie: icarEnums.icarAnimalSpecieType | None = None,

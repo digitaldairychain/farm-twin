@@ -11,21 +11,18 @@ This collection of endpoints allows for the addition, deletion
 and finding of those machines.
 """
 from fastapi import status, HTTPException, Response, APIRouter, Request, Query
-from pydantic import BaseModel, Field, AfterValidator
-from pydantic.functional_validators import BeforeValidator
+from pydantic import BaseModel, Field
+from pydantic_extra_types import mongo_object_id
 from typing import Optional, List
 from typing_extensions import Annotated
 from bson.objectid import ObjectId
-from ..ftCommon import FTModel, checkObjectId, filterQuery
+from ..ftCommon import FTModel, filterQuery
 
 router = APIRouter(
     prefix="/machines",
     tags=["things"],
     responses={404: {"description": "Not found"}},
 )
-
-
-PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Machine(FTModel):
@@ -123,8 +120,7 @@ async def update_machine(request: Request, ft: str, machine: Machine):
     response_model_by_alias=False,
 )
 async def machine_query(request: Request,
-                        ft: Annotated[str | None, AfterValidator(
-                            checkObjectId)] = None,
+                        ft: mongo_object_id.MongoObjectId | None = None,
                         manufacturer: str | None = None,
                         model: str | None = None,
                         type: Annotated[list[str] | None, Query()] = [],

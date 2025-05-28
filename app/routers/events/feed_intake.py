@@ -13,14 +13,14 @@ https://github.com/adewg/ICAR/blob/ADE-1/resources/icarFeedIntakeEventResource.j
 import pymongo
 
 from fastapi import status, HTTPException, Response, APIRouter, Request, Query
-from pydantic import BaseModel, Field, AfterValidator
-from pydantic.functional_validators import BeforeValidator
+from pydantic import BaseModel, Field
+from pydantic_extra_types import mongo_object_id
 from typing import Optional, List
 from typing_extensions import Annotated
 from datetime import datetime
 from bson.objectid import ObjectId
 from ..icar import icarTypes
-from ..ftCommon import checkObjectId, filterQuery
+from ..ftCommon import filterQuery
 from .eventCommon import AnimalEventModel
 
 router = APIRouter(
@@ -28,8 +28,6 @@ router = APIRouter(
     tags=["events"],
     responses={404: {"description": "Not found"}},
 )
-
-PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class FeedIntake(AnimalEventModel):
@@ -49,7 +47,7 @@ class FeedIntake(AnimalEventModel):
             "description": "The eventual ration that has been consumed",
         }
     )
-    device: Optional[PyObjectId] = Field(
+    device: Optional[mongo_object_id.MongoObjectId] = Field(
         default=None,
         json_schema_extra={
             "description": "ObjectID of device used for the feeding.",
@@ -72,9 +70,6 @@ class FeedIntakeCollection(BaseModel):
 async def create_feed_intake_event(request: Request, feedintake: FeedIntake):
     """
     Create a new feed intake event.
-
-    Adds a timestamp if one is not included (useful for devices without an
-    accurate clock).
 
     :param feedintake: Feed intake to be added
     """
@@ -120,11 +115,11 @@ async def remove_feed_intake_event(request: Request, ft: str):
 )
 async def feed_intake_event_query(
     request: Request,
-    ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
-    animal: Annotated[str | None, AfterValidator(checkObjectId)] = None,
-    device: Annotated[str | None, AfterValidator(checkObjectId)] = None,
-    feedID: Annotated[str | None, AfterValidator(checkObjectId)] = None,
-    rationID: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+    ft: mongo_object_id.MongoObjectId | None = None,
+    animal: mongo_object_id.MongoObjectId | None = None,
+    device: mongo_object_id.MongoObjectId | None = None,
+    feedID: mongo_object_id.MongoObjectId | None = None,
+    rationID: mongo_object_id.MongoObjectId | None = None,
     start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
     end: Annotated[datetime, Query(default_factory=datetime.now)] = None,
     createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),

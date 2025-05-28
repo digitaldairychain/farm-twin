@@ -17,9 +17,9 @@ import uuid
 
 from fastapi import status, HTTPException, Response, APIRouter, Request
 from pydantic import BaseModel, Field
-from pydantic.functional_validators import BeforeValidator
+from pydantic_extra_types import mongo_object_id
 from typing import Optional, List
-from typing_extensions import Annotated
+
 from geojson_pydantic import MultiPolygon, FeatureCollection
 from bson.objectid import ObjectId
 
@@ -31,11 +31,8 @@ router = APIRouter(
 )
 
 
-PyObjectId = Annotated[str, BeforeValidator(str)]
-
-
 class Polygon(BaseModel):
-    id: Optional[PyObjectId] = Field(
+    id: Optional[mongo_object_id.MongoObjectId] = Field(
         alias="_id",
         default=None,
         json_schema_extra={

@@ -19,12 +19,12 @@ import pymongo
 
 from fastapi import status, HTTPException, Response, APIRouter, Request, Query
 from pydantic import BaseModel, Field, AfterValidator
-from pydantic.functional_validators import BeforeValidator
+from pydantic_extra_types import mongo_object_id
 from typing import Optional, List
 from typing_extensions import Annotated
 from datetime import datetime
 from bson.objectid import ObjectId
-from ..ftCommon import FTModel, checkObjectId, filterQuery
+from ..ftCommon import FTModel, filterQuery
 
 router = APIRouter(
     prefix="/samples",
@@ -33,11 +33,8 @@ router = APIRouter(
 )
 
 
-PyObjectId = Annotated[str, BeforeValidator(str)]
-
-
 class Sample(FTModel):
-    sensor: PyObjectId = Field(
+    sensor: mongo_object_id.MongoObjectId = Field(
         json_schema_extra={
             "description": "ObjectID of sensor",
             "example": str(ObjectId()),
@@ -132,8 +129,8 @@ async def remove_samples(request: Request, ft: str):
 )
 async def sample_query(
     request: Request,
-    ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
-    sensor: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+    ft: mongo_object_id.MongoObjectId | None = None,
+    sensor: mongo_object_id.MongoObjectId | None = None,
     start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
     end: Annotated[datetime, Query(default_factory=datetime.now)] = None,
     predicted: bool | None = False,

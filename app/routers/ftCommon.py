@@ -1,18 +1,16 @@
 from pydantic import BaseModel, Field, PastDatetime
 from typing import Optional
-from typing_extensions import Annotated
-from pydantic.functional_validators import BeforeValidator
+
+from pydantic_extra_types import mongo_object_id
 from datetime import datetime
 from fastapi import Path
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
 
-PyObjectId = Annotated[str, BeforeValidator(str)]
-
 
 class FTModel(BaseModel):
     """farm-twin common model parameters."""
-    ft: Optional[PyObjectId] = Field(
+    ft: Optional[mongo_object_id.MongoObjectId] = Field(
         alias="_id",
         default=None,
         frozen=True
@@ -45,15 +43,6 @@ def modifiedFilter(modifiedStart, modifiedEnd):
     if not modifiedStart:
         mod.start = datetime(1970, 1, 1, 0, 0, 0)
     return mod
-
-
-def checkObjectId(ft: str):
-    try:
-        oid = ObjectId(ft)
-        if str(oid) == ft:
-            return ObjectId(ft)
-    except (InvalidId, TypeError) as e:
-        raise e
 
 
 def filterQuery(query: dict):

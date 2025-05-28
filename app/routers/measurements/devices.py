@@ -17,12 +17,13 @@ https://github.com/adewg/ICAR/blob/ADE-1/resources/icarDeviceResource.json
 import pymongo
 
 from fastapi import status, HTTPException, Response, APIRouter, Request, Query
-from pydantic import BaseModel, Field, AfterValidator
+from pydantic import BaseModel, Field
+from pydantic_extra_types import mongo_object_id
 from typing import Optional, List, Annotated
 from bson.objectid import ObjectId
 from ..icar import icarEnums, icarTypes
 from datetime import datetime
-from ..ftCommon import FTModel, checkObjectId, filterQuery
+from ..ftCommon import FTModel, filterQuery
 
 router = APIRouter(
     prefix="/devices",
@@ -196,7 +197,7 @@ async def remove_device(request: Request, ft: str):
 )
 async def device_query(
     request: Request,
-    ft: Annotated[str | None, AfterValidator(checkObjectId)] = None,
+    ft: mongo_object_id.MongoObjectId | None = None,
     id: str | None = None,
     serial: str | None = None,
     name: str | None = None,
