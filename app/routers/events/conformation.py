@@ -91,7 +91,8 @@ class ConformationCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_conformation_event(request: Request, conformation: Conformation):
+async def create_conformation_event(request: Request,
+                                    conformation: Conformation):
     """
     Create a new conformation event.
 
@@ -101,14 +102,14 @@ async def create_conformation_event(request: Request, conformation: Conformation
     if model["timestamp"] is None:
         model["timestamp"] = datetime.now()
     try:
-        new_we = await request.app.state.conformation.insert_one(model)
+        new_ce = await request.app.state.conformation.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
         raise HTTPException(status_code=404,
-                            detail=f"Conformation {conformation} already exists")
+                            detail="Conformation already exists")
     if (
         created_conformation_event :=
         await request.app.state.conformation.find_one(
-            {"_id": new_we.inserted_id}
+            {"_id": new_ce.inserted_id}
         )
     ) is not None:
         return created_conformation_event

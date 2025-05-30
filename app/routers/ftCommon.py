@@ -1,11 +1,9 @@
-from pydantic import BaseModel, Field, PastDatetime
+from pydantic import BaseModel, Field, PastDatetime, ConfigDict
 from typing import Optional
 
 from pydantic_extra_types import mongo_object_id
 from datetime import datetime
 from fastapi import Path
-from bson.objectid import ObjectId
-from bson.errors import InvalidId
 
 
 class FTModel(BaseModel):
@@ -15,8 +13,6 @@ class FTModel(BaseModel):
         default=None,
         frozen=True
     )
-    created: PastDatetime = Path(default_factory=datetime.now, frozen=True)
-    modified:  PastDatetime = Path(default_factory=datetime.now)
     predicted: Optional[bool] = Field(
         default=False,
         json_schema_extra={
@@ -24,6 +20,9 @@ class FTModel(BaseModel):
             "example": True,
         },
     )
+    created: PastDatetime = Path(default_factory=datetime.now, frozen=True)
+    modified:  PastDatetime = Path(default_factory=datetime.now)
+    model_config = ConfigDict(extra='forbid')
 
 
 class modified():

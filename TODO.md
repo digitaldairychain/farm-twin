@@ -6,6 +6,8 @@ Interface for managing data - related object discovery?
 Ensure UTC conformance for times
 
 Is a timestamp missing from conformation?
+Stop modified and created values being passed
+Stop ft being changed in updates (need to check)
 
 Compliance with ICAR: https://github.com/adewg/ICAR/wiki/Resource-entities
     - (!) events
