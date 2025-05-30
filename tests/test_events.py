@@ -42,3 +42,23 @@ class TestEvents:
 
         def test_create_feed_intake_wrong_payload(self, test_client):
             common.create_wrong_payload(test_client, self.path)
+
+    class TestWWithdrawal:
+        key = 'withdrawal'
+        path = '/' + ROOT + '/' + key
+
+        def test_create_withdrawal_event(self, test_client,
+                                         withdrawal_payload):
+            common.create_get(test_client, self.path,
+                              withdrawal_payload, self.key)
+
+        def test_create_delete_withdrawal_event(self, test_client,
+                                                withdrawal_payload):
+            common.create_delete(test_client, self.path,
+                                 withdrawal_payload, self.key)
+
+        def test_get_feed_intake_event_not_found(self, test_client, object_id):
+            common.get_not_found(test_client, self.path, object_id)
+
+        def test_create_feed_intake_wrong_payload(self, test_client):
+            common.create_wrong_payload(test_client, self.path)

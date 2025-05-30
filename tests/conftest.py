@@ -116,6 +116,16 @@ def feed_intake_payload():
 
 
 @pytest.fixture()
+def withdrawal_payload():
+    """Generate a withdrawal payload."""
+    return {
+        "animal": str(ObjectId()),
+        "endDateTime": datetime.now(timezone.utc).isoformat(),
+        "productType": "Eggs"
+    }
+
+
+@pytest.fixture()
 def object_id():
     """Generate a random uuid."""
     return str(ObjectId())

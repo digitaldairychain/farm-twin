@@ -105,7 +105,7 @@ async def remove_weight_event(request: Request, ft: str):
     """
     Delete a weight event.
 
-    :param ft: UUID of the weight event to delete
+    :param ft: ObjectID of the weight event to delete
     """
     delete_result = await request.app.state.weights.delete_one(
         {"_id": ObjectId(ft)})

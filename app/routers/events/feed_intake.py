@@ -95,7 +95,7 @@ async def remove_feed_intake_event(request: Request, ft: str):
     """
     Delete a feed intake event.
 
-    :param ft: UUID of the feed intake event to delete
+    :param ft: ObjectID of the feed intake event to delete
     """
     delete_result = await request.app.state.feed_intake.delete_one(
         {"_id": ObjectId(ft)})

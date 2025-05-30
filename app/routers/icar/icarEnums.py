@@ -154,3 +154,13 @@ class icarMessageType(str, Enum):
     groupDeaths = "GroupDeaths",
     groupWeights = "GroupWeights",
     other = "Other"
+
+
+class icarWithdrawalProductType(str, Enum):
+    meat = "Meat",
+    milk = "Milk",
+    eggs = "Eggs",
+    honey = "Honey",
+    velvet = "Velvet",
+    fibre = "Fibre",
+    other = "Other"
