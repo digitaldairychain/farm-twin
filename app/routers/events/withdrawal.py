@@ -105,6 +105,7 @@ async def remove_withdrawal_event(request: Request, ft: str):
 async def withdrawal_event_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
+    animal: mongo_object_id.MongoObjectId | None = None,
     start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
     end: Annotated[datetime, Query(default_factory=datetime.now)] = None,
     createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
@@ -114,6 +115,7 @@ async def withdrawal_event_query(
     """Search for a withdrawal event given the provided criteria."""
     query = {
         "_id": ft,
+        "animal": animal,
         "endDateTime": {"$gte": start, "$lte": end},
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": createdStart, "$lte": createdEnd},

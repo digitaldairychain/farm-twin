@@ -173,6 +173,20 @@ def machine_payload():
 
 
 @pytest.fixture()
+def conformation_payload(object_id):
+    """Generate a conformation payload."""
+    return {
+        "animal": str(ObjectId()),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "traitGroup": "Composite",
+        "score": 47,
+        "traitScored": "BodyLength",
+        "method": "Automated",
+        "device": object_id
+    }
+
+
+@pytest.fixture()
 def machine_payload_updated():
     """Generate an updated machine payload."""
     return {

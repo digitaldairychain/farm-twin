@@ -125,6 +125,7 @@ async def remove_weight_event(request: Request, ft: str):
 async def weight_event_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
+    animal: mongo_object_id.MongoObjectId | None = None,
     device: mongo_object_id.MongoObjectId | None = None,
     start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
     end: Annotated[datetime, Query(default_factory=datetime.now)] = None,
@@ -136,6 +137,7 @@ async def weight_event_query(
     query = {
         "_id": ft,
         "device": device,
+        "animal": animal,
         "timestamp": {"$gte": start, "$lte": end},
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": createdStart, "$lte": createdEnd},
