@@ -10,12 +10,14 @@ An on-farm example is a Tractor.
 This collection of endpoints allows for the addition, deletion
 and finding of those machines.
 """
-from fastapi import status, HTTPException, Response, APIRouter, Request, Query
+from typing import List, Optional
+
+from bson.objectid import ObjectId
+from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
-from typing import Optional, List
 from typing_extensions import Annotated
-from bson.objectid import ObjectId
+
 from ..ftCommon import FTModel, filterQuery
 
 router = APIRouter(

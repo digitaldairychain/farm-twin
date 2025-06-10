@@ -12,17 +12,15 @@ An on-farm example is an animal pen within a shed.
 This collection of endpoints allows for the addition, deletion
 and finding of those points.
 """
-import pymongo
 import uuid
+from typing import List, Optional
 
-from fastapi import status, HTTPException, Response, APIRouter, Request
+import pymongo
+from bson.objectid import ObjectId
+from fastapi import APIRouter, HTTPException, Request, Response, status
+from geojson_pydantic import FeatureCollection, MultiPolygon
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
-from typing import Optional, List
-
-from geojson_pydantic import MultiPolygon, FeatureCollection
-from bson.objectid import ObjectId
-
 
 router = APIRouter(
     prefix="/polygons",

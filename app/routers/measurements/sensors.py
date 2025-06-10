@@ -12,16 +12,17 @@ An on-farm example is a temperature sensor.
 This collection of endpoints allows for the addition, deletion
 and finding of those sensors.
 """
-import pymongo
+from datetime import datetime
+from typing import List, Optional
 
-from fastapi import status, HTTPException, Response, APIRouter, Request, Query
+import pymongo
+from bson.objectid import ObjectId
+from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
-from typing import Optional, List
 from typing_extensions import Annotated
-from bson.objectid import ObjectId
+
 from ..ftCommon import FTModel, filterQuery
-from datetime import datetime
 
 router = APIRouter(
     prefix="/sensors",

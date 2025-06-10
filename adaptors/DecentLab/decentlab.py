@@ -1,8 +1,9 @@
 """Adaptor to pull data from Decentlabs and push to farm-twin API."""
 
-import datetime
 import concurrent.futures
+import datetime
 import json
+
 import requests
 
 MW = 1000

@@ -1,20 +1,22 @@
 #!/usr/bin/python3
 import os
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
-from .routers.things import points, polygons, animals, machines
-from .routers.measurements import devices, sensors, samples
-from .routers.events import attention, conformation, feed_intake
-from .routers.events import weights, withdrawal
+from motor.motor_asyncio import AsyncIOMotorClient
+
+from app import __version__
+
+from .routers import attachments
+from .routers.events import (attention, conformation, feed_intake, weights,
+                             withdrawal)
 from .routers.events.milking import drying_off, visit
 from .routers.events.movement import arrival, birth, death, departure
-from .routers.events.observations import carcass, health_status
-from .routers.events.observations import lactation_status, position
-from .routers.events.observations import repro_status
-from .routers import attachments
-from motor.motor_asyncio import AsyncIOMotorClient
-from dotenv import load_dotenv
-from app import __version__
+from .routers.events.observations import (carcass, health_status,
+                                          lactation_status, position,
+                                          repro_status)
+from .routers.measurements import devices, samples, sensors
+from .routers.things import animals, machines, points, polygons
 
 load_dotenv()
 DB_USER = os.getenv('MONGO_INITDB_ROOT_USERNAME')

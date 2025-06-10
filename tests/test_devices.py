@@ -1,6 +1,5 @@
 from . import common
 
-
 ROOT = 'measurements'
 KEY = 'devices'
 PATH = '/' + ROOT + '/' + KEY

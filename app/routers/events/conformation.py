@@ -10,17 +10,18 @@ and finding of those events.
 Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarConformationScoreEventResource.json
 """
-import pymongo
+from datetime import datetime
+from typing import List, Optional
 
-from fastapi import status, HTTPException, Response, APIRouter, Request, Query
+import pymongo
+from bson.objectid import ObjectId
+from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
-from typing import List, Optional
 from typing_extensions import Annotated
-from datetime import datetime
-from bson.objectid import ObjectId
-from ..icar import icarEnums
+
 from ..ftCommon import filterQuery
+from ..icar import icarEnums
 from .eventCommon import AnimalEventModel
 
 router = APIRouter(

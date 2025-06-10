@@ -3,12 +3,13 @@ Collection of types used in ICAR data standards.
 
 See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/types
 """
+from typing import List, Optional
+
+from bson.objectid import ObjectId
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 
-from typing import List, Optional
 from . import icarEnums
-from bson.objectid import ObjectId
 
 
 class icarIndividualWeightType(BaseModel):

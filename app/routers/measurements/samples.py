@@ -15,15 +15,16 @@ This collection of endpoints allows for the addition, deletion
 and finding of those samples.
 """
 
-import pymongo
+from datetime import datetime
+from typing import List, Optional
 
-from fastapi import status, HTTPException, Response, APIRouter, Request, Query
+import pymongo
+from bson.objectid import ObjectId
+from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
-from typing import Optional, List
 from typing_extensions import Annotated
-from datetime import datetime
-from bson.objectid import ObjectId
+
 from ..ftCommon import FTModel, filterQuery
 
 router = APIRouter(

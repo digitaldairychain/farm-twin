@@ -1,10 +1,11 @@
-import pytest
-
 from datetime import datetime, timezone
-from bson.objectid import ObjectId
 from random import randint
-from app.main import app
+
+import pytest
+from bson.objectid import ObjectId
 from fastapi.testclient import TestClient
+
+from app.main import app
 
 
 @pytest.fixture()

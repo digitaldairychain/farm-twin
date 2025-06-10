@@ -14,16 +14,17 @@ Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarDeviceResource.json
 """
 
-import pymongo
+from datetime import datetime
+from typing import Annotated, List, Optional
 
-from fastapi import status, HTTPException, Response, APIRouter, Request, Query
+import pymongo
+from bson.objectid import ObjectId
+from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
-from typing import Optional, List, Annotated
-from bson.objectid import ObjectId
-from ..icar import icarEnums, icarTypes
-from datetime import datetime
+
 from ..ftCommon import FTModel, filterQuery
+from ..icar import icarEnums, icarTypes
 
 router = APIRouter(
     prefix="/devices",

@@ -1,8 +1,8 @@
-from ..ftCommon import FTModel
-
-from pydantic_extra_types import mongo_object_id
-from pydantic import Field
 from bson.objectid import ObjectId
+from pydantic import Field
+from pydantic_extra_types import mongo_object_id
+
+from ..ftCommon import FTModel
 
 
 class AnimalEventModel(FTModel):
