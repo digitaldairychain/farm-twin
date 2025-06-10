@@ -73,8 +73,8 @@ class Conformation(AnimalEventModel):
     timestamp: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
-            "description": "Time when conformation recorded. Current time inserted"
-            + " if empty",
+            "description": "Time when conformation recorded. " +
+            "Current time inserted if empty",
             "example": str(datetime.now()),
         },
     )

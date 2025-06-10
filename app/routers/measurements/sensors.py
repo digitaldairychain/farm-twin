@@ -150,7 +150,8 @@ async def sensor_query(
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": modifiedStart, "$lte": modifiedEnd}
     }
-    result = await request.app.state.sensors.find(filterQuery(query)).to_list(1000)
+    result = await request.app.state.sensors.find(
+        filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return SensorCollection(sensors=result)
     raise HTTPException(status_code=404, detail="No match found")

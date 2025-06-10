@@ -146,7 +146,8 @@ async def sample_query(
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": createdStart, "$lte": createdEnd}
     }
-    result = await request.app.state.samples.find(filterQuery(query)).to_list(1000)
+    result = await request.app.state.samples.find(
+        filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return SampleCollection(samples=result)
     raise HTTPException(status_code=404, detail="No match found")

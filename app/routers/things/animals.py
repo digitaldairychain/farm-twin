@@ -139,12 +139,13 @@ class Animal(FTModel):
         }
     )
 
-    reproductionStatus: Optional[icarEnums.icarAnimalReproductionStatusType] = Field(
-        default=None,
-        json_schema_extra={
-            'description': 'Reproduction status of the animal.',
-            'example': 'Pregnant'
-        }
+    reproductionStatus: Optional[
+        icarEnums.icarAnimalReproductionStatusType] = Field(
+            default=None,
+            json_schema_extra={
+                'description': 'Reproduction status of the animal.',
+                'example': 'Pregnant'
+            }
     )
 
     lactationStatus: Optional[icarEnums.icarAnimalLactationStatusType] = Field(
@@ -309,7 +310,8 @@ async def animal_query(
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": modifiedStart, "$lte": modifiedEnd}
     }
-    result = await request.app.state.animals.find(filterQuery(query)).to_list(1000)
+    result = await request.app.state.animals.find(
+        filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return AnimalCollection(animals=result)
     else:

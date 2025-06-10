@@ -1,8 +1,8 @@
 """
 Collects API calls related to animal feed intake events.
 
-The duration and consumption of feed by animals may be periodically recorded across
-a farm.
+The duration and consumption of feed by animals may be periodically recorded
+across a farm.
 
 This collection of endpoints allows for the addition, deletion
 and finding of those events.
@@ -80,7 +80,8 @@ async def create_feed_intake_event(request: Request, feedintake: FeedIntake):
         raise HTTPException(status_code=404,
                             detail="Feed intake already exists")
     if (
-        created_feedintake_event := await request.app.state.feed_intake.find_one(
+        created_feedintake_event :=
+        await request.app.state.feed_intake.find_one(
             {"_id": new_fie.inserted_id}
         )
     ) is not None:
@@ -137,7 +138,8 @@ async def feed_intake_event_query(
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": createdStart, "$lte": createdEnd},
     }
-    result = await request.app.state.feed_intake.find(filterQuery(query)).to_list(1000)
+    result = await request.app.state.feed_intake.find(
+        filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return FeedIntakeCollection(feed_intake=result)
     raise HTTPException(status_code=404, detail="No match found")

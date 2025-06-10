@@ -142,7 +142,8 @@ async def weight_event_query(
         "created": {"$gte": createdStart, "$lte": createdEnd},
         "modified": {"$gte": createdStart, "$lte": createdEnd},
     }
-    result = await request.app.state.weights.find(filterQuery(query)).to_list(1000)
+    result = await request.app.state.weights.find(
+        filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return WeightCollection(weight=result)
     raise HTTPException(status_code=404, detail="No match found")

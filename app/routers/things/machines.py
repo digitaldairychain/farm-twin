@@ -142,7 +142,8 @@ async def machine_query(request: Request,
         "registration": registration,
         "type": {"$in": type}
     }
-    result = await request.app.state.machines.find(filterQuery(query)).to_list(1000)
+    result = await request.app.state.machines.find(
+        filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return MachineCollection(machines=result)
     raise HTTPException(status_code=404, detail="No match found")
