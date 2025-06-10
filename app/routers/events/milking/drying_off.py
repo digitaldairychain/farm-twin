@@ -1,7 +1,7 @@
 """
 Collects API calls related to drying off of animals in milk.
 
-Records that the animal has been dried off from milking. 
+Records that the animal has been dried off from milking.
 If necessary, also record a separate health treatment event.
 
 This collection of endpoints allows for the addition, deletion
@@ -13,13 +13,12 @@ https://github.com/adewg/ICAR/blob/ADE-1/resources/icarMilkingDryOffEventResourc
 import pymongo
 
 from fastapi import status, HTTPException, Response, APIRouter, Request, Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
-from typing import Optional, List
+from typing import List
 from typing_extensions import Annotated
 from datetime import datetime
 from bson.objectid import ObjectId
-from ...icar import icarTypes
 from ...ftCommon import filterQuery
 from ..eventCommon import AnimalEventModel
 
