@@ -187,6 +187,14 @@ def conformation_payload(object_id):
 
 
 @pytest.fixture()
+def drying_off_payload(object_id):
+    """Generate a drying off payload."""
+    return {
+        "animal": str(ObjectId()),
+    }
+
+
+@pytest.fixture()
 def machine_payload_updated():
     """Generate an updated machine payload."""
     return {
