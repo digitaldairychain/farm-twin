@@ -196,6 +196,19 @@ def drying_off_payload(object_id):
 
 
 @pytest.fixture()
+def arrival_payload(object_id):
+    """Generate a drying off payload."""
+    return {
+        "animal": str(ObjectId()),
+        "arrivalReason": "ShowReturn",
+        "animalState": {
+            "currentLactationParity": 2,
+            "lastCalvingDate": datetime.now(timezone.utc).isoformat()
+        }
+    }
+
+
+@pytest.fixture()
 def machine_payload_updated():
     """Generate an updated machine payload."""
     return {

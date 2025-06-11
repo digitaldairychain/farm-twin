@@ -176,6 +176,22 @@ class icarConformationTraitGroupType(str, Enum):
     linear = "Linear"
 
 
+class icarArrivalReasonType(str, Enum):
+    purchase = "Purchase",
+    internalTransfer = "InternalTransfer",
+    imported = "Imported",
+    studService = "StudService",
+    studServiceReturn = "StudServiceReturn",
+    slaughter = "Slaughter",
+    agistment = "Agistment",
+    agistmentReturn = "AgistmentReturn",
+    show = "Show",
+    showReturn = "ShowReturn",
+    sale = "Sale",
+    saleReturn = "SaleReturn",
+    other = "Other"
+
+
 class icarConformationTraitType(str, Enum):
     angularity = "Angularity",
     backLength = "BackLength",

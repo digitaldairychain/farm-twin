@@ -3,6 +3,7 @@ Collection of types used in ICAR data standards.
 
 See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/types
 """
+from datetime import datetime
 from typing import List, Optional
 
 from bson.objectid import ObjectId
@@ -20,6 +21,57 @@ class icarIndividualWeightType(BaseModel):
 class icarIdentifierType(BaseModel):
     id: str
     scheme: str
+
+
+class icarLocationIdentifierType(icarIdentifierType):
+    pass
+
+
+class icarDeclarationIdentifierType(icarIdentifierType):
+    pass
+
+
+class icarOrganizationIdentifierType(icarIdentifierType):
+    pass
+
+
+class postalAddress(BaseModel):
+    addressCountry: str = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The country. For example, USA. You can also provide the two-letter ISO 3166-1 alpha-2 country code.',
+        }
+    )
+    addressLocality: str = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The locality in which the street address is, and which is in the region. For example, Mountain View.',
+        }
+    )
+    addressRegion: str = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The region in which the locality is, and which is in the country. For example, California or another appropriate first-level Administrative division',
+        }
+    )
+    postOfficeBoxNumber: str = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The post office box number for PO box addresses.',
+        }
+    )
+    postalCode: str = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The postal code. For example, 94043.',
+        }
+    )
+    streetAddress: str = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The street address. For example, 1600 Amphitheatre Pkwy.',
+        }
+    )
 
 
 class icarMetricType(icarIdentifierType):
@@ -206,5 +258,252 @@ class icarConsumedRationType(NutritionModel):
         json_schema_extra={
             "description": "ObjectID the ration consumed",
             "example": str(ObjectId()),
+        }
+    )
+
+
+class icarAnimalStateType(BaseModel):
+    currentLactationParity: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The current parity of the animal.'
+        }
+    )
+    lastCalvingDate: Optional[datetime] = Field(
+        default=datetime(1970, 1, 1, 0, 0, 0)
+    )
+    lastInseminationDate: Optional[datetime] = Field(
+        default=datetime(1970, 1, 1, 0, 0, 0)
+    )
+    lastDryingOffDate: Optional[datetime] = Field(
+        default=datetime(1970, 1, 1, 0, 0, 0)
+    )
+
+
+class icarOrganizationIdentityType(BaseModel):
+    name: str = Field(
+        json_schema_extra={
+            'description': 'Name of the organisation'
+        }
+    )
+    leiCode: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'An organization identifier that uniquely identifies a legal entity as defined in ISO 17442.',
+        }
+    )
+    globalLocationNumber: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The Global Location Number (GLN, sometimes also referred to as International Location Number or ILN) of the respective organization, person, or place. The GLN is a 13-digit number used to identify parties and physical locations.',
+        }
+    )
+    uri: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'A uniform resource identifier that is the unique reference or for this organisation, such as its web site.',
+        }
+    )
+
+
+class icarOrganizationType(icarOrganizationIdentityType):
+    establishmentIdentifiers: Optional[List[icarOrganizationIdentifierType]] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Scheme and identifier combinations that provide official registrations for a business or establishment',
+        }
+    )
+    address: Optional[postalAddress] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Postal address or physical address in postal format, including country. Optional as this may already be specified in a consignment.',
+        }
+    )
+    parentOrganization: Optional[icarOrganizationIdentityType] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The larger organization that this organization is a sub-organization of, if any.',
+        }
+    )
+    membershipIdentifiers: Optional[List[icarOrganizationIdentifierType]] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Scheme and identifier combinations that identity membership in programmes',
+        }
+    )
+
+
+class icarInterestedPartyType(icarOrganizationType):
+    interests: List[str] = Field(
+        json_schema_extra={
+            'description': 'Identifies the type of interest that the party has in a consignment or animal.',
+        }
+    )
+
+
+class icarConsignmentDeclarationType(BaseModel):
+    declarationId: Optional[icarDeclarationIdentifierType] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Identifies the specific declaration being made using a scheme and an id.',
+        }
+    )
+    declaredValue: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'The value of the declaration.',
+        }
+    )
+
+
+class icarConsignmentType(BaseModel):
+    id: Optional[icarIdentifierType] = Field(
+        default=None,
+        json_schema_extra={
+            'description': 'Official identifier for the movement.'
+        }
+    )
+    id: Optional[icarIdentifierType] = Field(
+        default=None,
+        json_schema_extra={
+            'Official identifier for the movement.'
+        }
+    )
+    originLocation: Optional[icarLocationIdentifierType] = Field(
+        default=None,
+        json_schema_extra={
+            'The location of the origin of the consignment expressed as a scheme and id.',
+        }
+    )
+    originAddress: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'Origin address for movement.'
+        }
+    )
+    originPostalAddress: Optional[postalAddress] = Field(
+        default=None,
+        json_schema_extra={
+            'A structured, schema.org-style address for the origin location.',
+        }
+    )
+    originOrganization: Optional[icarOrganizationType] = Field(
+        default=None,
+        json_schema_extra={
+            'The organisational details of the origin, including any necessary identifiers.',
+        }
+    )
+    destinationLocation: Optional[icarLocationIdentifierType] = Field(
+        default=None,
+        json_schema_extra={
+            'The location of the destination of the consignment expressed as a scheme and id.',
+        }
+    )
+    destinationAddress: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'Destination address for movement.'
+        }
+    )
+    destinationPostalAddress: Optional[postalAddress] = Field(
+        default=None,
+        json_schema_extra={
+            'A structured, schema.org-style address for the destination location.',
+        }
+    )
+    destinationOrganization: Optional[icarOrganizationType] = Field(
+        default=None,
+        json_schema_extra={
+            'The organisational details of the destination, including any necessary identifiers.',
+        }
+    )
+    loadingDateTime: Optional[datetime] = Field(
+        default=None,
+        json_schema_extra={
+            'RFC3339 UTC date and time animals were loaded for transport (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance).',
+        }
+    )
+    unloadingDateTime: Optional[datetime] = Field(
+        default=None,
+        json_schema_extra={
+            'RFC3339 UTC date and time animals were unloaded after transport (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance).',
+        }
+    )
+    expectedDuration: Optional[float] = Field(
+        default=None,
+        json_schema_extra={
+            'Expected duration of transportation in hours.'
+        }
+    )
+    transportOperator: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'Transport operator official name (should really be schema.org/organization).',
+        }
+    )
+    vehicle: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'Identification of the vehicle (for example, licence plate).'
+        }
+    )
+    transportReference: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            'Shipping or transporter reference.'
+        }
+    )
+    isolationFacilityUsed: Optional[bool] = Field(
+        default=None,
+        json_schema_extra={
+            'True if an isolation facility was used for the movement.'
+        }
+    )
+    farmAssuranceReference: Optional[icarIdentifierType] = Field(
+        default=None,
+        json_schema_extra={
+            'Identification reference of a farm assurance operation.'
+        }
+    )
+    countConsigned: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            'The number of animals despatched or consigned from the origin.',
+        }
+    )
+    countReceived: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            'The number of animals received at the destination.'
+        }
+    )
+    hoursOffFeed: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            'The number of hours since animals in the consignment had access to feed.',
+        }
+    )
+    hoursOffWater: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            'The number of hours since animals in the consignment had access to water.',
+        }
+    )
+    references: Optional[List[icarIdentifierType]] = Field(
+        default=None,
+        json_schema_extra={
+            'References associated with the consignment. These may be additional to the single transport reference (for instance, to support multi-mode transport).',
+        }
+    )
+    interestedParties: Optional[List[icarInterestedPartyType]] = Field(
+        default=None,
+        json_schema_extra={
+            'Identifies the parties and their interests in the consignment.',
+        }
+    )
+    declarations: Optional[List[icarConsignmentDeclarationType]] = Field(
+        default=None,
+        json_schema_extra={
+            'Country, species or scheme -specific declarations for the consignment.',
         }
     )

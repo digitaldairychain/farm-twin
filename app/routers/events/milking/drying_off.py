@@ -47,16 +47,16 @@ class DryingOffCollection(BaseModel):
 )
 async def create_drying_off_event(request: Request, dryingoff: DryingOff):
     """
-    Create a new feed intake event.
+    Create a new drying off event.
 
-    :param dryingoff: Feed intake to be added
+    :param dryingoff: Drying off to be added
     """
     model = dryingoff.model_dump(by_alias=True, exclude=["ft"])
     try:
         new_fie = await request.app.state.drying_off.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
         raise HTTPException(status_code=404,
-                            detail="Feed intake already exists")
+                            detail="Drying off already exists")
     if (
         created_dryingoff_event :=
         await request.app.state.drying_off.find_one(
@@ -65,16 +65,16 @@ async def create_drying_off_event(request: Request, dryingoff: DryingOff):
     ) is not None:
         return created_dryingoff_event
     raise HTTPException(
-        status_code=404, detail="Feed intake event not successfully" + " added"
+        status_code=404, detail="Drying off event not successfully" + " added"
     )
 
 
-@router.delete("/{ft}", response_description="Delete a feed intake event")
+@router.delete("/{ft}", response_description="Delete a drying off event")
 async def remove_drying_off_event(request: Request, ft: str):
     """
-    Delete a feed intake event.
+    Delete a drying off event.
 
-    :param ft: ObjectID of the feed intake event to delete
+    :param ft: ObjectID of the drying off event to delete
     """
     delete_result = await request.app.state.drying_off.delete_one(
         {"_id": ObjectId(ft)})
@@ -83,12 +83,12 @@ async def remove_drying_off_event(request: Request, ft: str):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     raise HTTPException(
-        status_code=404, detail=f"Feed intake event {ft} not found")
+        status_code=404, detail=f"Drying off event {ft} not found")
 
 
 @router.get(
     "/",
-    response_description="Search for feed intake event",
+    response_description="Search for drying off event",
     response_model=DryingOffCollection,
     response_model_by_alias=False,
 )
@@ -100,7 +100,7 @@ async def drying_off_event_query(
     createdEnd: Annotated[datetime, Query(
         default_factory=datetime.now)] = None,
 ):
-    """Search for a feed intake event given the provided criteria."""
+    """Search for a drying off event given the provided criteria."""
     query = {
         "_id": ft,
         "animal": animal,
