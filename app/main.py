@@ -8,16 +8,13 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from app import __version__
 
 from .routers import attachments
-from .routers.events import attention, conformation, feed_intake, weights, withdrawal
+from .routers.events import (attention, conformation, feed_intake, weights,
+                             withdrawal)
 from .routers.events.milking import drying_off, visit
 from .routers.events.movement import arrival, birth, death, departure
-from .routers.events.observations import (
-    carcass,
-    health_status,
-    lactation_status,
-    position,
-    repro_status,
-)
+from .routers.events.observations import (carcass, health_status,
+                                          lactation_status, position,
+                                          repro_status)
 from .routers.measurements import devices, samples, sensors
 from .routers.things import animals, machines, points, polygons
 

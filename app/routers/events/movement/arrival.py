@@ -14,14 +14,13 @@ https://github.com/adewg/ICAR/blob/ADE-1/resources/icarMovementArrivalEventResou
 from datetime import datetime
 from typing import List, Optional
 
-import pymongo
-from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Query, Request, Response, status
+from fastapi import APIRouter, Query, Request, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import dateBuild, filterQuery, delete_one_from_db, add_one_to_db
+from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
+                         find_in_db)
 from ...icar import icarEnums, icarTypes
 from ..eventCommon import AnimalEventModel
 
@@ -73,20 +72,17 @@ async def create_arrival_event(request: Request, arrival: Arrival):
     :param arrival: Arrival to be added
     """
     model = arrival.model_dump(by_alias=True, exclude=["ft"])
-    return await add_one_to_db(
-        model, request.app.state.arrival, ERROR_MSG_OBJECT)
+    return await add_one_to_db(model, request.app.state.arrival, ERROR_MSG_OBJECT)
 
 
-@router.delete("/{ft}", response_description=f"Delete event")
-async def remove_arrival_event(request: Request,
-                               ft: mongo_object_id.MongoObjectId):
+@router.delete("/{ft}", response_description="Delete event")
+async def remove_arrival_event(request: Request, ft: mongo_object_id.MongoObjectId):
     """
     Delete a arrival event.
 
     :param ft: ObjectID of the arrival event to delete
     """
-    return await delete_one_from_db(
-        request.app.state.arrival, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(request.app.state.arrival, ft, ERROR_MSG_OBJECT)
 
 
 @router.get(
@@ -128,7 +124,5 @@ async def arrival_event_query(
         ),
         "created": dateBuild(createdStart, createdEnd),
     }
-    result = await request.app.state.arrival.find(filterQuery(query)).to_list(1000)
-    if len(result) > 0:
-        return ArrivalCollection(arrival=result)
-    raise HTTPException(status_code=404, detail="No match found")
+    result = await find_in_db(request.app.state.arrival, query)
+    return ArrivalCollection(arrival=result)

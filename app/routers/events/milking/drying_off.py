@@ -14,14 +14,15 @@ https://github.com/adewg/ICAR/blob/ADE-1/resources/icarMilkingDryOffEventResourc
 from datetime import datetime
 from typing import List
 
-import pymongo
-from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Request, Response, status
+from fastapi import APIRouter, Request, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
-from ...ftCommon import dateBuild, filterQuery
+from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
+                         find_in_db)
 from ..eventCommon import AnimalEventModel
+
+ERROR_MSG_OBJECT = "Drying Off"
 
 router = APIRouter(
     prefix="/drying_off",
@@ -52,34 +53,17 @@ async def create_drying_off_event(request: Request, dryingoff: DryingOff):
     :param dryingoff: Drying off to be added
     """
     model = dryingoff.model_dump(by_alias=True, exclude=["ft"])
-    try:
-        new_fie = await request.app.state.drying_off.insert_one(model)
-    except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail="Drying off already exists")
-    if (
-        created_dryingoff_event := await request.app.state.drying_off.find_one(
-            {"_id": new_fie.inserted_id}
-        )
-    ) is not None:
-        return created_dryingoff_event
-    raise HTTPException(
-        status_code=404, detail="Drying off event not successfully" + " added"
-    )
+    return await add_one_to_db(model, request.app.state.drying_off, ERROR_MSG_OBJECT)
 
 
 @router.delete("/{ft}", response_description="Delete a drying off event")
-async def remove_drying_off_event(request: Request, ft: str):
+async def remove_drying_off_event(request: Request, ft: mongo_object_id.MongoObjectId):
     """
     Delete a drying off event.
 
     :param ft: ObjectID of the drying off event to delete
     """
-    delete_result = await request.app.state.drying_off.delete_one({"_id": ObjectId(ft)})
-
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-    raise HTTPException(status_code=404, detail=f"Drying off event {ft} not found")
+    return await delete_one_from_db(request.app.state.drying_off, ft, ERROR_MSG_OBJECT)
 
 
 @router.get(
@@ -101,7 +85,5 @@ async def drying_off_event_query(
         "animal": animal,
         "created": dateBuild(createdStart, createdEnd),
     }
-    result = await request.app.state.drying_off.find(filterQuery(query)).to_list(1000)
-    if len(result) > 0:
-        return DryingOffCollection(drying_off=result)
-    raise HTTPException(status_code=404, detail="No match found")
+    result = await find_in_db(request.app.state.drying_off, query)
+    return DryingOffCollection(drying_off=result)
