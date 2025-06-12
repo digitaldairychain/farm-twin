@@ -25,25 +25,6 @@ class FTModel(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
 
-class modified():
-    """Object to represent parameters when searching for modified objects."""
-    search = True
-    start = None
-    end = None
-
-
-def modifiedFilter(modifiedStart, modifiedEnd):
-    """Parse parameters when search for modified objects. """
-    mod = modified()
-    if not modifiedEnd and not modifiedStart:
-        mod.search = False
-    if not modifiedEnd:
-        mod.end = datetime.now()
-    if not modifiedStart:
-        mod.start = datetime(1970, 1, 1, 0, 0, 0)
-    return mod
-
-
 def filterQuery(query: dict):
     filtered_query = {}
     for k, v in query.items():
@@ -53,3 +34,17 @@ def filterQuery(query: dict):
             if v:
                 filtered_query[k] = v
     return filtered_query
+
+
+def dateBuild(start: datetime, end: datetime):
+    if start and end:
+        return {"$gte": start,
+                "$lte": end}
+    elif start and not end:
+        return {"$gte": start,
+                "$lte": datetime.now}
+    elif not start and end:
+        return {"$gte": datetime(1970, 1, 1, 0, 0, 0),
+                "$lte": end}
+    else:
+        return {}

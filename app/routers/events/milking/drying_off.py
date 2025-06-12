@@ -15,12 +15,11 @@ from typing import List
 
 import pymongo
 from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Query, Request, Response, status
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
-from typing_extensions import Annotated
 
-from ...ftCommon import filterQuery
+from ...ftCommon import dateBuild, filterQuery
 from ..eventCommon import AnimalEventModel
 
 router = APIRouter(
@@ -96,16 +95,14 @@ async def drying_off_event_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: mongo_object_id.MongoObjectId | None = None,
-    createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    createdEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a drying off event given the provided criteria."""
     query = {
         "_id": ft,
         "animal": animal,
-        "created": {"$gte": createdStart, "$lte": createdEnd},
-        "modified": {"$gte": createdStart, "$lte": createdEnd},
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await request.app.state.drying_off.find(
         filterQuery(query)).to_list(1000)

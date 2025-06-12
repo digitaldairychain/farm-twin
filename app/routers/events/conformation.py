@@ -15,12 +15,11 @@ from typing import List, Optional
 
 import pymongo
 from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Query, Request, Response, status
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
-from typing_extensions import Annotated
 
-from ..ftCommon import filterQuery
+from ..ftCommon import dateBuild, filterQuery
 from ..icar import icarEnums
 from .eventCommon import AnimalEventModel
 
@@ -146,19 +145,17 @@ async def conformation_event_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: mongo_object_id.MongoObjectId | None = None,
-    start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    end: Annotated[datetime, Query(default_factory=datetime.now)] = None,
-    createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    createdEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None,
+    start: datetime | None = None,
+    end: datetime | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a conformation event given the provided criteria."""
     query = {
         "_id": ft,
         "animal": animal,
-        "timestamp": {"$gte": start, "$lte": end},
-        "created": {"$gte": createdStart, "$lte": createdEnd},
-        "modified": {"$gte": createdStart, "$lte": createdEnd},
+        "timestamp": dateBuild(start, end),
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await request.app.state.conformation.find(
         filterQuery(query)).to_list(1000)

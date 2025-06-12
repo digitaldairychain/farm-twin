@@ -17,12 +17,11 @@ from typing import List, Optional
 
 import pymongo
 from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Query, Request, Response, status
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
-from typing_extensions import Annotated
 
-from ..ftCommon import FTModel, filterQuery
+from ..ftCommon import FTModel, dateBuild, filterQuery
 
 router = APIRouter(
     prefix="/sensors",
@@ -136,20 +135,19 @@ async def sensor_query(
         device: mongo_object_id.MongoObjectId | None = None,
         serial: str | None = None,
         measurement: str | None = None,
-        createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-        createdEnd: Annotated[datetime, Query(
-            default_factory=datetime.now)] = None,
-        modifiedStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-        modifiedEnd: Annotated[datetime, Query(
-            default_factory=datetime.now)] = None):
+        createdStart: datetime | None = None,
+        createdEnd:  datetime | None = None,
+        modifiedStart:  datetime | None = None,
+        modifiedEnd:  datetime | None = None
+):
     """Search for a sensor given the provided criteria."""
     query = {
         "_id": ft,
         "device": device,
         "serial": serial,
         "measurement": measurement,
-        "created": {"$gte": createdStart, "$lte": createdEnd},
-        "modified": {"$gte": modifiedStart, "$lte": modifiedEnd}
+        "created": dateBuild(createdStart, createdEnd),
+        "modified": dateBuild(modifiedStart, modifiedEnd)
     }
     result = await request.app.state.sensors.find(
         filterQuery(query)).to_list(1000)

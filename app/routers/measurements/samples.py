@@ -20,12 +20,11 @@ from typing import List, Optional
 
 import pymongo
 from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Query, Request, Response, status
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
-from typing_extensions import Annotated
 
-from ..ftCommon import FTModel, filterQuery
+from ..ftCommon import FTModel, dateBuild, filterQuery
 
 router = APIRouter(
     prefix="/samples",
@@ -132,20 +131,19 @@ async def sample_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
     sensor: mongo_object_id.MongoObjectId | None = None,
-    start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    end: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+    timestampStart: datetime | None = None,
+    timestampEnd: datetime | None = None,
     predicted: bool | None = False,
-    createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    createdEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a sample given the provided criteria."""
     query = {
         "_id": ft,
         "sensor": sensor,
         "predicted": predicted,
-        "timestamp": {"$gte": start, "$lte": end},
-        "created": {"$gte": createdStart, "$lte": createdEnd},
-        "modified": {"$gte": createdStart, "$lte": createdEnd}
+        "timestamp": dateBuild(timestampStart, timestampEnd),
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await request.app.state.samples.find(
         filterQuery(query)).to_list(1000)

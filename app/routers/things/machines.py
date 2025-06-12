@@ -10,6 +10,7 @@ An on-farm example is a Tractor.
 This collection of endpoints allows for the addition, deletion
 and finding of those machines.
 """
+from datetime import datetime
 from typing import List, Optional
 
 from bson.objectid import ObjectId
@@ -18,7 +19,7 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ..ftCommon import FTModel, filterQuery
+from ..ftCommon import FTModel, dateBuild, filterQuery
 
 router = APIRouter(
     prefix="/machines",
@@ -121,12 +122,17 @@ async def update_machine(request: Request, ft: str, machine: Machine):
     response_model=MachineCollection,
     response_model_by_alias=False,
 )
-async def machine_query(request: Request,
-                        ft: mongo_object_id.MongoObjectId | None = None,
-                        manufacturer: str | None = None,
-                        model: str | None = None,
-                        type: Annotated[list[str] | None, Query()] = [],
-                        registration: str | None = None):
+async def machine_query(
+        request: Request,
+        ft: mongo_object_id.MongoObjectId | None = None,
+        manufacturer: str | None = None,
+        model: str | None = None,
+        type: Annotated[list[str] | None, Query()] = [],
+        registration: str | None = None,
+        createdStart: datetime | None = None,
+        createdEnd:  datetime | None = None,
+        modifiedStart:  datetime | None = None,
+        modifiedEnd:  datetime | None = None):
     """
     Search for a machine given the provided criteria.
 
@@ -142,7 +148,9 @@ async def machine_query(request: Request,
         "manufacturer": manufacturer,
         "model":  model,
         "registration": registration,
-        "type": {"$in": type}
+        "type": {"$in": type},
+        "created": dateBuild(createdStart, createdEnd),
+        "modified": dateBuild(modifiedStart, modifiedEnd)
     }
     result = await request.app.state.machines.find(
         filterQuery(query)).to_list(1000)

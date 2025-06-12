@@ -15,12 +15,11 @@ from typing import List, Optional
 
 import pymongo
 from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Query, Request, Response, status
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
-from typing_extensions import Annotated
 
-from ..ftCommon import filterQuery
+from ..ftCommon import dateBuild, filterQuery
 from ..icar import icarTypes
 from .eventCommon import AnimalEventModel
 
@@ -122,11 +121,10 @@ async def feed_intake_event_query(
     device: mongo_object_id.MongoObjectId | None = None,
     feedID: mongo_object_id.MongoObjectId | None = None,
     rationID: mongo_object_id.MongoObjectId | None = None,
-    start: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    end: Annotated[datetime, Query(default_factory=datetime.now)] = None,
-    createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    createdEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None,
+    feedingStartingDateTimeStart: datetime | None = None,
+    feedingStartingDateTimeEnd: datetime | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a feed intake event given the provided criteria."""
     query = {
@@ -135,9 +133,8 @@ async def feed_intake_event_query(
         "device": device,
         "feedID": {"$in": feedID},
         "rationID": {"$in": rationID},
-        "feedingStartingDateTime": {"$gte": start, "$lte": end},
-        "created": {"$gte": createdStart, "$lte": createdEnd},
-        "modified": {"$gte": createdStart, "$lte": createdEnd},
+        "feedingStartingDateTime": dateBuild(feedingStartingDateTimeStart, feedingStartingDateTimeEnd),
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await request.app.state.feed_intake.find(
         filterQuery(query)).to_list(1000)

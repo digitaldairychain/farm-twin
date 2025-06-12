@@ -270,13 +270,13 @@ class icarAnimalStateType(BaseModel):
         }
     )
     lastCalvingDate: Optional[datetime] = Field(
-        default=datetime(1970, 1, 1, 0, 0, 0)
+        default=None
     )
     lastInseminationDate: Optional[datetime] = Field(
-        default=datetime(1970, 1, 1, 0, 0, 0)
+        default=None
     )
     lastDryingOffDate: Optional[datetime] = Field(
-        default=datetime(1970, 1, 1, 0, 0, 0)
+        default=None
     )
 
 

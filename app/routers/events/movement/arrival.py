@@ -20,8 +20,8 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import filterQuery
-from ...icar import icarTypes, icarEnums
+from ...ftCommon import dateBuild, filterQuery
+from ...icar import icarEnums, icarTypes
 from ..eventCommon import AnimalEventModel
 
 router = APIRouter(
@@ -118,19 +118,15 @@ async def arrival_event_query(
     animal: mongo_object_id.MongoObjectId | None = None,
     arrivalReason: icarEnums.icarArrivalReasonType | None = None,
     currentLactationParity: int | None = None,
-    lastCalvingDateStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
+    lastCalvingDateStart: datetime | None = None,
     lastCalvingDateEnd: Annotated[datetime, Query(
         default_factory=datetime.now)] = None,
-    lastInsemintationDateStart: datetime | None = datetime(
-        1970, 1, 1, 0, 0, 0),
-    lastInsemintationDateEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None,
-    lastDryingOffDateStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    lastDryingOffDateEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None,
-    createdStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    createdEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None,
+    lastInseminationDateStart: datetime | None = None,
+    lastInseminationDateEnd: datetime | None = None,
+    lastDryingOffDateStart: datetime | None = None,
+    lastDryingOffDateEnd: datetime | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None
 ):
     """Search for a arrival event given the provided criteria."""
     query = {
@@ -138,11 +134,10 @@ async def arrival_event_query(
         "animal": animal,
         "arrivalReason": arrivalReason,
         "animalState.currentLactationParity": currentLactationParity,
-        "animalState.lastCalvingDate": {"$gte": lastCalvingDateStart, "$lte": lastCalvingDateEnd},
-        "animalState.lastInseminationDate": {"$gte": lastInsemintationDateStart, "$lte": lastInsemintationDateEnd},
-        "animalState.lastDryingOffDate": {"$gte": lastDryingOffDateStart, "$lte": lastDryingOffDateEnd},
-        "created": {"$gte": createdStart, "$lte": createdEnd},
-        "modified": {"$gte": createdStart, "$lte": createdEnd},
+        "animalState.lastCalvingDate": dateBuild(lastCalvingDateStart, lastCalvingDateEnd),
+        "animalState.lastInseminationDate": dateBuild(lastInseminationDateStart, lastInseminationDateEnd),
+        "animalState.lastDryingOffDate": dateBuild(lastDryingOffDateStart, lastDryingOffDateEnd),
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await request.app.state.arrival.find(
         filterQuery(query)).to_list(1000)

@@ -22,7 +22,7 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ..ftCommon import FTModel, filterQuery
+from ..ftCommon import FTModel, filterQuery, dateBuild
 from ..icar import icarEnums, icarTypes
 
 router = APIRouter(
@@ -262,10 +262,8 @@ async def animal_query(
     alternativeIdentifiers: Annotated[list[str] | None, Query()] = [],
     specie: icarEnums.icarAnimalSpecieType | None = None,
     gender: icarEnums.icarAnimalGenderType | None = None,
-    birthDateStart: datetime | None = datetime(
-        1970, 1, 1, 0, 0, 0),
-    birthDateEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None,
+    birthDateStart: datetime | None = None,
+    birthDateEnd: datetime | None = None,
     primaryBreed: str | None = None,
     coatColor: str | None = None,
     coatColorIdentifier: str | None = None,
@@ -278,14 +276,10 @@ async def animal_query(
     lactationStatus: icarEnums.icarAnimalLactationStatusType | None = None,
     parentage: Annotated[list[str] | None, Query()] = [],
     healthStatus: icarEnums.icarAnimalHealthStatusType | None = None,
-    createdStart: datetime | None = datetime(
-        1970, 1, 1, 0, 0, 0),
-    createdEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None,
-    modifiedStart: datetime | None = datetime(
-        1970, 1, 1, 0, 0, 0),
-    modifiedEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None
+    createdStart: datetime | None = None,
+    createdEnd:  datetime | None = None,
+    modifiedStart:  datetime | None = None,
+    modifiedEnd:  datetime | None = None
 ):
     """
     Search for an animal given the provided criteria.
@@ -299,7 +293,7 @@ async def animal_query(
         "coatColor": coatColor,
         "coatColorIdentifier": coatColorIdentifier,
         "managementTag": managementTag,
-        "birthDate": {"$gte": birthDateStart, "$lte": birthDateEnd},
+        "birthDate": dateBuild(birthDateStart, birthDateEnd),
         "name": name,
         "officialName": officialName,
         "productionPurpose": productionPurpose,
@@ -309,8 +303,8 @@ async def animal_query(
         "lactationStatus": lactationStatus,
         "parentage": {"$in": parentage},
         "healthStatus": healthStatus,
-        "created": {"$gte": createdStart, "$lte": createdEnd},
-        "modified": {"$gte": modifiedStart, "$lte": modifiedEnd}
+        "created": dateBuild(createdStart, createdEnd),
+        "modified": dateBuild(modifiedStart, modifiedEnd)
     }
     result = await request.app.state.animals.find(
         filterQuery(query)).to_list(1000)
