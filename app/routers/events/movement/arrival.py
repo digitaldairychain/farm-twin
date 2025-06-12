@@ -21,9 +21,11 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import dateBuild, filterQuery
+from ...ftCommon import dateBuild, filterQuery, delete_one_from_db, add_one_to_db
 from ...icar import icarEnums, icarTypes
 from ..eventCommon import AnimalEventModel
+
+ERROR_MSG_OBJECT = "Arrival"
 
 router = APIRouter(
     prefix="/arrival",
@@ -71,36 +73,20 @@ async def create_arrival_event(request: Request, arrival: Arrival):
     :param arrival: Arrival to be added
     """
     model = arrival.model_dump(by_alias=True, exclude=["ft"])
-    try:
-        new_ae = await request.app.state.arrival.insert_one(model)
-    except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail="Arrival already exists")
-    if (
-        created_arrival_event := await request.app.state.arrival.find_one(
-            {"_id": new_ae.inserted_id}
-        )
-    ) is not None:
-        return created_arrival_event
-    raise HTTPException(
-        status_code=404, detail="Arrival event not successfully" + " added"
-    )
-    # TODO: Is this common code?
+    return await add_one_to_db(
+        model, request.app.state.arrival, ERROR_MSG_OBJECT)
 
 
-@router.delete("/{ft}", response_description="Delete a arrival event")
-async def remove_arrival_event(request: Request, ft: str):
+@router.delete("/{ft}", response_description=f"Delete event")
+async def remove_arrival_event(request: Request,
+                               ft: mongo_object_id.MongoObjectId):
     """
     Delete a arrival event.
 
     :param ft: ObjectID of the arrival event to delete
     """
-    delete_result = await request.app.state.arrival.delete_one({"_id": ObjectId(ft)})
-
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-    raise HTTPException(status_code=404, detail=f"Arrival event {ft} not found")
-    # TODO: Is this common code?
+    return await delete_one_from_db(
+        request.app.state.arrival, ft, ERROR_MSG_OBJECT)
 
 
 @router.get(
@@ -116,7 +102,8 @@ async def arrival_event_query(
     arrivalReason: icarEnums.icarArrivalReasonType | None = None,
     currentLactationParity: int | None = None,
     lastCalvingDateStart: datetime | None = None,
-    lastCalvingDateEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+    lastCalvingDateEnd: Annotated[datetime, Query(
+        default_factory=datetime.now)] = None,
     lastInseminationDateStart: datetime | None = None,
     lastInseminationDateEnd: datetime | None = None,
     lastDryingOffDateStart: datetime | None = None,

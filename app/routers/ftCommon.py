@@ -1,9 +1,12 @@
 from datetime import datetime
 from typing import Optional
 
+import pymongo
+
 from fastapi import Path
 from pydantic import BaseModel, ConfigDict, Field, PastDatetime
 from pydantic_extra_types import mongo_object_id
+from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 
 
 class FTModel(BaseModel):
@@ -44,3 +47,30 @@ def dateBuild(start: datetime, end: datetime):
         return {"$gte": datetime(1970, 1, 1, 0, 0, 0), "$lte": end}
     else:
         return {}
+
+
+async def add_one_to_db(model, db, error_msg_object: str):
+    try:
+        new = await db.insert_one(model)
+    except pymongo.errors.DuplicateKeyError:
+        raise HTTPException(
+            status_code=404, detail=f"{error_msg_object} already exists")
+    if (
+        created := await db.find_one(
+            {"_id": new.inserted_id}
+        )
+    ) is not None:
+        return created
+    raise HTTPException(
+        status_code=404, detail=f"{error_msg_object} not successfully added"
+    )
+
+
+async def delete_one_from_db(db, ft: mongo_object_id, error_msg_object: str):
+    delete_result = await db.delete_one({"_id": ft})
+
+    if delete_result.deleted_count == 1:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    raise HTTPException(
+        status_code=404, detail=f"{error_msg_object} event {ft} not found")
