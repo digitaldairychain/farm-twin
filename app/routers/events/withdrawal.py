@@ -10,6 +10,7 @@ and finding of those events.
 Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarWithdrawalEventResource.json
 """
+
 from datetime import datetime
 from typing import List
 
@@ -34,8 +35,8 @@ router = APIRouter(
 class Withdrawal(AnimalEventModel):
     endDateTime: datetime = Field(
         json_schema_extra={
-            "description": "RFC3339 UTC date and time " +
-            "(see https://ijmacd.github.io/rfc3339-iso8601/)."
+            "description": "RFC3339 UTC date and time "
+            + "(see https://ijmacd.github.io/rfc3339-iso8601/)."
         }
     )
     productType: icarEnums.icarWithdrawalProductType = Field(
@@ -66,11 +67,11 @@ async def create_withdrawal_event(request: Request, withdrawal: Withdrawal):
     try:
         new_we = await request.app.state.withdrawal.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404,
-                            detail=f"Withdrawal {withdrawal} already exists")
+        raise HTTPException(
+            status_code=404, detail=f"Withdrawal {withdrawal} already exists"
+        )
     if (
-        created_withdrawal_event :=
-        await request.app.state.withdrawal.find_one(
+        created_withdrawal_event := await request.app.state.withdrawal.find_one(
             {"_id": new_we.inserted_id}
         )
     ) is not None:
@@ -87,14 +88,12 @@ async def remove_withdrawal_event(request: Request, ft: str):
 
     :param ft: ObjectID of the withdrawal event to delete
     """
-    delete_result = await request.app.state.withdrawal.delete_one(
-        {"_id": ObjectId(ft)})
+    delete_result = await request.app.state.withdrawal.delete_one({"_id": ObjectId(ft)})
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(
-        status_code=404, detail=f"Withdrawal event {ft} not found")
+    raise HTTPException(status_code=404, detail=f"Withdrawal event {ft} not found")
 
 
 @router.get(
@@ -108,8 +107,7 @@ async def withdrawal_event_query(
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: mongo_object_id.MongoObjectId | None = None,
     endDateTimeStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    endDateTimeEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None,
+    endDateTimeEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
 ):
@@ -120,8 +118,7 @@ async def withdrawal_event_query(
         "endDateTime": dateBuild(endDateTimeStart, endDateTimeEnd),
         "created": dateBuild(createdStart, createdEnd),
     }
-    result = await request.app.state.withdrawal.find(
-        filterQuery(query)).to_list(1000)
+    result = await request.app.state.withdrawal.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return WithdrawalCollection(withdrawal=result)
     raise HTTPException(status_code=404, detail="No match found")

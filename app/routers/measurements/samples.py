@@ -89,9 +89,7 @@ async def create_sample(request: Request, sample: Sample):
     try:
         new_sample = await request.app.state.samples.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(
-            status_code=404, detail="Sample already exists"
-        )
+        raise HTTPException(status_code=404, detail="Sample already exists")
     if (
         created_sample := await request.app.state.samples.find_one(
             {"_id": new_sample.inserted_id}
@@ -111,9 +109,7 @@ async def remove_samples(request: Request, ft: str):
 
     :param ft: ObjectID of the sample to delete
     """
-    delete_result = await request.app.state.samples.delete_one(
-        {"_id": ObjectId(ft)}
-    )
+    delete_result = await request.app.state.samples.delete_one({"_id": ObjectId(ft)})
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -145,8 +141,7 @@ async def sample_query(
         "timestamp": dateBuild(timestampStart, timestampEnd),
         "created": dateBuild(createdStart, createdEnd),
     }
-    result = await request.app.state.samples.find(
-        filterQuery(query)).to_list(1000)
+    result = await request.app.state.samples.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return SampleCollection(samples=result)
     raise HTTPException(status_code=404, detail="No match found")

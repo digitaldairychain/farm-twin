@@ -8,10 +8,9 @@ from pydantic_extra_types import mongo_object_id
 
 class FTModel(BaseModel):
     """farm-twin common model parameters."""
+
     ft: Optional[mongo_object_id.MongoObjectId] = Field(
-        alias="_id",
-        default=None,
-        frozen=True
+        alias="_id", default=None, frozen=True
     )
     predicted: Optional[bool] = Field(
         default=False,
@@ -21,8 +20,8 @@ class FTModel(BaseModel):
         },
     )
     created: PastDatetime = Path(default_factory=datetime.now, frozen=True)
-    modified:  PastDatetime = Path(default_factory=datetime.now)
-    model_config = ConfigDict(extra='forbid')
+    modified: PastDatetime = Path(default_factory=datetime.now)
+    model_config = ConfigDict(extra="forbid")
 
 
 def filterQuery(query: dict):
@@ -38,13 +37,10 @@ def filterQuery(query: dict):
 
 def dateBuild(start: datetime, end: datetime):
     if start and end:
-        return {"$gte": start,
-                "$lte": end}
+        return {"$gte": start, "$lte": end}
     elif start and not end:
-        return {"$gte": start,
-                "$lte": datetime.now}
+        return {"$gte": start, "$lte": datetime.now}
     elif not start and end:
-        return {"$gte": datetime(1970, 1, 1, 0, 0, 0),
-                "$lte": end}
+        return {"$gte": datetime(1970, 1, 1, 0, 0, 0), "$lte": end}
     else:
         return {}

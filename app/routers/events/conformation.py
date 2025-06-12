@@ -10,6 +10,7 @@ and finding of those events.
 Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarConformationScoreEventResource.json
 """
+
 from datetime import datetime
 from typing import List, Optional
 
@@ -34,24 +35,24 @@ class Conformation(AnimalEventModel):
     traitGroup: Optional[icarEnums.icarConformationTraitGroupType] = Field(
         default=None,
         json_schema_extra={
-            "description": "Defines whether the trait is a composite trait " +
-            "or a linear trait.",
+            "description": "Defines whether the trait is a composite trait "
+            + "or a linear trait.",
             "example": "Composite",
         },
     )
     score: int = Field(
         json_schema_extra={
-            "description": "Conformation score with values of 1 to 9 " +
-            "numeric in case of linear traits and for composites in most " +
-            "cases between 50 and 99",
+            "description": "Conformation score with values of 1 to 9 "
+            + "numeric in case of linear traits and for composites in most "
+            + "cases between 50 and 99",
             "example": 47,
         },
     )
     traitScored: icarEnums.icarConformationTraitType = Field(
         json_schema_extra={
-            "description": "Scored conformation trait type according " +
-            "ICAR guidelines. See " +
-            "https://www.icar.org/Guidelines/05-Conformation-Recording.pdf",
+            "description": "Scored conformation trait type according "
+            + "ICAR guidelines. See "
+            + "https://www.icar.org/Guidelines/05-Conformation-Recording.pdf",
             "example": "BodyLength",
         },
     )
@@ -73,8 +74,8 @@ class Conformation(AnimalEventModel):
     timestamp: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
-            "description": "Time when conformation recorded. " +
-            "Current time inserted if empty",
+            "description": "Time when conformation recorded. "
+            + "Current time inserted if empty",
             "example": str(datetime.now()),
         },
     )
@@ -91,8 +92,7 @@ class ConformationCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_conformation_event(request: Request,
-                                    conformation: Conformation):
+async def create_conformation_event(request: Request, conformation: Conformation):
     """
     Create a new conformation event.
 
@@ -104,11 +104,9 @@ async def create_conformation_event(request: Request,
     try:
         new_ce = await request.app.state.conformation.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404,
-                            detail="Conformation already exists")
+        raise HTTPException(status_code=404, detail="Conformation already exists")
     if (
-        created_conformation_event :=
-        await request.app.state.conformation.find_one(
+        created_conformation_event := await request.app.state.conformation.find_one(
             {"_id": new_ce.inserted_id}
         )
     ) is not None:
@@ -126,13 +124,13 @@ async def remove_conformation_event(request: Request, ft: str):
     :param ft: ObjectID of the conformation event to delete
     """
     delete_result = await request.app.state.conformation.delete_one(
-        {"_id": ObjectId(ft)})
+        {"_id": ObjectId(ft)}
+    )
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(
-        status_code=404, detail=f"Conformation event {ft} not found")
+    raise HTTPException(status_code=404, detail=f"Conformation event {ft} not found")
 
 
 @router.get(
@@ -157,8 +155,7 @@ async def conformation_event_query(
         "timestamp": dateBuild(start, end),
         "created": dateBuild(createdStart, createdEnd),
     }
-    result = await request.app.state.conformation.find(
-        filterQuery(query)).to_list(1000)
+    result = await request.app.state.conformation.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return ConformationCollection(conformation=result)
     raise HTTPException(status_code=404, detail="No match found")

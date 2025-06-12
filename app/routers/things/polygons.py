@@ -12,6 +12,7 @@ An on-farm example is an animal pen within a shed.
 This collection of endpoints allows for the addition, deletion
 and finding of those points.
 """
+
 import uuid
 from typing import List, Optional
 
@@ -34,11 +35,15 @@ class Polygon(BaseModel):
         alias="_id",
         default=None,
         json_schema_extra={
-            'description': 'UUID of polygon',
-            'example': str(uuid.uuid4())
-        })
-    polygon: MultiPolygon = Field(json_schema_extra={
-        'description': 'GeoJSON MultiPolygon, a bounded shape on earth'})
+            "description": "UUID of polygon",
+            "example": str(uuid.uuid4()),
+        },
+    )
+    polygon: MultiPolygon = Field(
+        json_schema_extra={
+            "description": "GeoJSON MultiPolygon, a bounded shape on earth"
+        }
+    )
     tags: Optional[List[str]] = Field(default=[])
 
 
@@ -60,15 +65,16 @@ async def create_polygon(request: Request, polygon: Polygon):
             polygon.model_dump(by_alias=True, exclude=["id"])
         )
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404,
-                            detail=f"Polygon {polygon} already exists")
+        raise HTTPException(status_code=404, detail=f"Polygon {polygon} already exists")
     if (
-        created_polygon := await
-        request.app.state.polygons.find_one({"_id": new_polygon.inserted_id})
+        created_polygon := await request.app.state.polygons.find_one(
+            {"_id": new_polygon.inserted_id}
+        )
     ) is not None:
         return created_polygon
-    raise HTTPException(status_code=404, detail=f"Polygon {polygon._id}" +
-                        " not successfully added")
+    raise HTTPException(
+        status_code=404, detail=f"Polygon {polygon._id}" + " not successfully added"
+    )
 
 
 @router.delete("/{id}", response_description="Delete a polygon")
@@ -78,8 +84,7 @@ async def remove_polygon(request: Request, id: str):
 
     :param id: UUID of the polygon to delete
     """
-    delete_result = await request.app.state.polygons.delete_one(
-        {"_id": ObjectId(id)})
+    delete_result = await request.app.state.polygons.delete_one({"_id": ObjectId(id)})
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -93,9 +98,9 @@ async def remove_polygon(request: Request, id: str):
     response_model=FeatureCollection,
     response_model_by_alias=False,
 )
-async def polygon_query(request: Request, response: Response,
-                        id: str | None = None,
-                        tag: str | None = None):
+async def polygon_query(
+    request: Request, response: Response, id: str | None = None, tag: str | None = None
+):
     """
     Search for a polygon given the provided criteria.
 
@@ -116,12 +121,14 @@ async def polygon_query(request: Request, response: Response,
                 "properties": {
                     "objectid": str(polygon["_id"]),
                     "tags": polygon["tags"],
-                    "type": "polygon"
+                    "type": "polygon",
                 },
-                "geometry": polygon["polygon"]
+                "geometry": polygon["polygon"],
             }
             fc["features"].append(f)
             response.headers["Access-Control-Allow-Origin"] = "*"
         return fc
     raise HTTPException(status_code=404, detail="No match found")
+
+
 # TODO: Allow searching within a bounded box

@@ -3,6 +3,7 @@ Collection of enums used in ICAR data standards.
 
 See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/enums
 """
+
 from enum import Enum
 
 
@@ -18,7 +19,7 @@ class icarAnimalSpecieType(str, Enum):
 
 
 class icarAnimalGenderType(str, Enum):
-    female = "Female",
+    female = ("Female",)
     femaleNeuter = "FemaleNeuter"
     Freemartin = "Freemartin"
     male = "Male"
@@ -67,196 +68,196 @@ class icarAnimalHealthStatusType(str, Enum):
 
 
 class uncefactMassUnitsType(str, Enum):
-    kgm = "KGM",
-    grm = "GRM",
-    lbr = "LBR",
-    tne = "TNE",
-    mc = "MC",
-    mgm = "MGM",
-    onz = "ONZ",
+    kgm = ("KGM",)
+    grm = ("GRM",)
+    lbr = ("LBR",)
+    tne = ("TNE",)
+    mc = ("MC",)
+    mgm = ("MGM",)
+    onz = ("ONZ",)
     pn = "PN"
 
 
 class icarWeightMethodType(str, Enum):
-    loadCell = "LoadCell",
-    girth = "Girth",
-    assessed = "Assessed",
-    walkover = "WalkOver",
-    predicted = "Predicted",
-    imaged = "Imaged",
-    frontEndCorrelated = "FrontEndCorrelated",
+    loadCell = ("LoadCell",)
+    girth = ("Girth",)
+    assessed = ("Assessed",)
+    walkover = ("WalkOver",)
+    predicted = ("Predicted",)
+    imaged = ("Imaged",)
+    frontEndCorrelated = ("FrontEndCorrelated",)
     groupAverage = "GroupAverage"
 
 
 class icarAggregationType(str, Enum):
-    average = "Average",
-    sum = "Sum",
-    stDev = "StDev",
-    min = "Min",
-    max = "Max",
+    average = ("Average",)
+    sum = ("Sum",)
+    stDev = ("StDev",)
+    min = ("Min",)
+    max = ("Max",)
     count = "Count"
 
 
 class uncefactTimeUnitsType(str, Enum):
-    sec = "SEC",
+    sec = ("SEC",)
     min = "MIN"
 
 
 class icarMessageType(str, Enum):
-    milkingVisits = "MilkingVisits",
-    testDayResults = "TestDayResults",
-    births = "Births",
-    deaths = "Deaths",
-    arrivals = "Arrivals",
-    departures = "Departures",
-    animals = "Animals",
-    pregnancy = "PregnancyChecks",
-    heats = "Heats",
-    dryingOffs = "DryingOffs",
-    inseminations = "Inseminations",
-    abortions = "Abortions",
-    parturitions = "Parturitions",
-    matingRecommendations = "MatingRecommendations",
-    devices = "Devices",
-    weights = "Weights",
-    locations = "Locations",
-    animalSetJoins = "AnimalSetJoins",
-    animalSetLeaves = "AnimalSetLeaves",
-    progenyDetails = "ProgenyDetails",
-    breedingValues = "BreedingValues",
-    feedIntakes = "FeedIntakes",
-    feedReports = "FeedReports",
-    feedRecommendations = "FeedRecommendations",
-    rations = "Rations",
-    feedStorages = "FeedStorages",
-    gestations = "Gestations",
-    doNotBreedInstructions = "DoNotBreedInstructions",
-    reproductionStatusObservation = "ReproductionStatusObservations",
-    lactations = "Lactations",
-    lactationStatusObservations = "LactationStatusObservations",
-    withdrawals = "Withdrawals",
-    dailyMilkingAverages = "DailyMilkingAverages",
-    diagnoses = "Diagnoses",
-    treatments = "Treatments",
-    treatmentPrograms = "TreatmentPrograms",
-    healthStatusObservations = "HealthStatusObservations",
-    conformationScores = "ConformationScores",
-    typeClassifications = "TypeClassifications",
-    statistics = "Statistics",
-    schemes = "Schemes",
-    embryos = "Embryos",
-    semenStraws = "SemenStraws",
-    flushings = "Flushings",
-    groupTreatments = "GroupTreatments",
-    groupBirths = "GroupBirths",
-    groupArrivals = "GroupArrivals",
-    groupDepartures = "GroupDepartures",
-    groupDeaths = "GroupDeaths",
-    groupWeights = "GroupWeights",
+    milkingVisits = ("MilkingVisits",)
+    testDayResults = ("TestDayResults",)
+    births = ("Births",)
+    deaths = ("Deaths",)
+    arrivals = ("Arrivals",)
+    departures = ("Departures",)
+    animals = ("Animals",)
+    pregnancy = ("PregnancyChecks",)
+    heats = ("Heats",)
+    dryingOffs = ("DryingOffs",)
+    inseminations = ("Inseminations",)
+    abortions = ("Abortions",)
+    parturitions = ("Parturitions",)
+    matingRecommendations = ("MatingRecommendations",)
+    devices = ("Devices",)
+    weights = ("Weights",)
+    locations = ("Locations",)
+    animalSetJoins = ("AnimalSetJoins",)
+    animalSetLeaves = ("AnimalSetLeaves",)
+    progenyDetails = ("ProgenyDetails",)
+    breedingValues = ("BreedingValues",)
+    feedIntakes = ("FeedIntakes",)
+    feedReports = ("FeedReports",)
+    feedRecommendations = ("FeedRecommendations",)
+    rations = ("Rations",)
+    feedStorages = ("FeedStorages",)
+    gestations = ("Gestations",)
+    doNotBreedInstructions = ("DoNotBreedInstructions",)
+    reproductionStatusObservation = ("ReproductionStatusObservations",)
+    lactations = ("Lactations",)
+    lactationStatusObservations = ("LactationStatusObservations",)
+    withdrawals = ("Withdrawals",)
+    dailyMilkingAverages = ("DailyMilkingAverages",)
+    diagnoses = ("Diagnoses",)
+    treatments = ("Treatments",)
+    treatmentPrograms = ("TreatmentPrograms",)
+    healthStatusObservations = ("HealthStatusObservations",)
+    conformationScores = ("ConformationScores",)
+    typeClassifications = ("TypeClassifications",)
+    statistics = ("Statistics",)
+    schemes = ("Schemes",)
+    embryos = ("Embryos",)
+    semenStraws = ("SemenStraws",)
+    flushings = ("Flushings",)
+    groupTreatments = ("GroupTreatments",)
+    groupBirths = ("GroupBirths",)
+    groupArrivals = ("GroupArrivals",)
+    groupDepartures = ("GroupDepartures",)
+    groupDeaths = ("GroupDeaths",)
+    groupWeights = ("GroupWeights",)
     other = "Other"
 
 
 class icarWithdrawalProductType(str, Enum):
-    meat = "Meat",
-    milk = "Milk",
-    eggs = "Eggs",
-    honey = "Honey",
-    velvet = "Velvet",
-    fibre = "Fibre",
+    meat = ("Meat",)
+    milk = ("Milk",)
+    eggs = ("Eggs",)
+    honey = ("Honey",)
+    velvet = ("Velvet",)
+    fibre = ("Fibre",)
     other = "Other"
 
 
 class icarConformationScoringMethodType(str, Enum):
-    manual = "Manual",
+    manual = ("Manual",)
     automated = "Automated"
 
 
 class icarConformationTraitGroupType(str, Enum):
-    composite = "Composite",
+    composite = ("Composite",)
     linear = "Linear"
 
 
 class icarArrivalReasonType(str, Enum):
-    purchase = "Purchase",
-    internalTransfer = "InternalTransfer",
-    imported = "Imported",
-    studService = "StudService",
-    studServiceReturn = "StudServiceReturn",
-    slaughter = "Slaughter",
-    agistment = "Agistment",
-    agistmentReturn = "AgistmentReturn",
-    show = "Show",
-    showReturn = "ShowReturn",
-    sale = "Sale",
-    saleReturn = "SaleReturn",
+    purchase = ("Purchase",)
+    internalTransfer = ("InternalTransfer",)
+    imported = ("Imported",)
+    studService = ("StudService",)
+    studServiceReturn = ("StudServiceReturn",)
+    slaughter = ("Slaughter",)
+    agistment = ("Agistment",)
+    agistmentReturn = ("AgistmentReturn",)
+    show = ("Show",)
+    showReturn = ("ShowReturn",)
+    sale = ("Sale",)
+    saleReturn = ("SaleReturn",)
     other = "Other"
 
 
 class icarConformationTraitType(str, Enum):
-    angularity = "Angularity",
-    backLength = "BackLength",
-    backWidth = "BackWidth",
-    bodyConditionScore = "BodyConditionScore",
-    bodyDepth = "BodyDepth",
-    bodyLength = "BodyLength",
-    boneStructure = "BoneStructure",
-    centralLigament = "CentralLigament",
-    chestDepth = "ChestDepth",
-    chestWidth = "ChestWidth",
-    clawAngle = "ClawAngle",
-    dairyStrength = "DairyStrength",
-    feetLegs = "FeetLegs",
-    finalScore = "FinalScore",
-    flankDepth = "FlankDepth",
-    footAngle = "FootAngle",
-    forePasternsSideView = "ForePasternsSideView",
-    foreUdderAttachment = "ForeUdderAttachment",
-    foreUdderLength = "ForeUdderLength",
-    frame = "Frame",
-    frontLegsFrontView = "FrontLegsFrontView",
-    frontTeatPlacement = "FrontTeatPlacement",
-    heightAtRump = "HeightAtRump",
-    heightAtWithers = "HeightAtWithers",
-    hindPasternsSideView = "HindPasternsSideView",
-    hockDevelopment = "HockDevelopment",
-    lengthOfRump = "LengthOfRump",
-    locomotion = "Locomotion",
-    loinStrength = "LoinStrength",
-    muscularity = "Muscularity",
-    muscularityComposite = "MuscularityComposite",
-    muscularityShoulderSideView = "MuscularityShoulderSideView",
-    muscularityShoulderTopView = "MuscularityShoulderTopView",
-    muzzleWidth = "MuzzleWidth",
-    rearLegsRearView = "RearLegsRearView",
-    rearLegsSet = "RearLegsSet",
-    rearLegsSideView = "RearLegsSideView",
-    rearTeatPlacement = "RearTeatPlacement",
-    rearUdderHeight = "RearUdderHeight",
-    rearUdderWidth = "RearUdderWidth",
-    roundingOfRibs = "RoundingOfRibs",
-    rumpAngle = "RumpAngle",
-    rumpLength = "RumpLength",
-    rumpWidth = "RumpWidth",
-    skinThickness = "SkinThickness",
-    stature = "Stature",
-    tailSet = "TailSet",
-    teatDirection = "TeatDirection",
-    teatForm = "TeatForm",
-    teatLength = "TeatLength",
-    teatPlacementRearView = "TeatPlacementRearView",
-    teatPlacementSideView = "TeatPlacementSideView",
-    teatThickness = "TeatThickness",
-    thicknessOfBone = "ThicknessOfBone",
-    thicknessOfTeat = "ThicknessOfTeat",
-    thicknessOfLoin = "ThicknessOfLoin",
-    thighLength = "ThighLength",
-    thighRoundingSideView = "ThighRoundingSideView",
-    thighWidthRearView = "ThighWidthRearView",
-    thurlWidth = "ThurlWidth",
-    topLine = "TopLine",
-    type = "Type",
-    udder = "Udder",
-    udderBalance = "UdderBalance",
-    udderDepth = "UdderDepth",
-    widthAtHips = "WidthAtHips",
+    angularity = ("Angularity",)
+    backLength = ("BackLength",)
+    backWidth = ("BackWidth",)
+    bodyConditionScore = ("BodyConditionScore",)
+    bodyDepth = ("BodyDepth",)
+    bodyLength = ("BodyLength",)
+    boneStructure = ("BoneStructure",)
+    centralLigament = ("CentralLigament",)
+    chestDepth = ("ChestDepth",)
+    chestWidth = ("ChestWidth",)
+    clawAngle = ("ClawAngle",)
+    dairyStrength = ("DairyStrength",)
+    feetLegs = ("FeetLegs",)
+    finalScore = ("FinalScore",)
+    flankDepth = ("FlankDepth",)
+    footAngle = ("FootAngle",)
+    forePasternsSideView = ("ForePasternsSideView",)
+    foreUdderAttachment = ("ForeUdderAttachment",)
+    foreUdderLength = ("ForeUdderLength",)
+    frame = ("Frame",)
+    frontLegsFrontView = ("FrontLegsFrontView",)
+    frontTeatPlacement = ("FrontTeatPlacement",)
+    heightAtRump = ("HeightAtRump",)
+    heightAtWithers = ("HeightAtWithers",)
+    hindPasternsSideView = ("HindPasternsSideView",)
+    hockDevelopment = ("HockDevelopment",)
+    lengthOfRump = ("LengthOfRump",)
+    locomotion = ("Locomotion",)
+    loinStrength = ("LoinStrength",)
+    muscularity = ("Muscularity",)
+    muscularityComposite = ("MuscularityComposite",)
+    muscularityShoulderSideView = ("MuscularityShoulderSideView",)
+    muscularityShoulderTopView = ("MuscularityShoulderTopView",)
+    muzzleWidth = ("MuzzleWidth",)
+    rearLegsRearView = ("RearLegsRearView",)
+    rearLegsSet = ("RearLegsSet",)
+    rearLegsSideView = ("RearLegsSideView",)
+    rearTeatPlacement = ("RearTeatPlacement",)
+    rearUdderHeight = ("RearUdderHeight",)
+    rearUdderWidth = ("RearUdderWidth",)
+    roundingOfRibs = ("RoundingOfRibs",)
+    rumpAngle = ("RumpAngle",)
+    rumpLength = ("RumpLength",)
+    rumpWidth = ("RumpWidth",)
+    skinThickness = ("SkinThickness",)
+    stature = ("Stature",)
+    tailSet = ("TailSet",)
+    teatDirection = ("TeatDirection",)
+    teatForm = ("TeatForm",)
+    teatLength = ("TeatLength",)
+    teatPlacementRearView = ("TeatPlacementRearView",)
+    teatPlacementSideView = ("TeatPlacementSideView",)
+    teatThickness = ("TeatThickness",)
+    thicknessOfBone = ("ThicknessOfBone",)
+    thicknessOfTeat = ("ThicknessOfTeat",)
+    thicknessOfLoin = ("ThicknessOfLoin",)
+    thighLength = ("ThighLength",)
+    thighRoundingSideView = ("ThighRoundingSideView",)
+    thighWidthRearView = ("ThighWidthRearView",)
+    thurlWidth = ("ThurlWidth",)
+    topLine = ("TopLine",)
+    type = ("Type",)
+    udder = ("Udder",)
+    udderBalance = ("UdderBalance",)
+    udderDepth = ("UdderDepth",)
+    widthAtHips = ("WidthAtHips",)
     widthAtPins = "WidthAtPins"

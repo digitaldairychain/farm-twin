@@ -7,6 +7,7 @@ from ..ftCommon import FTModel
 
 class AnimalEventModel(FTModel):
     """farm-twin common model parameters."""
+
     animal: mongo_object_id.MongoObjectId = Field(
         json_schema_extra={
             "description": "ObjectID of animal.",

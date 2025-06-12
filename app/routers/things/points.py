@@ -10,6 +10,7 @@ An on-farm example is a stake inserted into the ground in a field.
 This collection of endpoints allows for the addition, deletion
 and finding of those points.
 """
+
 import uuid
 from typing import List, Optional
 
@@ -32,13 +33,13 @@ class Point(BaseModel):
         alias="_id",
         default=None,
         json_schema_extra={
-            'description': 'UUID of point',
-            'example': str(uuid.uuid4())
-        })
+            "description": "UUID of point",
+            "example": str(uuid.uuid4()),
+        },
+    )
     point: Point = Field(
-        json_schema_extra={
-            'description': 'GeoJSON Point, a fixed point on earth'
-        })
+        json_schema_extra={"description": "GeoJSON Point, a fixed point on earth"}
+    )
     tags: Optional[List[str]] = Field(default=[])
 
 
@@ -60,15 +61,16 @@ async def create_point(request: Request, point: Point):
             point.model_dump(by_alias=True, exclude=["id"])
         )
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404,
-                            detail=f"Point {point} already exists")
+        raise HTTPException(status_code=404, detail=f"Point {point} already exists")
     if (
-        created_point := await
-        request.app.state.points.find_one({"_id": new_point.inserted_id})
+        created_point := await request.app.state.points.find_one(
+            {"_id": new_point.inserted_id}
+        )
     ) is not None:
         return created_point
-    raise HTTPException(status_code=404, detail=f"Point {point._id}" +
-                        " not successfully added")
+    raise HTTPException(
+        status_code=404, detail=f"Point {point._id}" + " not successfully added"
+    )
 
 
 @router.delete("/{id}", response_description="Delete a point")
@@ -78,8 +80,7 @@ async def remove_point(request: Request, id: str):
 
     :param id: UUID of the point to delete
     """
-    delete_result = await request.app.state.points.delete_one(
-        {"_id": ObjectId(id)})
+    delete_result = await request.app.state.points.delete_one({"_id": ObjectId(id)})
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -93,11 +94,14 @@ async def remove_point(request: Request, id: str):
     response_model=FeatureCollection,
     response_model_by_alias=False,
 )
-async def point_query(request: Request, response: Response,
-                      id: str | None = None,
-                      lat: float | None = None,
-                      long: float | None = None,
-                      tag: str | None = None,):
+async def point_query(
+    request: Request,
+    response: Response,
+    id: str | None = None,
+    lat: float | None = None,
+    long: float | None = None,
+    tag: str | None = None,
+):
     """
     Search for a point given the provided criteria.
 
@@ -112,11 +116,7 @@ async def point_query(request: Request, response: Response,
     if tag:
         query["tags"] = {"$in": [tag]}
     if lat is not None and long is not None:
-        query["point"] = {
-            "bbox": None,
-            "type": "Point",
-            "coordinates": [lat, long]
-        }
+        query["point"] = {"bbox": None, "type": "Point", "coordinates": [lat, long]}
     if tag:
         query["tags"] = {"$in": [tag]}
     result = await request.app.state.points.find(query).to_list(1000)
@@ -128,12 +128,14 @@ async def point_query(request: Request, response: Response,
                 "properties": {
                     "objectid": str(point["_id"]),
                     "tags": point["tags"],
-                    "type": "point"
+                    "type": "point",
                 },
-                "geometry": point["point"]
+                "geometry": point["point"],
             }
             fc["features"].append(f)
         response.headers["Access-Control-Allow-Origin"] = "*"
         return fc
     raise HTTPException(status_code=404, detail="No match found")
+
+
 # TODO: Allow searching within a bounded box

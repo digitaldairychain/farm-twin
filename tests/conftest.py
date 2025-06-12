@@ -32,7 +32,7 @@ def animal_payload():
         "status": "Alive",
         "reproductionStatus": "Open",
         "lactationStatus": "Fresh",
-        "healthStatus": "Healthy"
+        "healthStatus": "Healthy",
     }
 
 
@@ -47,7 +47,7 @@ def animal_payload_updated():
         "status": "Alive",
         "reproductionStatus": "Open",
         "lactationStatus": "Fresh",
-        "healthStatus": "InTreatment"
+        "healthStatus": "InTreatment",
     }
 
 
@@ -90,7 +90,7 @@ def weight_payload():
             "measurement": float(randint(453, 816)),
             "units": "KGM",
             "method": "LoadCell",
-            "resolution": float(randint(1, 9)/10)
+            "resolution": float(randint(1, 9) / 10),
         },
         "device": str(ObjectId()),
         "timeOffFeed": float(randint(1, 5)),
@@ -103,16 +103,8 @@ def feed_intake_payload():
     return {
         "animal": str(ObjectId()),
         "feedingStartingDateTime": datetime.now(timezone.utc).isoformat(),
-        "feedVisitDuration": {
-            "unitCode": "MIN",
-            "value": 10
-        },
-        "consumedFeed": [
-            {
-                "feedID": str(ObjectId()),
-                "dryMatterPercentage": 10
-            }
-        ]
+        "feedVisitDuration": {"unitCode": "MIN", "value": 10},
+        "consumedFeed": [{"feedID": str(ObjectId()), "dryMatterPercentage": 10}],
     }
 
 
@@ -122,7 +114,7 @@ def withdrawal_payload():
     return {
         "animal": str(ObjectId()),
         "endDateTime": datetime.now(timezone.utc).isoformat(),
-        "productType": "Eggs"
+        "productType": "Eggs",
     }
 
 
@@ -135,20 +127,13 @@ def object_id():
 @pytest.fixture()
 def sensor_payload(object_id, serial):
     """Generate a sensor payload."""
-    return {
-        "device": object_id,
-        "measurement": "Air Temperature"
-    }
+    return {"device": object_id, "measurement": "Air Temperature"}
 
 
 @pytest.fixture()
 def sensor_payload_updated(object_id, serial):
     """Generate an updated sensor payload."""
-    return {
-        "device": object_id,
-        "serial": serial,
-        "measurement": "Soil Temperature"
-    }
+    return {"device": object_id, "serial": serial, "measurement": "Soil Temperature"}
 
 
 @pytest.fixture()
@@ -158,7 +143,7 @@ def sample_payload(object_id):
         "sensor": object_id,
         "timestamp": str(datetime.now()),
         "value": float(randint(10000, 99999)),
-        "predicted": False
+        "predicted": False,
     }
 
 
@@ -169,7 +154,7 @@ def machine_payload():
         "manufacturer": "Acme Machine Co.",
         "model": "Machine 3000",
         "type": ["Vehicle", "Off-Road", "Utility"],
-        "registration": "BD51 SMR"
+        "registration": "BD51 SMR",
     }
 
 
@@ -183,7 +168,7 @@ def conformation_payload(object_id):
         "score": 47,
         "traitScored": "BodyLength",
         "method": "Automated",
-        "device": object_id
+        "device": object_id,
     }
 
 
@@ -203,8 +188,8 @@ def arrival_payload(object_id):
         "arrivalReason": "ShowReturn",
         "animalState": {
             "currentLactationParity": 2,
-            "lastCalvingDate": datetime.now(timezone.utc).isoformat()
-        }
+            "lastCalvingDate": datetime.now(timezone.utc).isoformat(),
+        },
     }
 
 
@@ -214,5 +199,5 @@ def machine_payload_updated():
     return {
         "manufacturer": "Generic Machine Ltd.",
         "model": "IronHorse XT-450",
-        "type": ["Vehicle", "Tractor"]
+        "type": ["Vehicle", "Tractor"],
     }

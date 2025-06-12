@@ -10,6 +10,7 @@ and finding of those events.
 Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarMovementArrivalEventResource.json
 """
+
 from datetime import datetime
 from typing import List, Optional
 
@@ -36,19 +37,19 @@ class Arrival(AnimalEventModel):
         default=None,
         json_schema_extra={
             "description": "Reason the animal arrived on the holding.",
-        }
+        },
     )
     animalState: Optional[icarTypes.icarAnimalStateType] = Field(
         default=None,
         json_schema_extra={
             "description": "State information about an animal.",
-        }
+        },
     )
     consignment: Optional[icarTypes.icarConsignmentType] = Field(
         default=None,
         json_schema_extra={
             "description": "Identifies the consignment of the animal to the holding.",
-        }
+        },
     )
 
 
@@ -73,11 +74,9 @@ async def create_arrival_event(request: Request, arrival: Arrival):
     try:
         new_ae = await request.app.state.arrival.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404,
-                            detail="Arrival already exists")
+        raise HTTPException(status_code=404, detail="Arrival already exists")
     if (
-        created_arrival_event :=
-        await request.app.state.arrival.find_one(
+        created_arrival_event := await request.app.state.arrival.find_one(
             {"_id": new_ae.inserted_id}
         )
     ) is not None:
@@ -95,14 +94,12 @@ async def remove_arrival_event(request: Request, ft: str):
 
     :param ft: ObjectID of the arrival event to delete
     """
-    delete_result = await request.app.state.arrival.delete_one(
-        {"_id": ObjectId(ft)})
+    delete_result = await request.app.state.arrival.delete_one({"_id": ObjectId(ft)})
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(
-        status_code=404, detail=f"Arrival event {ft} not found")
+    raise HTTPException(status_code=404, detail=f"Arrival event {ft} not found")
     # TODO: Is this common code?
 
 
@@ -119,14 +116,13 @@ async def arrival_event_query(
     arrivalReason: icarEnums.icarArrivalReasonType | None = None,
     currentLactationParity: int | None = None,
     lastCalvingDateStart: datetime | None = None,
-    lastCalvingDateEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None,
+    lastCalvingDateEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
     lastInseminationDateStart: datetime | None = None,
     lastInseminationDateEnd: datetime | None = None,
     lastDryingOffDateStart: datetime | None = None,
     lastDryingOffDateEnd: datetime | None = None,
     createdStart: datetime | None = None,
-    createdEnd: datetime | None = None
+    createdEnd: datetime | None = None,
 ):
     """Search for a arrival event given the provided criteria."""
     query = {
@@ -134,13 +130,18 @@ async def arrival_event_query(
         "animal": animal,
         "arrivalReason": arrivalReason,
         "animalState.currentLactationParity": currentLactationParity,
-        "animalState.lastCalvingDate": dateBuild(lastCalvingDateStart, lastCalvingDateEnd),
-        "animalState.lastInseminationDate": dateBuild(lastInseminationDateStart, lastInseminationDateEnd),
-        "animalState.lastDryingOffDate": dateBuild(lastDryingOffDateStart, lastDryingOffDateEnd),
+        "animalState.lastCalvingDate": dateBuild(
+            lastCalvingDateStart, lastCalvingDateEnd
+        ),
+        "animalState.lastInseminationDate": dateBuild(
+            lastInseminationDateStart, lastInseminationDateEnd
+        ),
+        "animalState.lastDryingOffDate": dateBuild(
+            lastDryingOffDateStart, lastDryingOffDateEnd
+        ),
         "created": dateBuild(createdStart, createdEnd),
     }
-    result = await request.app.state.arrival.find(
-        filterQuery(query)).to_list(1000)
+    result = await request.app.state.arrival.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return ArrivalCollection(arrival=result)
     raise HTTPException(status_code=404, detail="No match found")

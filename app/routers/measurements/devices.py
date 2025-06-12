@@ -98,15 +98,13 @@ class Device(FTModel):
         },
     )
 
-    registration: Optional[icarTypes.icarDeviceRegistrationIdentifierType] = (
-        Field(
-            default=None,
-            json_schema_extra={
-                "description": " registration identifier for the device "
-                + "(most devices should eventually have a registration "
-                + "issued by `org.icar` or other entity",
-            },
-        )
+    registration: Optional[icarTypes.icarDeviceRegistrationIdentifierType] = Field(
+        default=None,
+        json_schema_extra={
+            "description": " registration identifier for the device "
+            + "(most devices should eventually have a registration "
+            + "issued by `org.icar` or other entity",
+        },
     )
 
 
@@ -139,9 +137,7 @@ async def create_device(request: Request, device: Device):
         )
     ) is not None:
         return created_device
-    raise HTTPException(
-        status_code=404, detail="Device not successfully added"
-    )
+    raise HTTPException(status_code=404, detail="Device not successfully added")
 
 
 @router.patch(
@@ -168,9 +164,7 @@ async def update_device(request: Request, ft: str, device: Device):
         )
     ) is not None:
         return updated_device
-    raise HTTPException(
-        status_code=404, detail=f"Device {id} not successfully updated"
-    )
+    raise HTTPException(status_code=404, detail=f"Device {id} not successfully updated")
 
 
 @router.delete("/{ft}", response_description="Delete a device")
@@ -180,9 +174,7 @@ async def remove_device(request: Request, ft: str):
 
     :param ft: ObjectID of the device to delete
     """
-    delete_result = await request.app.state.devices.delete_one(
-        {"_id": ObjectId(ft)}
-    )
+    delete_result = await request.app.state.devices.delete_one({"_id": ObjectId(ft)})
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -210,9 +202,9 @@ async def device_query(
     manufacturer: icarTypes.icarDeviceManufacturerType | None = None,
     registration: icarTypes.icarDeviceRegistrationIdentifierType | None = None,
     createdStart: datetime | None = None,
-    createdEnd:  datetime | None = None,
-    modifiedStart:  datetime | None = None,
-    modifiedEnd:  datetime | None = None,
+    createdEnd: datetime | None = None,
+    modifiedStart: datetime | None = None,
+    modifiedEnd: datetime | None = None,
 ):
     """Search for a device given the provided criteria."""
     query = {
@@ -228,10 +220,9 @@ async def device_query(
         "registration": registration,
         "supportedMessages": {"$in": supportedMessages},
         "created": dateBuild(createdStart, createdEnd),
-        "modified": dateBuild(modifiedStart, modifiedEnd)
+        "modified": dateBuild(modifiedStart, modifiedEnd),
     }
-    result = await request.app.state.devices.find(
-        filterQuery(query)).to_list(1000)
+    result = await request.app.state.devices.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return DeviceCollection(devices=result)
     raise HTTPException(status_code=404, detail="No match found")

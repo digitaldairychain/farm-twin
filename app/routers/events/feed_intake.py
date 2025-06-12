@@ -10,6 +10,7 @@ and finding of those events.
 Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarFeedIntakeEventResource.json
 """
+
 from datetime import datetime
 from typing import List, Optional
 
@@ -33,19 +34,17 @@ router = APIRouter(
 class FeedIntake(AnimalEventModel):
     feedingStartingDateTime: datetime = Field(
         json_schema_extra={
-            "description": "The RFC3339 UTC moment the feeding started (see" +
-            "https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
+            "description": "The RFC3339 UTC moment the feeding started (see"
+            + "https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         }
     )
     feedVisitDuration: icarTypes.icarFeedDurationType = Field()
-    consumedFeed: Optional[List[icarTypes.icarConsumedFeedType]] = Field(
-        default=None
-    )
+    consumedFeed: Optional[List[icarTypes.icarConsumedFeedType]] = Field(default=None)
     consumedRation: Optional[icarTypes.icarConsumedRationType] = Field(
         default=None,
         json_schema_extra={
             "description": "The eventual ration that has been consumed",
-        }
+        },
     )
     device: Optional[mongo_object_id.MongoObjectId] = Field(
         default=None,
@@ -77,11 +76,9 @@ async def create_feed_intake_event(request: Request, feedintake: FeedIntake):
     try:
         new_fie = await request.app.state.feed_intake.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404,
-                            detail="Feed intake already exists")
+        raise HTTPException(status_code=404, detail="Feed intake already exists")
     if (
-        created_feedintake_event :=
-        await request.app.state.feed_intake.find_one(
+        created_feedintake_event := await request.app.state.feed_intake.find_one(
             {"_id": new_fie.inserted_id}
         )
     ) is not None:
@@ -99,13 +96,13 @@ async def remove_feed_intake_event(request: Request, ft: str):
     :param ft: ObjectID of the feed intake event to delete
     """
     delete_result = await request.app.state.feed_intake.delete_one(
-        {"_id": ObjectId(ft)})
+        {"_id": ObjectId(ft)}
+    )
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(
-        status_code=404, detail=f"Feed intake event {ft} not found")
+    raise HTTPException(status_code=404, detail=f"Feed intake event {ft} not found")
 
 
 @router.get(
@@ -133,11 +130,12 @@ async def feed_intake_event_query(
         "device": device,
         "feedID": {"$in": feedID},
         "rationID": {"$in": rationID},
-        "feedingStartingDateTime": dateBuild(feedingStartingDateTimeStart, feedingStartingDateTimeEnd),
+        "feedingStartingDateTime": dateBuild(
+            feedingStartingDateTimeStart, feedingStartingDateTimeEnd
+        ),
         "created": dateBuild(createdStart, createdEnd),
     }
-    result = await request.app.state.feed_intake.find(
-        filterQuery(query)).to_list(1000)
+    result = await request.app.state.feed_intake.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return FeedIntakeCollection(feed_intake=result)
     raise HTTPException(status_code=404, detail="No match found")

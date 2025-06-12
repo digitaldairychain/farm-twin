@@ -10,6 +10,7 @@ An on-farm example is a Tractor.
 This collection of endpoints allows for the addition, deletion
 and finding of those machines.
 """
+
 from datetime import datetime
 from typing import List, Optional
 
@@ -29,18 +30,31 @@ router = APIRouter(
 
 
 class Machine(FTModel):
-    manufacturer: str = Field(json_schema_extra={
-        'description': 'Manufacturer of machine',
-        'example': 'Acme Machine Co.'})
-    model: str = Field(json_schema_extra={
-        'description': 'Model number or product code of device',
-        'example': 'Machine 3000'})
-    type: Optional[list[str]] = Field(json_schema_extra={
-        'description': 'List of categories to which this machine belongs',
-        'example': '["Tractor", "Utility"]'})
-    registration: Optional[str] = Field(default=None, json_schema_extra={
-        'description': 'Assigned vehicle registration number, if applicable',
-        'example': 'BD51 SMR'})
+    manufacturer: str = Field(
+        json_schema_extra={
+            "description": "Manufacturer of machine",
+            "example": "Acme Machine Co.",
+        }
+    )
+    model: str = Field(
+        json_schema_extra={
+            "description": "Model number or product code of device",
+            "example": "Machine 3000",
+        }
+    )
+    type: Optional[list[str]] = Field(
+        json_schema_extra={
+            "description": "List of categories to which this machine belongs",
+            "example": '["Tractor", "Utility"]',
+        }
+    )
+    registration: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "description": "Assigned vehicle registration number, if applicable",
+            "example": "BD51 SMR",
+        },
+    )
 
 
 class MachineCollection(BaseModel):
@@ -64,12 +78,12 @@ async def create_machine(request: Request, machine: Machine):
         machine.model_dump(by_alias=True, exclude=["ft"])
     )
     if (
-        created_machine := await
-        request.app.state.machines.find_one({"_id": new_machine.inserted_id})
+        created_machine := await request.app.state.machines.find_one(
+            {"_id": new_machine.inserted_id}
+        )
     ) is not None:
         return created_machine
-    raise HTTPException(status_code=404,
-                        detail="Machine not successfully added")
+    raise HTTPException(status_code=404, detail="Machine not successfully added")
 
 
 @router.delete("/{ft}", response_description="Delete a machine")
@@ -79,8 +93,7 @@ async def remove_machine(request: Request, ft: str):
 
     :param ft: UUID of the machine to delete
     """
-    delete_result = await request.app.state.machines.delete_one(
-        {"_id": ObjectId(ft)})
+    delete_result = await request.app.state.machines.delete_one({"_id": ObjectId(ft)})
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -92,7 +105,7 @@ async def remove_machine(request: Request, ft: str):
     "/{ft}",
     response_description="Update an machine",
     response_model=Machine,
-    status_code=status.HTTP_202_ACCEPTED
+    status_code=status.HTTP_202_ACCEPTED,
 )
 async def update_machine(request: Request, ft: str, machine: Machine):
     """
@@ -103,17 +116,19 @@ async def update_machine(request: Request, ft: str, machine: Machine):
     """
     await request.app.state.machines.update_one(
         {"_id": ObjectId(ft)},
-        {'$set': machine.model_dump(by_alias=True, exclude=["ft", "created"])},
-        upsert=False
+        {"$set": machine.model_dump(by_alias=True, exclude=["ft", "created"])},
+        upsert=False,
     )
 
     if (
-        updated_machine := await
-        request.app.state.machines.find_one({"_id": ObjectId(ft)})
+        updated_machine := await request.app.state.machines.find_one(
+            {"_id": ObjectId(ft)}
+        )
     ) is not None:
         return updated_machine
-    raise HTTPException(status_code=404,
-                        detail=f"Machine {ft} not successfully updated")
+    raise HTTPException(
+        status_code=404, detail=f"Machine {ft} not successfully updated"
+    )
 
 
 @router.get(
@@ -123,16 +138,17 @@ async def update_machine(request: Request, ft: str, machine: Machine):
     response_model_by_alias=False,
 )
 async def machine_query(
-        request: Request,
-        ft: mongo_object_id.MongoObjectId | None = None,
-        manufacturer: str | None = None,
-        model: str | None = None,
-        type: Annotated[list[str] | None, Query()] = [],
-        registration: str | None = None,
-        createdStart: datetime | None = None,
-        createdEnd:  datetime | None = None,
-        modifiedStart:  datetime | None = None,
-        modifiedEnd:  datetime | None = None):
+    request: Request,
+    ft: mongo_object_id.MongoObjectId | None = None,
+    manufacturer: str | None = None,
+    model: str | None = None,
+    type: Annotated[list[str] | None, Query()] = [],
+    registration: str | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
+    modifiedStart: datetime | None = None,
+    modifiedEnd: datetime | None = None,
+):
     """
     Search for a machine given the provided criteria.
 
@@ -146,14 +162,13 @@ async def machine_query(
     query = {
         "_id": ft,
         "manufacturer": manufacturer,
-        "model":  model,
+        "model": model,
         "registration": registration,
         "type": {"$in": type},
         "created": dateBuild(createdStart, createdEnd),
-        "modified": dateBuild(modifiedStart, modifiedEnd)
+        "modified": dateBuild(modifiedStart, modifiedEnd),
     }
-    result = await request.app.state.machines.find(
-        filterQuery(query)).to_list(1000)
+    result = await request.app.state.machines.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return MachineCollection(machines=result)
     raise HTTPException(status_code=404, detail="No match found")

@@ -10,6 +10,7 @@ and finding of those events.
 Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarWeightEventResource.json
 """
+
 from datetime import datetime
 from typing import List, Optional
 
@@ -87,8 +88,7 @@ async def create_weight_event(request: Request, weight: Weight):
     try:
         new_we = await request.app.state.weights.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404,
-                            detail=f"Weight {weight} already exists")
+        raise HTTPException(status_code=404, detail=f"Weight {weight} already exists")
     if (
         created_weight_event := await request.app.state.weights.find_one(
             {"_id": new_we.inserted_id}
@@ -107,8 +107,7 @@ async def remove_weight_event(request: Request, ft: str):
 
     :param ft: ObjectID of the weight event to delete
     """
-    delete_result = await request.app.state.weights.delete_one(
-        {"_id": ObjectId(ft)})
+    delete_result = await request.app.state.weights.delete_one({"_id": ObjectId(ft)})
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -140,8 +139,7 @@ async def weight_event_query(
         "timestamp": dateBuild(timestampStart, timestampEnd),
         "created": dateBuild(createdStart, createdEnd),
     }
-    result = await request.app.state.weights.find(
-        filterQuery(query)).to_list(1000)
+    result = await request.app.state.weights.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return WeightCollection(weight=result)
     raise HTTPException(status_code=404, detail="No match found")
