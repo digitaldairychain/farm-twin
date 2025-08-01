@@ -4,6 +4,7 @@ Add experiment endpoint as a collection of things and attachments
 Add a documentation endpoint for adding context to data - markdown?
 Interface for managing data - related object discovery?
 Ensure UTC conformance for times
+source field: tell me where the data came from
 
 Is a timestamp missing from conformation?
 Stop modified and created values being passed

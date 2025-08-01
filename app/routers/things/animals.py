@@ -15,16 +15,16 @@ https://github.com/adewg/ICAR/blob/ADE-1/resources/icarAnimalCoreResource.json
 """
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 from bson.objectid import ObjectId
 from fastapi import APIRouter, HTTPException, Query, Request, Response, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ..ftCommon import FTModel, dateBuild, filterQuery
-from ..icar import icarEnums, icarTypes
+from ..ftCommon import dateBuild, filterQuery
+from ..icar import icarEnums, icarTypes, icarResources
 
 router = APIRouter(
     prefix="/animals",
@@ -33,154 +33,20 @@ router = APIRouter(
 )
 
 
-class Animal(FTModel):
-    identifier: str = Field(
-        json_schema_extra={
-            "description": "Unique animal scheme and identifier combination.",
-            "example": "UK230011200123",
-        }
-    )
-
-    alternativeIdentifier: Optional[List[str]] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Alternative identifiers for the animal. "
-            + "Here, also temporary identifiers, e.g. transponders or animal "
-            + "numbers, can be listed.",
-        },
-    )
-
-    specie: icarEnums.icarAnimalSpecieType = Field(
-        json_schema_extra={"description": "Species of the animal.", "example": "Cattle"}
-    )
-
-    gender: icarEnums.icarAnimalGenderType = Field(
-        json_schema_extra={"description": "Gender of the animal.", "example": "Female"}
-    )
-
-    birthDate: Optional[datetime] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Date and time of birth.",
-            "example": str(datetime.now()),
-        },
-    )
-
-    primaryBreed: Optional[str] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "ICAR Breed code for the animal.",
-            "example": "HOL",
-        },
-    )
-
-    breedFractions: Optional[icarTypes.icarBreedFractions] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Breed fractions for the animal.",
-        },
-    )
-
-    coatColor: Optional[str] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Colour of the animal's coat, using the "
-            + "conventions for that breed.",
-        },
-    )
-
-    coatColorIdentifier: Optional[str] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Colour of the animal's coat using a national "
-            + "or breed-defined scheme and identifier combination.",
-        },
-    )
-
-    managementTag: Optional[str] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "The identifier used by the farmer in day to day "
-            + "operations. In many cases this could be the animal number.",
-        },
-    )
-
-    name: Optional[str] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Name given by the farmer for this animal.",
-        },
-    )
-
-    officialName: Optional[str] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Official herdbook name.",
-        },
-    )
-
-    productionPurpose: Optional[icarEnums.icarProductionPurposeType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Primary production purpose for which animals "
-            + "are bred.",
-            "example": "Milk",
-        },
-    )
-
-    status: Optional[icarEnums.icarAnimalStatusType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "On-farm status of the animal.",
-            "example": "Alive",
-        },
-    )
-
-    reproductionStatus: Optional[icarEnums.icarAnimalReproductionStatusType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Reproduction status of the animal.",
-            "example": "Pregnant",
-        },
-    )
-
-    lactationStatus: Optional[icarEnums.icarAnimalLactationStatusType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Lactation status of the animal.",
-            "example": "Fresh",
-        },
-    )
-
-    parentage: Optional[List[str]] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Parents of the animal.  The array can handle "
-            + "multiple generations by specifying the parent of a parent.",
-        },
-    )
-
-    healthStatus: Optional[icarEnums.icarAnimalHealthStatusType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Health status of the animal",
-            "example": "InTreatment",
-        },
-    )
-
-
 class AnimalCollection(BaseModel):
-    animals: List[Animal]
+    animals: List[icarResources.icarAnimalCoreResource]
 
 
 @router.post(
     "/",
     response_description="Add new animal",
-    response_model=Animal,
+    response_model=icarResources.icarAnimalCoreResource,
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_animal(request: Request, animal: Animal):
+async def create_animal(
+        request: Request,
+        animal: icarResources.icarAnimalCoreResource):
     """
     Create a new animal.
 
@@ -196,7 +62,8 @@ async def create_animal(request: Request, animal: Animal):
         )
     ) is not None:
         return created_animal
-    raise HTTPException(status_code=404, detail="Animal not successfully added")
+    raise HTTPException(
+        status_code=404, detail="Animal not successfully added")
 
 
 @router.delete("/{ft}", response_description="Delete an animal")
@@ -217,10 +84,13 @@ async def remove_animal(request: Request, ft: str):
 @router.patch(
     "/{ft}",
     response_description="Update an animal",
-    response_model=Animal,
+    response_model=icarResources.icarAnimalCoreResource,
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def update_animal(request: Request, ft: str, animal: Animal):
+async def update_animal(
+        request: Request,
+        ft: str,
+        animal: icarResources.icarAnimalCoreResource):
     """
     Update an existing animal if it exists.
 
@@ -239,7 +109,8 @@ async def update_animal(request: Request, ft: str, animal: Animal):
         )
     ) is not None:
         return updated_animal
-    raise HTTPException(status_code=404, detail=f"Animal {ft} not successfully updated")
+    raise HTTPException(
+        status_code=404, detail=f"Animal {ft} not successfully updated")
 
 
 @router.get(
@@ -251,7 +122,7 @@ async def update_animal(request: Request, ft: str, animal: Animal):
 async def animal_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
-    identifier: str | None = None,
+    identifier: icarTypes.icarAnimalIdentifierType | None = None,
     alternativeIdentifiers: Annotated[list[str] | None, Query()] = [],
     specie: icarEnums.icarAnimalSpecieType | None = None,
     gender: icarEnums.icarAnimalGenderType | None = None,

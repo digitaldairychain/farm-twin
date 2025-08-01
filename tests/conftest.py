@@ -24,7 +24,10 @@ def serial():
 def animal_payload():
     """Generate an animal payload."""
     return {
-        "identifier": "UK230011200123",
+        "identifier": {
+            "id": "UK230011200123",
+            "scheme": "gov.uk"
+        },
         "specie": "Cattle",
         "gender": "Female",
         "birthDate": "2025-04-24 12:18:06.625573",
@@ -33,6 +36,7 @@ def animal_payload():
         "reproductionStatus": "Open",
         "lactationStatus": "Fresh",
         "healthStatus": "Healthy",
+        "resourceType": "icarAnimalCoreResource"
     }
 
 
@@ -40,7 +44,10 @@ def animal_payload():
 def animal_payload_updated():
     """Generate an animal payload."""
     return {
-        "identifier": "UK230011200123",
+        "identifier": {
+            "id": "UK230011200124",
+            "scheme": "gov.uk"
+        },
         "specie": "Cattle",
         "gender": "Male",
         "productionPurpose": "Wool",
@@ -48,6 +55,7 @@ def animal_payload_updated():
         "reproductionStatus": "Open",
         "lactationStatus": "Fresh",
         "healthStatus": "InTreatment",
+        "resourceType": "icarAnimalCoreResource"
     }
 
 
