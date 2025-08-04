@@ -11,17 +11,15 @@ Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarConformationScoreEventResource.json
 """
 
-from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 import pymongo
 from bson.objectid import ObjectId
 from fastapi import APIRouter, HTTPException, Request, Response, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
-from ..ftCommon import dateBuild, filterQuery
-from ..icar import icarEnums
+from ..ftCommon import filterQuery
 from ..icar.icarResources import icarConformationScoreEventResource as Conformation
 
 router = APIRouter(

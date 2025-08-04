@@ -12,17 +12,16 @@ https://github.com/adewg/ICAR/blob/ADE-1/resources/icarFeedIntakeEventResource.j
 """
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 import pymongo
 from bson.objectid import ObjectId
 from fastapi import APIRouter, HTTPException, Request, Response, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
 from ..ftCommon import dateBuild, filterQuery
-from ..icar import icarTypes
-from .eventCommon import AnimalEventModel
+from ..icar.icarResources import icarFeedIntakeEventResource as FeedIntake
 
 router = APIRouter(
     prefix="/feed_intake",
@@ -31,28 +30,29 @@ router = APIRouter(
 )
 
 
-class FeedIntake(AnimalEventModel):
-    feedingStartingDateTime: datetime = Field(
-        json_schema_extra={
-            "description": "The RFC3339 UTC moment the feeding started (see"
-            + "https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
-        }
-    )
-    feedVisitDuration: icarTypes.icarFeedDurationType = Field()
-    consumedFeed: Optional[List[icarTypes.icarConsumedFeedType]] = Field(default=None)
-    consumedRation: Optional[icarTypes.icarConsumedRationType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "The eventual ration that has been consumed",
-        },
-    )
-    device: Optional[mongo_object_id.MongoObjectId] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "ObjectID of device used for the feeding.",
-            "example": str(ObjectId()),
-        },
-    )
+# class FeedIntake(AnimalEventModel):
+#     feedingStartingDateTime: datetime = Field(
+#         json_schema_extra={
+#             "description": "The RFC3339 UTC moment the feeding started (see"
+#             + "https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
+#         }
+#     )
+#     feedVisitDuration: icarTypes.icarFeedDurationType = Field()
+#     consumedFeed: Optional[List[icarTypes.icarConsumedFeedType]] = Field(
+#         default=None)
+#     consumedRation: Optional[icarTypes.icarConsumedRationType] = Field(
+#         default=None,
+#         json_schema_extra={
+#             "description": "The eventual ration that has been consumed",
+#         },
+#     )
+#     device: Optional[mongo_object_id.MongoObjectId] = Field(
+#         default=None,
+#         json_schema_extra={
+#             "description": "ObjectID of device used for the feeding.",
+#             "example": str(ObjectId()),
+#         },
+#     )
 
 
 class FeedIntakeCollection(BaseModel):
@@ -76,7 +76,8 @@ async def create_feed_intake_event(request: Request, feedintake: FeedIntake):
     try:
         new_fie = await request.app.state.feed_intake.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail="Feed intake already exists")
+        raise HTTPException(
+            status_code=404, detail="Feed intake already exists")
     if (
         created_feedintake_event := await request.app.state.feed_intake.find_one(
             {"_id": new_fie.inserted_id}
@@ -102,7 +103,8 @@ async def remove_feed_intake_event(request: Request, ft: str):
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(status_code=404, detail=f"Feed intake event {ft} not found")
+    raise HTTPException(
+        status_code=404, detail=f"Feed intake event {ft} not found")
 
 
 @router.get(
@@ -114,26 +116,26 @@ async def remove_feed_intake_event(request: Request, ft: str):
 async def feed_intake_event_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
-    animal: mongo_object_id.MongoObjectId | None = None,
-    device: mongo_object_id.MongoObjectId | None = None,
-    feedID: mongo_object_id.MongoObjectId | None = None,
-    rationID: mongo_object_id.MongoObjectId | None = None,
+    animal: str | None = None,
+    device: str | None = None,
+    feedID: str | None = None,
+    # feedID: mongo_object_id.MongoObjectId | None = None,
+    rationID: str | None = None,
     feedingStartingDateTimeStart: datetime | None = None,
     feedingStartingDateTimeEnd: datetime | None = None,
-    createdStart: datetime | None = None,
-    createdEnd: datetime | None = None,
+    # createdStart: datetime | None = None,
+    # createdEnd: datetime | None = None,
 ):
     """Search for a feed intake event given the provided criteria."""
     query = {
         "_id": ft,
-        "animal": animal,
-        "device": device,
+        "animal": {"$in": animal},
+        "device": {"$in": device},
         "feedID": {"$in": feedID},
         "rationID": {"$in": rationID},
         "feedingStartingDateTime": dateBuild(
             feedingStartingDateTimeStart, feedingStartingDateTimeEnd
-        ),
-        "created": dateBuild(createdStart, createdEnd),
+        )
     }
     result = await request.app.state.feed_intake.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:

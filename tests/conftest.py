@@ -103,10 +103,11 @@ def weight_payload():
 def feed_intake_payload():
     """Generate a feed intake event payload."""
     return {
-        "animal": str(ObjectId()),
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "feedingStartingDateTime": datetime.now(timezone.utc).isoformat(),
         "feedVisitDuration": {"unitCode": "MIN", "value": 10},
-        "consumedFeed": [{"feedID": str(ObjectId()), "dryMatterPercentage": 10}],
+        "consumedFeed": [{"feedId": {"id": "test", "scheme": "ft.org"}, "dryMatterPercentage": 10}],
+        "resourceType": "icarAnimalCoreResource",
     }
 
 

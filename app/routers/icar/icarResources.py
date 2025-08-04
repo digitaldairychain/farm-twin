@@ -56,7 +56,7 @@ class icarReproEmbryoResource(icarResource):
         default=None,
         json_schema_extra={"description": "Identifies the collection centre."},
     )
-    dateCollected: Optional[icarTypes.icarDateTimeType] = Field(
+    dateCollected: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The RFC3339 UTC date of collection (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -82,11 +82,13 @@ class icarReproEmbryoResource(icarResource):
     )
     sireOfficialName: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "Official herdbook name of the sire."},
+        json_schema_extra={
+            "description": "Official herdbook name of the sire."},
     )
     sireURI: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "URI to an AnimalCoreResource for the sire."},
+        json_schema_extra={
+            "description": "URI to an AnimalCoreResource for the sire."},
     )
 
 
@@ -102,7 +104,8 @@ class icarStatisticsResource(icarResource):
         },
     )
     purpose: icarEnums.icarStatisticsPurposeType = Field(
-        json_schema_extra={"description": "Defines the purpose for these statistics."},
+        json_schema_extra={
+            "description": "Defines the purpose for these statistics."},
     )
     dateFrom: icarTypes.icarDateType = Field(
         json_schema_extra={
@@ -128,7 +131,7 @@ class icarEventCoreResource(icarResource):
             "description": "Unique identifier in the source system for this event."
         },
     )
-    eventDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    eventDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date and time (see https://ijmacd.github.io/rfc3339-iso8601/)."
@@ -220,7 +223,8 @@ class icarAnimalCoreResource(icarResource):
     )
     name: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "Name given by the farmer for this animal."},
+        json_schema_extra={
+            "description": "Name given by the farmer for this animal."},
     )
     officialName: Optional[str] = Field(
         default=None,
@@ -240,7 +244,8 @@ class icarAnimalCoreResource(icarResource):
     )
     reproductionStatus: Optional[icarEnums.icarAnimalReproductionStatusType] = Field(
         default=None,
-        json_schema_extra={"description": "Reproduction status of the animal."},
+        json_schema_extra={
+            "description": "Reproduction status of the animal."},
     )
     lactationStatus: Optional[icarEnums.icarAnimalLactationStatusType] = Field(
         default=None,
@@ -292,7 +297,7 @@ class icarGestationResource(icarResource):
             "description": "Unique scheme/identifier combinations for the sire, including official ID and Herdbook."
         },
     )
-    expectedCalvingDate: icarTypes.icarDateTimeType = Field(
+    expectedCalvingDate: datetime = Field(
         json_schema_extra={
             "description": "The RFC3339 UTC date the calving is expected to happen (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
@@ -357,7 +362,8 @@ class icarTreatmentEventResource(icarAnimalEventCoreResource):
     )
     dose: Optional[icarTypes.icarMedicineDoseType] = Field(
         default=None,
-        json_schema_extra={"description": "Details of medicine dose administered"},
+        json_schema_extra={
+            "description": "Details of medicine dose administered"},
     )
     site: Optional[str] = Field(
         default=None,
@@ -441,7 +447,7 @@ class icarResourceCollectionReference(FTModel):
 
 
 class icarFeedIntakeEventResource(icarAnimalEventCoreResource):
-    feedingStartingDateTime: icarTypes.icarDateTimeType = Field(
+    feedingStartingDateTime: datetime = Field(
         json_schema_extra={
             "description": "The RFC3339 UTC moment the feeding started (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
@@ -452,7 +458,8 @@ class icarFeedIntakeEventResource(icarAnimalEventCoreResource):
     )
     consumedRation: Optional[icarTypes.icarConsumedRationType] = Field(
         default=None,
-        json_schema_extra={"description": "The eventual ration that has been consumed"},
+        json_schema_extra={
+            "description": "The eventual ration that has been consumed"},
     )
     device: Optional[icarTypes.icarDeviceReferenceType] = Field(
         default=None,
@@ -478,7 +485,8 @@ class icarLocationResource(icarResource):
     )
     name: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "The human readable name of the location."},
+        json_schema_extra={
+            "description": "The human readable name of the location."},
     )
     timeZoneId: Optional[str] = Field(
         default=None,
@@ -490,20 +498,22 @@ class icarLocationResource(icarResource):
 
 class icarMedicineTransactionResource(icarTypes.icarInventoryTransactionType):
     product: icarTypes.icarMedicineReferenceType = Field(
-        json_schema_extra={"description": "The medicine product in this transaction."},
+        json_schema_extra={
+            "description": "The medicine product in this transaction."},
     )
 
 
 class icarTestDayResource(icarResource):
     id: str = Field(
-        json_schema_extra={"description": "Unique identifier for this test day."},
+        json_schema_extra={
+            "description": "Unique identifier for this test day."},
     )
-    beginDate: icarTypes.icarDateTimeType = Field(
+    beginDate: datetime = Field(
         json_schema_extra={
             "description": "The RFC3339 UTC datetime of the beginning of the milk sampling (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    endDate: icarTypes.icarDateTimeType = Field(
+    endDate: datetime = Field(
         json_schema_extra={
             "description": "The RFC3339 UTC datetime of the end of the milk sampling (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
@@ -619,11 +629,13 @@ class icarGroupMovementArrivalEventResource(icarGroupEventCoreResource):
 class icarReproPregnancyCheckEventResource(icarAnimalEventCoreResource):
     method: Optional[icarEnums.icarReproPregnancyMethodType] = Field(
         default=None,
-        json_schema_extra={"description": "Method by which diagnosis was carried out."},
+        json_schema_extra={
+            "description": "Method by which diagnosis was carried out."},
     )
     result: Optional[icarEnums.icarReproPregnancyResultType] = Field(
         default=None,
-        json_schema_extra={"description": "Result - unknown, empty, pregnant."},
+        json_schema_extra={
+            "description": "Result - unknown, empty, pregnant."},
     )
     foetalAge: Optional[int] = Field(
         default=None,
@@ -664,13 +676,13 @@ class icarFeedReportResource(icarResource):
             "description": "As per JSON-LD Hydra syntax, animals provides the array of animals part of the feeding report. This could also be a report for one animal."
         },
     )
-    reportStartDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    reportStartDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The RFC3339 UTC moment the period of the reporting started (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    reportEndDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    reportEndDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The RFC3339 UTC moment the period of the reporting ended (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -754,11 +766,13 @@ class icarDeviceResource(icarResource):
     )
     name: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "Name given to the device by the farmer."},
+        json_schema_extra={
+            "description": "Name given to the device by the farmer."},
     )
     description: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "Description of the device by the farmer."},
+        json_schema_extra={
+            "description": "Description of the device by the farmer."},
     )
     softwareVersion: Optional[str] = Field(
         default=None,
@@ -838,7 +852,7 @@ class icarResponseMessageResource(FTModel):
 
 
 class icarWithdrawalEventResource(icarAnimalEventCoreResource):
-    endDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    endDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date and time (see https://ijmacd.github.io/rfc3339-iso8601/)."
@@ -873,7 +887,7 @@ class icarBatchResult(FTModel):
 
 
 class icarGroupFeedingEventResource(icarGroupEventCoreResource):
-    feedingEndDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    feedingEndDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The RFC3339 UTC moment from which animals could no longer consume the feed (eventDateTime represents the start of feed availability)."
@@ -916,19 +930,19 @@ class icarFeedRecommendationResource(icarResource):
             "description": "Unique animal scheme and identifier combination."
         },
     )
-    recommendationDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    recommendationDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The RFC3339 UTC timestamp of the recommendation (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    startDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    startDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The RFC3339 UTC date of the beginning of the recommendation (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    endDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    endDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The RFC3339 UTC end date of the recommendation (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -947,7 +961,8 @@ class icarVisualDetection(BaseModel):
         default=None,
         json_schema_extra={"description": "Array of heat signs."},
     )
-    heatIntensity: Optional[icarEnums.icarReproHeatIntensityType] = Field(default=None)
+    heatIntensity: Optional[icarEnums.icarReproHeatIntensityType] = Field(
+        default=None)
 
 
 class icarheatReportScrSenseTime(BaseModel):
@@ -964,7 +979,7 @@ class icarheatReportScrSenseTime(BaseModel):
 
 
 class icarheatReportNedapCowControl(BaseModel):
-    expirationDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    expirationDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date/time when the heat will start (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -985,13 +1000,13 @@ class icarReproHeatEventResource(icarAnimalEventCoreResource):
     certainty: Optional[icarEnums.icarReproHeatCertaintyType] = Field(
         default=None,
     )
-    commencementDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    commencementDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date/time when the heat will start (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    expirationDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    expirationDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date/time when the heat will end (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -1046,13 +1061,14 @@ class icarReproSemenStrawResource(icarResource):
     )
     batch: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "Identification of the batch of semen."},
+        json_schema_extra={
+            "description": "Identification of the batch of semen."},
     )
     collectionCentre: Optional[str] = Field(
         default=None,
         json_schema_extra={"description": "Identifies the collection centre."},
     )
-    dateCollected: Optional[icarTypes.icarDateTimeType] = Field(
+    dateCollected: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date/time of collection (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -1066,11 +1082,13 @@ class icarReproSemenStrawResource(icarResource):
     )
     sireOfficialName: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "Official herdbook name of the sire."},
+        json_schema_extra={
+            "description": "Official herdbook name of the sire."},
     )
     sireURI: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "URI to an AnimalCoreResource for the sire."},
+        json_schema_extra={
+            "description": "URI to an AnimalCoreResource for the sire."},
     )
     preservationType: Optional[icarEnums.icarReproSemenPreservationType] = Field(
         default=None,
@@ -1098,7 +1116,8 @@ class icarReproSemenStrawResource(icarResource):
 
 class icarFeedTransactionResource(icarTypes.icarInventoryTransactionType):
     product: icarTypes.icarFeedReferenceType = Field(
-        json_schema_extra={"description": "The feed product in this transaction."},
+        json_schema_extra={
+            "description": "The feed product in this transaction."},
     )
 
 
@@ -1179,7 +1198,8 @@ class icarDiagnosisEventResource(icarAnimalEventCoreResource):
 
 class icarInventoryTransactionResource(icarTypes.icarInventoryTransactionType):
     product: icarTypes.icarProductReferenceType = Field(
-        json_schema_extra={"description": "The product in this inventory transaction."},
+        json_schema_extra={
+            "description": "The product in this inventory transaction."},
     )
 
 
@@ -1321,7 +1341,8 @@ class icarGroupTreatmentEventResource(icarGroupEventCoreResource):
     )
     totalMedicineUsed: Optional[icarTypes.icarMedicineDoseType] = Field(
         default=None,
-        json_schema_extra={"description": "The total amount of medicine used."},
+        json_schema_extra={
+            "description": "The total amount of medicine used."},
     )
     site: Optional[str] = Field(
         default=None,
@@ -1365,7 +1386,7 @@ class icarRationResource(icarResource):
 
 
 class icarAttentionEventResource(icarAnimalEventCoreResource):
-    alertEndDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    alertEndDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 date time that represents the end time of an alert (start time is the eventDateTime) if it has ended."
@@ -1383,7 +1404,8 @@ class icarAttentionEventResource(icarAnimalEventCoreResource):
     )
     priority: Optional[icarEnums.icarAttentionPriorityType] = Field(
         default=None,
-        json_schema_extra={"description": "The relative priority of the alert."},
+        json_schema_extra={
+            "description": "The relative priority of the alert."},
     )
     severity: Optional[icarEnums.icarDiagnosisSeverityType] = Field(
         default=None,
@@ -1416,13 +1438,13 @@ class icarLactationResource(icarResource):
             "description": "Unique animal scheme and identifier combination."
         },
     )
-    beginDate: Optional[icarTypes.icarDateTimeType] = Field(
+    beginDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The RFC3339 UTC date of the beginning of the lactation (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    endDate: Optional[icarTypes.icarDateTimeType] = Field(
+    endDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The RFC3339 UTC end date of the the lactation. This occurs when the animal is dried off, dies or calves again."
@@ -1464,7 +1486,7 @@ class icarLactationResource(icarResource):
             "description": "The amount of lactosis produced in this lactation."
         },
     )
-    lastTestDay: Optional[icarTypes.icarDateTimeType] = Field(
+    lastTestDay: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The RCF3339 UTC date of the last test day in the lactation (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -1497,11 +1519,13 @@ class icarReproInseminationEventResource(icarAnimalEventCoreResource):
     )
     sireOfficialName: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "Official herdbook name of the sire."},
+        json_schema_extra={
+            "description": "Official herdbook name of the sire."},
     )
     sireURI: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "URI to an AnimalCoreResource for the sire."},
+        json_schema_extra={
+            "description": "URI to an AnimalCoreResource for the sire."},
     )
     straw: Optional[icarReproSemenStrawResource] = Field(
         default=None,
@@ -1509,7 +1533,7 @@ class icarReproInseminationEventResource(icarAnimalEventCoreResource):
             "description": "Details of the straw, which may also include sire details."
         },
     )
-    eventEndDateTime: Optional[icarTypes.icarDateTimeType] = Field(
+    eventEndDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "To be used in case of running with a bull to end the period. RFC3339 UTC format (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -1546,7 +1570,8 @@ class icarSortingSiteResource(icarResource):
     )
     capacity: Optional[float] = Field(
         default=None,
-        json_schema_extra={"description": "The maximum capacity of this site."},
+        json_schema_extra={
+            "description": "The maximum capacity of this site."},
     )
 
 
@@ -1565,14 +1590,16 @@ class icarMedicineResource(icarResource):
     )
     registeredID: Optional[icarTypes.icarMedicineIdentifierType] = Field(
         default=None,
-        json_schema_extra={"description": "Registered ID in the scheme and ID format."},
+        json_schema_extra={
+            "description": "Registered ID in the scheme and ID format."},
     )
 
 
 class icarMovementArrivalEventResource(icarAnimalEventCoreResource):
     arrivalReason: Optional[icarEnums.icarArrivalReasonType] = Field(
         default=None,
-        json_schema_extra={"description": "Reason the animal arrived on the holding."},
+        json_schema_extra={
+            "description": "Reason the animal arrived on the holding."},
     )
     animalDetail: Optional[icarAnimalCoreResource] = Field(
         default=None,
@@ -1582,7 +1609,8 @@ class icarMovementArrivalEventResource(icarAnimalEventCoreResource):
     )
     animalState: Optional[icarTypes.icarAnimalStateType] = Field(
         default=None,
-        json_schema_extra={"description": "State information about an animal."},
+        json_schema_extra={
+            "description": "State information about an animal."},
     )
     consignment: Optional[icarTypes.icarConsignmentType] = Field(
         default=None,
@@ -1603,12 +1631,12 @@ class icarAnimalSortingCommandResource(icarResource):
             "description": "Array with unique site identifiers where this animal can be sorted to."
         },
     )
-    validFrom: icarTypes.icarDateTimeType = Field(
+    validFrom: datetime = Field(
         json_schema_extra={
             "description": "Specifies from when the sort command should be active. RFC3339 UTC date time (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    validTo: Optional[icarTypes.icarDateTimeType] = Field(
+    validTo: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "Specifies until when the sort command should be active. Could be left empty, when the sorting should be ongoing (until replaced). RFC3339 UTC date time (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -1617,7 +1645,7 @@ class icarAnimalSortingCommandResource(icarResource):
 
 
 class icarMilkingVisitEventResource(icarAnimalEventCoreResource):
-    milkingStartingDateTime: icarTypes.icarDateTimeType = Field(
+    milkingStartingDateTime: datetime = Field(
         json_schema_extra={
             "description": "The RFC3339 UTC date time of the start of milking (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
@@ -1669,7 +1697,7 @@ class icarMilkingVisitEventResource(icarAnimalEventCoreResource):
             "description": "The ID of the device where the measurement of the milking took place"
         },
     )
-    milkingShiftLocalStartDate: Optional[icarTypes.icarDateTimeType] = Field(
+    milkingShiftLocalStartDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The ISO8601 date in local time zone to which this milking shift belongs. A time component is not expected or required."
@@ -1775,13 +1803,14 @@ class icarProgenyDetailsResource(icarResource):
     )
     name: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "Name given by the farmer for this animal."},
+        json_schema_extra={
+            "description": "Name given by the farmer for this animal."},
     )
     officialName: Optional[str] = Field(
         default=None,
         json_schema_extra={"description": "Official herdbook name."},
     )
-    taggingDate: Optional[icarTypes.icarDateTimeType] = Field(
+    taggingDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "Progeny tagging date in RFC3339 UTC (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -1896,7 +1925,8 @@ class icarReproEmbryoFlushingEventResource(icarEventCoreResource):
     )
     collectionCentre: Optional[str] = Field(
         default=None,
-        json_schema_extra={"description": "The location where the embryo was flushed."},
+        json_schema_extra={
+            "description": "The location where the embryo was flushed."},
     )
 
 
