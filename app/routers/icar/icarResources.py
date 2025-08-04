@@ -82,13 +82,11 @@ class icarReproEmbryoResource(icarResource):
     )
     sireOfficialName: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Official herdbook name of the sire."},
+        json_schema_extra={"description": "Official herdbook name of the sire."},
     )
     sireURI: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "URI to an AnimalCoreResource for the sire."},
+        json_schema_extra={"description": "URI to an AnimalCoreResource for the sire."},
     )
 
 
@@ -104,8 +102,7 @@ class icarStatisticsResource(icarResource):
         },
     )
     purpose: icarEnums.icarStatisticsPurposeType = Field(
-        json_schema_extra={
-            "description": "Defines the purpose for these statistics."},
+        json_schema_extra={"description": "Defines the purpose for these statistics."},
     )
     dateFrom: icarTypes.icarDateType = Field(
         json_schema_extra={
@@ -223,8 +220,7 @@ class icarAnimalCoreResource(icarResource):
     )
     name: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Name given by the farmer for this animal."},
+        json_schema_extra={"description": "Name given by the farmer for this animal."},
     )
     officialName: Optional[str] = Field(
         default=None,
@@ -244,8 +240,7 @@ class icarAnimalCoreResource(icarResource):
     )
     reproductionStatus: Optional[icarEnums.icarAnimalReproductionStatusType] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Reproduction status of the animal."},
+        json_schema_extra={"description": "Reproduction status of the animal."},
     )
     lactationStatus: Optional[icarEnums.icarAnimalLactationStatusType] = Field(
         default=None,
@@ -362,8 +357,7 @@ class icarTreatmentEventResource(icarAnimalEventCoreResource):
     )
     dose: Optional[icarTypes.icarMedicineDoseType] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Details of medicine dose administered"},
+        json_schema_extra={"description": "Details of medicine dose administered"},
     )
     site: Optional[str] = Field(
         default=None,
@@ -458,8 +452,7 @@ class icarFeedIntakeEventResource(icarAnimalEventCoreResource):
     )
     consumedRation: Optional[icarTypes.icarConsumedRationType] = Field(
         default=None,
-        json_schema_extra={
-            "description": "The eventual ration that has been consumed"},
+        json_schema_extra={"description": "The eventual ration that has been consumed"},
     )
     device: Optional[icarTypes.icarDeviceReferenceType] = Field(
         default=None,
@@ -485,8 +478,7 @@ class icarLocationResource(icarResource):
     )
     name: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "The human readable name of the location."},
+        json_schema_extra={"description": "The human readable name of the location."},
     )
     timeZoneId: Optional[str] = Field(
         default=None,
@@ -498,15 +490,13 @@ class icarLocationResource(icarResource):
 
 class icarMedicineTransactionResource(icarTypes.icarInventoryTransactionType):
     product: icarTypes.icarMedicineReferenceType = Field(
-        json_schema_extra={
-            "description": "The medicine product in this transaction."},
+        json_schema_extra={"description": "The medicine product in this transaction."},
     )
 
 
 class icarTestDayResource(icarResource):
     id: str = Field(
-        json_schema_extra={
-            "description": "Unique identifier for this test day."},
+        json_schema_extra={"description": "Unique identifier for this test day."},
     )
     beginDate: datetime = Field(
         json_schema_extra={
@@ -629,13 +619,11 @@ class icarGroupMovementArrivalEventResource(icarGroupEventCoreResource):
 class icarReproPregnancyCheckEventResource(icarAnimalEventCoreResource):
     method: Optional[icarEnums.icarReproPregnancyMethodType] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Method by which diagnosis was carried out."},
+        json_schema_extra={"description": "Method by which diagnosis was carried out."},
     )
     result: Optional[icarEnums.icarReproPregnancyResultType] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Result - unknown, empty, pregnant."},
+        json_schema_extra={"description": "Result - unknown, empty, pregnant."},
     )
     foetalAge: Optional[int] = Field(
         default=None,
@@ -766,13 +754,11 @@ class icarDeviceResource(icarResource):
     )
     name: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Name given to the device by the farmer."},
+        json_schema_extra={"description": "Name given to the device by the farmer."},
     )
     description: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Description of the device by the farmer."},
+        json_schema_extra={"description": "Description of the device by the farmer."},
     )
     softwareVersion: Optional[str] = Field(
         default=None,
@@ -961,8 +947,7 @@ class icarVisualDetection(BaseModel):
         default=None,
         json_schema_extra={"description": "Array of heat signs."},
     )
-    heatIntensity: Optional[icarEnums.icarReproHeatIntensityType] = Field(
-        default=None)
+    heatIntensity: Optional[icarEnums.icarReproHeatIntensityType] = Field(default=None)
 
 
 class icarheatReportScrSenseTime(BaseModel):
@@ -1061,8 +1046,7 @@ class icarReproSemenStrawResource(icarResource):
     )
     batch: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Identification of the batch of semen."},
+        json_schema_extra={"description": "Identification of the batch of semen."},
     )
     collectionCentre: Optional[str] = Field(
         default=None,
@@ -1082,13 +1066,11 @@ class icarReproSemenStrawResource(icarResource):
     )
     sireOfficialName: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Official herdbook name of the sire."},
+        json_schema_extra={"description": "Official herdbook name of the sire."},
     )
     sireURI: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "URI to an AnimalCoreResource for the sire."},
+        json_schema_extra={"description": "URI to an AnimalCoreResource for the sire."},
     )
     preservationType: Optional[icarEnums.icarReproSemenPreservationType] = Field(
         default=None,
@@ -1116,8 +1098,7 @@ class icarReproSemenStrawResource(icarResource):
 
 class icarFeedTransactionResource(icarTypes.icarInventoryTransactionType):
     product: icarTypes.icarFeedReferenceType = Field(
-        json_schema_extra={
-            "description": "The feed product in this transaction."},
+        json_schema_extra={"description": "The feed product in this transaction."},
     )
 
 
@@ -1198,8 +1179,7 @@ class icarDiagnosisEventResource(icarAnimalEventCoreResource):
 
 class icarInventoryTransactionResource(icarTypes.icarInventoryTransactionType):
     product: icarTypes.icarProductReferenceType = Field(
-        json_schema_extra={
-            "description": "The product in this inventory transaction."},
+        json_schema_extra={"description": "The product in this inventory transaction."},
     )
 
 
@@ -1341,8 +1321,7 @@ class icarGroupTreatmentEventResource(icarGroupEventCoreResource):
     )
     totalMedicineUsed: Optional[icarTypes.icarMedicineDoseType] = Field(
         default=None,
-        json_schema_extra={
-            "description": "The total amount of medicine used."},
+        json_schema_extra={"description": "The total amount of medicine used."},
     )
     site: Optional[str] = Field(
         default=None,
@@ -1404,8 +1383,7 @@ class icarAttentionEventResource(icarAnimalEventCoreResource):
     )
     priority: Optional[icarEnums.icarAttentionPriorityType] = Field(
         default=None,
-        json_schema_extra={
-            "description": "The relative priority of the alert."},
+        json_schema_extra={"description": "The relative priority of the alert."},
     )
     severity: Optional[icarEnums.icarDiagnosisSeverityType] = Field(
         default=None,
@@ -1519,13 +1497,11 @@ class icarReproInseminationEventResource(icarAnimalEventCoreResource):
     )
     sireOfficialName: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Official herdbook name of the sire."},
+        json_schema_extra={"description": "Official herdbook name of the sire."},
     )
     sireURI: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "URI to an AnimalCoreResource for the sire."},
+        json_schema_extra={"description": "URI to an AnimalCoreResource for the sire."},
     )
     straw: Optional[icarReproSemenStrawResource] = Field(
         default=None,
@@ -1570,8 +1546,7 @@ class icarSortingSiteResource(icarResource):
     )
     capacity: Optional[float] = Field(
         default=None,
-        json_schema_extra={
-            "description": "The maximum capacity of this site."},
+        json_schema_extra={"description": "The maximum capacity of this site."},
     )
 
 
@@ -1590,16 +1565,14 @@ class icarMedicineResource(icarResource):
     )
     registeredID: Optional[icarTypes.icarMedicineIdentifierType] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Registered ID in the scheme and ID format."},
+        json_schema_extra={"description": "Registered ID in the scheme and ID format."},
     )
 
 
 class icarMovementArrivalEventResource(icarAnimalEventCoreResource):
     arrivalReason: Optional[icarEnums.icarArrivalReasonType] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Reason the animal arrived on the holding."},
+        json_schema_extra={"description": "Reason the animal arrived on the holding."},
     )
     animalDetail: Optional[icarAnimalCoreResource] = Field(
         default=None,
@@ -1609,8 +1582,7 @@ class icarMovementArrivalEventResource(icarAnimalEventCoreResource):
     )
     animalState: Optional[icarTypes.icarAnimalStateType] = Field(
         default=None,
-        json_schema_extra={
-            "description": "State information about an animal."},
+        json_schema_extra={"description": "State information about an animal."},
     )
     consignment: Optional[icarTypes.icarConsignmentType] = Field(
         default=None,
@@ -1803,8 +1775,7 @@ class icarProgenyDetailsResource(icarResource):
     )
     name: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Name given by the farmer for this animal."},
+        json_schema_extra={"description": "Name given by the farmer for this animal."},
     )
     officialName: Optional[str] = Field(
         default=None,
@@ -1925,8 +1896,7 @@ class icarReproEmbryoFlushingEventResource(icarEventCoreResource):
     )
     collectionCentre: Optional[str] = Field(
         default=None,
-        json_schema_extra={
-            "description": "The location where the embryo was flushed."},
+        json_schema_extra={"description": "The location where the embryo was flushed."},
     )
 
 

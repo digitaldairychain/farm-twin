@@ -30,31 +30,6 @@ router = APIRouter(
 )
 
 
-# class FeedIntake(AnimalEventModel):
-#     feedingStartingDateTime: datetime = Field(
-#         json_schema_extra={
-#             "description": "The RFC3339 UTC moment the feeding started (see"
-#             + "https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
-#         }
-#     )
-#     feedVisitDuration: icarTypes.icarFeedDurationType = Field()
-#     consumedFeed: Optional[List[icarTypes.icarConsumedFeedType]] = Field(
-#         default=None)
-#     consumedRation: Optional[icarTypes.icarConsumedRationType] = Field(
-#         default=None,
-#         json_schema_extra={
-#             "description": "The eventual ration that has been consumed",
-#         },
-#     )
-#     device: Optional[mongo_object_id.MongoObjectId] = Field(
-#         default=None,
-#         json_schema_extra={
-#             "description": "ObjectID of device used for the feeding.",
-#             "example": str(ObjectId()),
-#         },
-#     )
-
-
 class FeedIntakeCollection(BaseModel):
     feed_intake: List[FeedIntake]
 
@@ -76,8 +51,7 @@ async def create_feed_intake_event(request: Request, feedintake: FeedIntake):
     try:
         new_fie = await request.app.state.feed_intake.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(
-            status_code=404, detail="Feed intake already exists")
+        raise HTTPException(status_code=404, detail="Feed intake already exists")
     if (
         created_feedintake_event := await request.app.state.feed_intake.find_one(
             {"_id": new_fie.inserted_id}
@@ -103,8 +77,7 @@ async def remove_feed_intake_event(request: Request, ft: str):
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(
-        status_code=404, detail=f"Feed intake event {ft} not found")
+    raise HTTPException(status_code=404, detail=f"Feed intake event {ft} not found")
 
 
 @router.get(
@@ -135,7 +108,7 @@ async def feed_intake_event_query(
         "rationID": {"$in": rationID},
         "feedingStartingDateTime": dateBuild(
             feedingStartingDateTimeStart, feedingStartingDateTimeEnd
-        )
+        ),
     }
     result = await request.app.state.feed_intake.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:

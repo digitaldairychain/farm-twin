@@ -106,7 +106,9 @@ def feed_intake_payload():
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "feedingStartingDateTime": datetime.now(timezone.utc).isoformat(),
         "feedVisitDuration": {"unitCode": "MIN", "value": 10},
-        "consumedFeed": [{"feedId": {"id": "test", "scheme": "ft.org"}, "dryMatterPercentage": 10}],
+        "consumedFeed": [
+            {"feedId": {"id": "test", "scheme": "ft.org"}, "dryMatterPercentage": 10}
+        ],
         "resourceType": "icarAnimalCoreResource",
     }
 
@@ -170,7 +172,7 @@ def conformation_payload(object_id):
         "score": 47,
         "traitScored": "BodyLength",
         "method": "Automated",
-        "resourceType": "icarConformationScoreEvent"
+        "resourceType": "icarConformationScoreEvent",
     }
 
 
