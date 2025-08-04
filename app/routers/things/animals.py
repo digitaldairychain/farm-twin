@@ -24,7 +24,8 @@ from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
 from ..ftCommon import dateBuild, filterQuery
-from ..icar import icarEnums, icarTypes, icarResources
+from ..icar import icarEnums, icarTypes
+from ..icar.icarResources import icarAnimalCoreResource as Animal
 
 router = APIRouter(
     prefix="/animals",
@@ -34,19 +35,17 @@ router = APIRouter(
 
 
 class AnimalCollection(BaseModel):
-    animals: List[icarResources.icarAnimalCoreResource]
+    animals: List[Animal]
 
 
 @router.post(
     "/",
     response_description="Add new animal",
-    response_model=icarResources.icarAnimalCoreResource,
+    response_model=Animal,
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_animal(
-        request: Request,
-        animal: icarResources.icarAnimalCoreResource):
+async def create_animal(request: Request, animal: Animal):
     """
     Create a new animal.
 
@@ -62,8 +61,7 @@ async def create_animal(
         )
     ) is not None:
         return created_animal
-    raise HTTPException(
-        status_code=404, detail="Animal not successfully added")
+    raise HTTPException(status_code=404, detail="Animal not successfully added")
 
 
 @router.delete("/{ft}", response_description="Delete an animal")
@@ -84,13 +82,10 @@ async def remove_animal(request: Request, ft: str):
 @router.patch(
     "/{ft}",
     response_description="Update an animal",
-    response_model=icarResources.icarAnimalCoreResource,
+    response_model=Animal,
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def update_animal(
-        request: Request,
-        ft: str,
-        animal: icarResources.icarAnimalCoreResource):
+async def update_animal(request: Request, ft: str, animal: Animal):
     """
     Update an existing animal if it exists.
 
@@ -109,8 +104,7 @@ async def update_animal(
         )
     ) is not None:
         return updated_animal
-    raise HTTPException(
-        status_code=404, detail=f"Animal {ft} not successfully updated")
+    raise HTTPException(status_code=404, detail=f"Animal {ft} not successfully updated")
 
 
 @router.get(
