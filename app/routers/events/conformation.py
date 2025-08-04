@@ -22,63 +22,13 @@ from pydantic_extra_types import mongo_object_id
 
 from ..ftCommon import dateBuild, filterQuery
 from ..icar import icarEnums
-from .eventCommon import AnimalEventModel
+from ..icar.icarResources import icarConformationScoreEventResource as Conformation
 
 router = APIRouter(
     prefix="/conformation",
     tags=["events"],
     responses={404: {"description": "Not found"}},
 )
-
-
-class Conformation(AnimalEventModel):
-    traitGroup: Optional[icarEnums.icarConformationTraitGroupType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Defines whether the trait is a composite trait "
-            + "or a linear trait.",
-            "example": "Composite",
-        },
-    )
-    score: int = Field(
-        json_schema_extra={
-            "description": "Conformation score with values of 1 to 9 "
-            + "numeric in case of linear traits and for composites in most "
-            + "cases between 50 and 99",
-            "example": 47,
-        },
-    )
-    traitScored: icarEnums.icarConformationTraitType = Field(
-        json_schema_extra={
-            "description": "Scored conformation trait type according "
-            + "ICAR guidelines. See "
-            + "https://www.icar.org/Guidelines/05-Conformation-Recording.pdf",
-            "example": "BodyLength",
-        },
-    )
-    method: Optional[icarEnums.icarConformationScoringMethodType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Method of conformation scoring",
-            "example": "Automated",
-        },
-    )
-    device: Optional[mongo_object_id.MongoObjectId] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Optional information about the device used for "
-            + "the automated scoring.",
-            "example": str(ObjectId()),
-        },
-    )
-    timestamp: Optional[datetime] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Time when conformation recorded. "
-            + "Current time inserted if empty",
-            "example": str(datetime.now()),
-        },
-    )
 
 
 class ConformationCollection(BaseModel):
@@ -99,12 +49,11 @@ async def create_conformation_event(request: Request, conformation: Conformation
     :param conformation: Conformation to be added
     """
     model = conformation.model_dump(by_alias=True, exclude=["ft"])
-    if model["timestamp"] is None:
-        model["timestamp"] = datetime.now()
     try:
         new_ce = await request.app.state.conformation.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail="Conformation already exists")
+        raise HTTPException(
+            status_code=404, detail="Conformation event already exists")
     if (
         created_conformation_event := await request.app.state.conformation.find_one(
             {"_id": new_ce.inserted_id}
@@ -130,7 +79,8 @@ async def remove_conformation_event(request: Request, ft: str):
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(status_code=404, detail=f"Conformation event {ft} not found")
+    raise HTTPException(
+        status_code=404, detail=f"Conformation event {ft} not found")
 
 
 @router.get(
@@ -142,18 +92,12 @@ async def remove_conformation_event(request: Request, ft: str):
 async def conformation_event_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
-    animal: mongo_object_id.MongoObjectId | None = None,
-    start: datetime | None = None,
-    end: datetime | None = None,
-    createdStart: datetime | None = None,
-    createdEnd: datetime | None = None,
+    animal: str | None = None,
 ):
     """Search for a conformation event given the provided criteria."""
     query = {
         "_id": ft,
-        "animal": animal,
-        "timestamp": dateBuild(start, end),
-        "created": dateBuild(createdStart, createdEnd),
+        "animal": {"id": animal}
     }
     result = await request.app.state.conformation.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:

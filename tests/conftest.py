@@ -164,13 +164,12 @@ def machine_payload():
 def conformation_payload(object_id):
     """Generate a conformation payload."""
     return {
-        "animal": str(ObjectId()),
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "traitGroup": "Composite",
         "score": 47,
         "traitScored": "BodyLength",
         "method": "Automated",
-        "device": object_id,
+        "resourceType": "icarConformationScoreEvent"
     }
 
 
