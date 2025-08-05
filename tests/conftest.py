@@ -189,7 +189,7 @@ def drying_off_payload(object_id):
 
 @pytest.fixture()
 def arrival_payload(object_id):
-    """Generate a drying off payload."""
+    """Generate an arrival payload."""
     return {
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "arrivalReason": "ShowReturn",
@@ -198,6 +198,37 @@ def arrival_payload(object_id):
             "lastCalvingDate": datetime.now(timezone.utc).isoformat(),
         },
         "resourceType": "icarMovementArrivalEventResource",
+    }
+
+
+@pytest.fixture()
+def birth_payload(object_id):
+    """Generate a birth payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "registrationReason": "Born",
+        "resourceType": "icarMovementBirthEventResource",
+    }
+
+
+@pytest.fixture()
+def death_payload(object_id):
+    """Generate a death payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "deathReason": "Age",
+        "resourceType": "icarMovementDeathEventResource",
+    }
+
+
+@pytest.fixture()
+def departure_payload(object_id):
+    """Generate an departure payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "departureReason": "Sale",
+        "departureKind": "Sale",
+        "resourceType": "icarMovementDepartureEventResource",
     }
 
 

@@ -1,9 +1,6 @@
 """
 Collects API calls related to animal arrival events.
 
-The duration and consumption of feed by animals may be periodically recorded
-across a farm.
-
 This collection of endpoints allows for the addition, deletion
 and finding of those events.
 
@@ -77,14 +74,11 @@ async def arrival_event_query(
     arrivalReason: icarEnums.icarArrivalReasonType | None = None,
     currentLactationParity: int | None = None,
     lastCalvingDateStart: datetime | None = None,
-    lastCalvingDateEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None,
+    lastCalvingDateEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
     lastInseminationDateStart: datetime | None = None,
     lastInseminationDateEnd: datetime | None = None,
     lastDryingOffDateStart: datetime | None = None,
     lastDryingOffDateEnd: datetime | None = None,
-    createdStart: datetime | None = None,
-    createdEnd: datetime | None = None,
 ):
     """Search for a arrival event given the provided criteria."""
     query = {
@@ -101,7 +95,6 @@ async def arrival_event_query(
         "animalState.lastDryingOffDate": dateBuild(
             lastDryingOffDateStart, lastDryingOffDateEnd
         ),
-        "created": dateBuild(createdStart, createdEnd),
     }
     result = await find_in_db(request.app.state.arrival, query)
     return ArrivalCollection(arrival=result)
