@@ -194,7 +194,7 @@ def milking_visit_payload(object_id):
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "milkingStartingDateTime": str(datetime.now()),
         "milkingMilkWeight": {"unitCode": "KGM", "value": 10},
-        "resourceType": "icarMilkingVisitEventResource"
+        "resourceType": "icarMilkingVisitEventResource",
     }
 
 

@@ -8,15 +8,15 @@ Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarMilkingVisitEventResource.json
 """
 
-from typing import List
-
 from datetime import datetime
+from typing import List
 
 from fastapi import APIRouter, Request, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
-from ...ftCommon import add_one_to_db, delete_one_from_db, find_in_db, dateBuild
+from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
+                         find_in_db)
 from ...icar import icarEnums
 from ...icar.icarResources import icarMilkingVisitEventResource as Visit
 
@@ -98,7 +98,7 @@ async def visit_event_query(
         "milkingShiftLocalStartDate": dateBuild(
             milkingShiftLocalStartDateStart, milkingShiftLocalStartDateEnd
         ),
-        "milkingShiftNumber": milkingShiftNumber
+        "milkingShiftNumber": milkingShiftNumber,
     }
     result = await find_in_db(request.app.state.visit, query)
     return VisitCollection(visit=result)
