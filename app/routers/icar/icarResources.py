@@ -104,12 +104,12 @@ class icarStatisticsResource(icarResource):
     purpose: icarEnums.icarStatisticsPurposeType = Field(
         json_schema_extra={"description": "Defines the purpose for these statistics."},
     )
-    dateFrom: icarTypes.icarDateType = Field(
+    dateFrom: datetime = Field(
         json_schema_extra={
             "description": "The start of the period for which statistics are calculated."
         },
     )
-    dateTo: icarTypes.icarDateType = Field(
+    dateTo: datetime = Field(
         json_schema_extra={
             "description": "The end of the period for which statistics are calculated."
         },
@@ -311,7 +311,7 @@ class icarDailyMilkingAveragesResource(icarResource):
             "description": "Unique animal scheme and identifier combination."
         },
     )
-    averageDate: icarTypes.icarDateType = Field(
+    averageDate: datetime = Field(
         json_schema_extra={
             "description": "The date on which the average has been calculated."
         },

@@ -20,8 +20,8 @@ from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
 from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
-from ...icar import icarEnums, icarTypes
-from ..eventCommon import AnimalEventModel
+from ...icar import icarEnums
+from ...icar.icarResources import icarMovementArrivalEventResource as Arrival
 
 ERROR_MSG_OBJECT = "Arrival"
 
@@ -30,27 +30,6 @@ router = APIRouter(
     tags=["events", "movement"],
     responses={404: {"description": "Not found"}},
 )
-
-
-class Arrival(AnimalEventModel):
-    arrivalReason: Optional[icarEnums.icarArrivalReasonType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Reason the animal arrived on the holding.",
-        },
-    )
-    animalState: Optional[icarTypes.icarAnimalStateType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "State information about an animal.",
-        },
-    )
-    consignment: Optional[icarTypes.icarConsignmentType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Identifies the consignment of the animal to the holding.",
-        },
-    )
 
 
 class ArrivalCollection(BaseModel):
@@ -93,7 +72,7 @@ async def remove_arrival_event(request: Request, ft: mongo_object_id.MongoObject
 async def arrival_event_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
-    animal: mongo_object_id.MongoObjectId | None = None,
+    animal: str | None = None,
     arrivalReason: icarEnums.icarArrivalReasonType | None = None,
     currentLactationParity: int | None = None,
     lastCalvingDateStart: datetime | None = None,
@@ -108,7 +87,7 @@ async def arrival_event_query(
     """Search for a arrival event given the provided criteria."""
     query = {
         "_id": ft,
-        "animal": animal,
+        "animal.id": animal,
         "arrivalReason": arrivalReason,
         "animalState.currentLactationParity": currentLactationParity,
         "animalState.lastCalvingDate": dateBuild(

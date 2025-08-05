@@ -87,15 +87,16 @@ def device_payload_updated(serial):
 def weight_payload():
     """Generate a weight event payload."""
     return {
-        "animal": str(ObjectId()),
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "weight": {
             "measurement": float(randint(453, 816)),
             "units": "KGM",
             "method": "LoadCell",
             "resolution": float(randint(1, 9) / 10),
         },
-        "device": str(ObjectId()),
+        "device": {"manufacturerName": "Acme Sensor Co."},
         "timeOffFeed": float(randint(1, 5)),
+        "resourceType": "icarWeightEventResource",
     }
 
 
@@ -109,7 +110,7 @@ def feed_intake_payload():
         "consumedFeed": [
             {"feedId": {"id": "test", "scheme": "ft.org"}, "dryMatterPercentage": 10}
         ],
-        "resourceType": "icarAnimalCoreResource",
+        "resourceType": "icarFeedIntakeEventResource",
     }
 
 
@@ -117,9 +118,10 @@ def feed_intake_payload():
 def withdrawal_payload():
     """Generate a withdrawal payload."""
     return {
-        "animal": str(ObjectId()),
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "endDateTime": datetime.now(timezone.utc).isoformat(),
         "productType": "Eggs",
+        "resourceType": "icarWithdrawalEventResource",
     }
 
 
@@ -180,7 +182,8 @@ def conformation_payload(object_id):
 def drying_off_payload(object_id):
     """Generate a drying off payload."""
     return {
-        "animal": str(ObjectId()),
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "resourceType": "icarMilkingDryOffEventResource",
     }
 
 
@@ -188,12 +191,13 @@ def drying_off_payload(object_id):
 def arrival_payload(object_id):
     """Generate a drying off payload."""
     return {
-        "animal": str(ObjectId()),
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "arrivalReason": "ShowReturn",
         "animalState": {
             "currentLactationParity": 2,
             "lastCalvingDate": datetime.now(timezone.utc).isoformat(),
         },
+        "resourceType": "icarMovementArrivalEventResource",
     }
 
 

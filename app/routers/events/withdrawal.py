@@ -22,28 +22,13 @@ from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
 from ..ftCommon import dateBuild, filterQuery
-from ..icar import icarEnums
-from .eventCommon import AnimalEventModel
+from ..icar.icarResources import icarWithdrawalEventResource as Withdrawal
 
 router = APIRouter(
     prefix="/withdrawal",
     tags=["events"],
     responses={404: {"description": "Not found"}},
 )
-
-
-class Withdrawal(AnimalEventModel):
-    endDateTime: datetime = Field(
-        json_schema_extra={
-            "description": "RFC3339 UTC date and time "
-            + "(see https://ijmacd.github.io/rfc3339-iso8601/)."
-        }
-    )
-    productType: icarEnums.icarWithdrawalProductType = Field(
-        json_schema_extra={
-            "description": "Product or food item affected by this withdrawal.",
-        },
-    )
 
 
 class WithdrawalCollection(BaseModel):
@@ -105,18 +90,18 @@ async def remove_withdrawal_event(request: Request, ft: str):
 async def withdrawal_event_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
-    animal: mongo_object_id.MongoObjectId | None = None,
+    animal: str | None = None,
     endDateTimeStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
     endDateTimeEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
-    createdStart: datetime | None = None,
-    createdEnd: datetime | None = None,
+    # createdStart: datetime | None = None,
+    # createdEnd: datetime | None = None,
 ):
     """Search for a withdrawal event given the provided criteria."""
     query = {
         "_id": ft,
-        "animal": animal,
+        "animal.id": animal,
         "endDateTime": dateBuild(endDateTimeStart, endDateTimeEnd),
-        "created": dateBuild(createdStart, createdEnd),
+        # "created": dateBuild(createdStart, createdEnd),
     }
     result = await request.app.state.withdrawal.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:

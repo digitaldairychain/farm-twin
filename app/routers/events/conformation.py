@@ -91,7 +91,7 @@ async def conformation_event_query(
     animal: str | None = None,
 ):
     """Search for a conformation event given the provided criteria."""
-    query = {"_id": ft, "animal": {"id": animal}}
+    query = {"_id": ft, "animal.id": animal}
     result = await request.app.state.conformation.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return ConformationCollection(conformation=result)

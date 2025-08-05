@@ -1110,10 +1110,6 @@ class icarProductIdentifierType(icarIdentifierType):
     pass
 
 
-class icarDateType(BaseModel):
-    pass
-
-
 class icarProductReferenceType(icarResourceReferenceType):
     identifiers: list[icarProductIdentifierType] = Field(
         json_schema_extra={
@@ -1461,19 +1457,19 @@ class icarAnimalStateType(BaseModel):
         default=None,
         json_schema_extra={"description": "The current parity of the animal."},
     )
-    lastCalvingDate: Optional[icarDateType] = Field(
+    lastCalvingDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date (see https://ijmacd.github.io/rfc3339-iso8601/)."
         },
     )
-    lastInseminationDate: Optional[icarDateType] = Field(
+    lastInseminationDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date (see https://ijmacd.github.io/rfc3339-iso8601/)."
         },
     )
-    lastDryingOffDate: Optional[icarDateType] = Field(
+    lastDryingOffDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date (see https://ijmacd.github.io/rfc3339-iso8601/)."

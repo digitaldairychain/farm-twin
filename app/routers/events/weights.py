@@ -21,45 +21,13 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 
 from ..ftCommon import dateBuild, filterQuery
-from ..icar import icarTypes
-from .eventCommon import AnimalEventModel
+from ..icar.icarResources import icarWeightEventResource as Weight
 
 router = APIRouter(
     prefix="/weight",
     tags=["events"],
     responses={404: {"description": "Not found"}},
 )
-
-
-class Weight(AnimalEventModel):
-    weight: icarTypes.icarMassMeasureType = Field(
-        json_schema_extra={
-            "description": "The weight measurement, including units and "
-            + "resolution.",
-        }
-    )
-    device: Optional[mongo_object_id.MongoObjectId] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "ObjectID of weighing device.",
-            "example": str(ObjectId()),
-        },
-    )
-    timestamp: Optional[datetime] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Time when weight recorded. Current time inserted"
-            + " if empty",
-            "example": str(datetime.now()),
-        },
-    )
-    timeOffFeed: Optional[float] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Hours of curfew or withholding feed prior to"
-            + " weighing to standardise gut fill.",
-        },
-    )
 
 
 class WeightCollection(BaseModel):
@@ -83,8 +51,6 @@ async def create_weight_event(request: Request, weight: Weight):
     :param weight: Weight to be added
     """
     model = weight.model_dump(by_alias=True, exclude=["ft"])
-    if model["timestamp"] is None:
-        model["timestamp"] = datetime.now()
     try:
         new_we = await request.app.state.weights.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
@@ -124,20 +90,20 @@ async def remove_weight_event(request: Request, ft: str):
 async def weight_event_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
-    animal: mongo_object_id.MongoObjectId | None = None,
-    device: mongo_object_id.MongoObjectId | None = None,
-    timestampStart: datetime | None = None,
-    timestampEnd: datetime | None = None,
-    createdStart: datetime | None = None,
-    createdEnd: datetime | None = None,
+    animal: str | None = None,
+    device: str | None = None,
+    # timestampStart: datetime | None = None,
+    # timestampEnd: datetime | None = None,
+    # createdStart: datetime | None = None,
+    # createdEnd: datetime | None = None,
 ):
     """Search for a weight event given the provided criteria."""
     query = {
         "_id": ft,
-        "device": device,
-        "animal": animal,
-        "timestamp": dateBuild(timestampStart, timestampEnd),
-        "created": dateBuild(createdStart, createdEnd),
+        "animal.id": animal,
+        "device.id": device,
+        # "timestamp": dateBuild(timestampStart, timestampEnd),
+        # "created": dateBuild(createdStart, createdEnd),
     }
     result = await request.app.state.weights.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:

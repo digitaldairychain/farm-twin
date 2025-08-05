@@ -91,9 +91,9 @@ async def feed_intake_event_query(
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
     device: str | None = None,
-    feedID: str | None = None,
-    # feedID: mongo_object_id.MongoObjectId | None = None,
-    rationID: str | None = None,
+    # feedID: str | None = None,
+    # # feedID: mongo_object_id.MongoObjectId | None = None,
+    # rationID: str | None = None,
     feedingStartingDateTimeStart: datetime | None = None,
     feedingStartingDateTimeEnd: datetime | None = None,
     # createdStart: datetime | None = None,
@@ -102,10 +102,8 @@ async def feed_intake_event_query(
     """Search for a feed intake event given the provided criteria."""
     query = {
         "_id": ft,
-        "animal": {"$in": animal},
-        "device": {"$in": device},
-        "feedID": {"$in": feedID},
-        "rationID": {"$in": rationID},
+        "animal.id": animal,
+        "device.id": device,
         "feedingStartingDateTime": dateBuild(
             feedingStartingDateTimeStart, feedingStartingDateTimeEnd
         ),
