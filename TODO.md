@@ -29,3 +29,5 @@ Python datetime -> ICAR Datetime format/type
 align ft device/machine? -> https://github.com/adewg/ICAR/blob/ADE-1/types/icarDeviceReferenceType.json
 
 Does Birth Event allow for duplication of data? animalDetail field
+implementation of complex types in search
+implementation of searching in arrays

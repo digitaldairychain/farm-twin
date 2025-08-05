@@ -188,6 +188,17 @@ def drying_off_payload(object_id):
 
 
 @pytest.fixture()
+def milking_visit_payload(object_id):
+    """Generate a milking visit payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "milkingStartingDateTime": str(datetime.now()),
+        "milkingMilkWeight": {"unitCode": "KGM", "value": 10},
+        "resourceType": "icarMilkingVisitEventResource"
+    }
+
+
+@pytest.fixture()
 def arrival_payload(object_id):
     """Generate an arrival payload."""
     return {
