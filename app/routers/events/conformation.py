@@ -20,7 +20,8 @@ from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
 from ..ftCommon import filterQuery
-from ..icar.icarResources import icarConformationScoreEventResource as Conformation
+from ..icar.icarResources import \
+    icarConformationScoreEventResource as Conformation
 
 router = APIRouter(
     prefix="/conformation",

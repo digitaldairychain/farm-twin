@@ -12,14 +12,15 @@ https://github.com/adewg/ICAR/blob/ADE-1/resources/icarMovementArrivalEventResou
 """
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 from fastapi import APIRouter, Query, Request, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
+                         find_in_db)
 from ...icar import icarEnums
 from ...icar.icarResources import icarMovementArrivalEventResource as Arrival
 
@@ -76,7 +77,8 @@ async def arrival_event_query(
     arrivalReason: icarEnums.icarArrivalReasonType | None = None,
     currentLactationParity: int | None = None,
     lastCalvingDateStart: datetime | None = None,
-    lastCalvingDateEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+    lastCalvingDateEnd: Annotated[datetime, Query(
+        default_factory=datetime.now)] = None,
     lastInseminationDateStart: datetime | None = None,
     lastInseminationDateEnd: datetime | None = None,
     lastDryingOffDateStart: datetime | None = None,

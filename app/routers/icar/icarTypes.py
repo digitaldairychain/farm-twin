@@ -3,8 +3,8 @@ Collection of types used in ICAR data standards.
 See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/enums
 """
 
-from typing import Optional
 from datetime import datetime
+from typing import Optional
 
 from geojson_pydantic import GeometryCollection
 from pydantic import BaseModel, Field
