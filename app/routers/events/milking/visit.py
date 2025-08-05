@@ -20,7 +20,7 @@ from ...ftCommon import add_one_to_db, delete_one_from_db, find_in_db, dateBuild
 from ...icar import icarEnums
 from ...icar.icarResources import icarMilkingVisitEventResource as Visit
 
-ERROR_MSG_OBJECT = "Visit"
+ERROR_MSG_OBJECT = "Milking Visit"
 
 router = APIRouter(
     prefix="/visit",
