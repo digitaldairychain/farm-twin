@@ -8,13 +8,15 @@ Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarMovementDeathEventResource.json
 """
 
+from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Request, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
-from ...ftCommon import add_one_to_db, delete_one_from_db, find_in_db
+from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
+                         find_in_db)
 from ...icar import icarEnums
 from ...icar.icarResources import icarMovementDeathEventResource as Death
 
@@ -74,6 +76,8 @@ async def death_event_query(
     disposalOperator: str | None = None,
     disposalReference: str | None = None,
     deathMethod: icarEnums.icarDeathMethodType | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a death event given the provided criteria."""
     query = {
@@ -85,6 +89,7 @@ async def death_event_query(
         "disposalOperator": disposalOperator,
         "disposalReference": disposalReference,
         "deathMethod": deathMethod,
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await find_in_db(request.app.state.death, query)
     return DeathCollection(death=result)

@@ -11,6 +11,7 @@ Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarConformationScoreEventResource.json
 """
 
+from datetime import datetime
 from typing import List
 
 import pymongo
@@ -19,7 +20,7 @@ from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
-from ..ftCommon import filterQuery
+from ..ftCommon import dateBuild, filterQuery
 from ..icar.icarResources import \
     icarConformationScoreEventResource as Conformation
 
@@ -90,9 +91,15 @@ async def conformation_event_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a conformation event given the provided criteria."""
-    query = {"_id": ft, "animal.id": animal}
+    query = {
+        "_id": ft,
+        "animal.id": animal,
+        "created": dateBuild(createdStart, createdEnd),
+    }
     result = await request.app.state.conformation.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:
         return ConformationCollection(conformation=result)

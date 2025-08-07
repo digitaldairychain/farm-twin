@@ -93,15 +93,15 @@ async def withdrawal_event_query(
     animal: str | None = None,
     endDateTimeStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
     endDateTimeEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
-    # createdStart: datetime | None = None,
-    # createdEnd: datetime | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a withdrawal event given the provided criteria."""
     query = {
         "_id": ft,
         "animal.id": animal,
         "endDateTime": dateBuild(endDateTimeStart, endDateTimeEnd),
-        # "created": dateBuild(createdStart, createdEnd),
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await request.app.state.withdrawal.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:

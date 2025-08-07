@@ -81,6 +81,8 @@ async def visit_event_query(
     milkingShiftLocalStartDateStart: datetime | None = None,
     milkingShiftLocalStartDateEnd: datetime | None = None,
     milkingShiftNumber: int | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a milking visit event given the provided criteria."""
     query = {
@@ -99,6 +101,7 @@ async def visit_event_query(
             milkingShiftLocalStartDateStart, milkingShiftLocalStartDateEnd
         ),
         "milkingShiftNumber": milkingShiftNumber,
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await find_in_db(request.app.state.visit, query)
     return VisitCollection(visit=result)

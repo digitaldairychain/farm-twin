@@ -11,13 +11,15 @@ Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarMilkingDryOffEventResource.json
 """
 
+from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Request, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
-from ...ftCommon import add_one_to_db, delete_one_from_db, find_in_db
+from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
+                         find_in_db)
 from ...icar.icarResources import icarMilkingDryOffEventResource as DryingOff
 
 ERROR_MSG_OBJECT = "Drying Off"
@@ -70,11 +72,14 @@ async def drying_off_event_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a drying off event given the provided criteria."""
     query = {
         "_id": ft,
         "animal.id": animal,
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await find_in_db(request.app.state.drying_off, query)
     return DryingOffCollection(drying_off=result)

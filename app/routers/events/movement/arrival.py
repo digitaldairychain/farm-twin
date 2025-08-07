@@ -79,6 +79,8 @@ async def arrival_event_query(
     lastInseminationDateEnd: datetime | None = None,
     lastDryingOffDateStart: datetime | None = None,
     lastDryingOffDateEnd: datetime | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a arrival event given the provided criteria."""
     query = {
@@ -95,6 +97,7 @@ async def arrival_event_query(
         "animalState.lastDryingOffDate": dateBuild(
             lastDryingOffDateStart, lastDryingOffDateEnd
         ),
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await find_in_db(request.app.state.arrival, query)
     return ArrivalCollection(arrival=result)

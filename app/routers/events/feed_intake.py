@@ -91,13 +91,10 @@ async def feed_intake_event_query(
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
     device: str | None = None,
-    # feedID: str | None = None,
-    # # feedID: mongo_object_id.MongoObjectId | None = None,
-    # rationID: str | None = None,
     feedingStartingDateTimeStart: datetime | None = None,
     feedingStartingDateTimeEnd: datetime | None = None,
-    # createdStart: datetime | None = None,
-    # createdEnd: datetime | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a feed intake event given the provided criteria."""
     query = {
@@ -107,6 +104,7 @@ async def feed_intake_event_query(
         "feedingStartingDateTime": dateBuild(
             feedingStartingDateTimeStart, feedingStartingDateTimeEnd
         ),
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await request.app.state.feed_intake.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:

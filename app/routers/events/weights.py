@@ -92,18 +92,15 @@ async def weight_event_query(
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
     device: str | None = None,
-    # timestampStart: datetime | None = None,
-    # timestampEnd: datetime | None = None,
-    # createdStart: datetime | None = None,
-    # createdEnd: datetime | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a weight event given the provided criteria."""
     query = {
         "_id": ft,
         "animal.id": animal,
         "device.id": device,
-        # "timestamp": dateBuild(timestampStart, timestampEnd),
-        # "created": dateBuild(createdStart, createdEnd),
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await request.app.state.weights.find(filterQuery(query)).to_list(1000)
     if len(result) > 0:

@@ -8,13 +8,15 @@ Compliant with ICAR data standards:
 https://github.com/adewg/ICAR/blob/ADE-1/resources/icarMovementDepartureEventResource.json
 """
 
+from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Request, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
-from ...ftCommon import add_one_to_db, delete_one_from_db, find_in_db
+from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
+                         find_in_db)
 from ...icar import icarEnums
 from ...icar.icarResources import \
     icarMovementDepartureEventResource as Departure
@@ -71,6 +73,8 @@ async def departure_event_query(
     animal: str | None = None,
     departureKind: icarEnums.icarDepartureKindType | None = None,
     departureReason: icarEnums.icarDepartureReasonType | None = None,
+    createdStart: datetime | None = None,
+    createdEnd: datetime | None = None,
 ):
     """Search for a departure event given the provided criteria."""
     query = {
@@ -78,6 +82,7 @@ async def departure_event_query(
         "animal.id": animal,
         "departureKind": departureKind,
         "departureReason": departureReason,
+        "created": dateBuild(createdStart, createdEnd),
     }
     result = await find_in_db(request.app.state.departure, query)
     return DepartureCollection(departure=result)
