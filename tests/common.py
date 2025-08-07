@@ -43,6 +43,7 @@ def create_get(test_client, path, payload, key, expected_code=201):
     if response.status_code == 201:
         response = test_client.get(path + f"/?ft={response_json['ft']}")
         assert response.status_code == 200
+        print(response.json())
         assert len(response.json()[key]) == 1
         response_json = response.json()[key][0]
         check_object_similarity(payload, response_json)
@@ -103,3 +104,13 @@ def create_duplicate(test_client, path, payload, key):
     """POST the same object twice - the second time should produce an error."""
     create_get(test_client, path, payload, key)
     create_get(test_client, path, payload, key, expected_code=404)
+
+
+def test_endpoint(tc, path, payload, key, oid, update):
+    if update:
+        pass
+    else:
+        create_get(tc, path, payload, key)
+        create_delete(tc, path, payload, key)
+        get_not_found(tc, path, oid)
+        create_wrong_payload(tc, path)

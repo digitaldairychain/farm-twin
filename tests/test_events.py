@@ -195,3 +195,106 @@ class TestEvents:
 
             def test_create_milking_visit_wrong_payload(self, test_client):
                 common.create_wrong_payload(test_client, self.path)
+
+    class TestObservations:
+        class TestCarcass:
+            key = "carcass"
+            path = "/" + ROOT + "/observations/" + key
+
+            def test_create_carcass_event(self, test_client, carcass_payload):
+                common.create_get(test_client, self.path, carcass_payload, self.key)
+
+            def test_create_delete_carcass_event(self, test_client, carcass_payload):
+                common.create_delete(test_client, self.path, carcass_payload, self.key)
+
+            def test_get_carcass_event_not_found(self, test_client, object_id):
+                common.get_not_found(test_client, self.path, object_id)
+
+            def test_create_carcass_wrong_payload(self, test_client):
+                common.create_wrong_payload(test_client, self.path)
+
+        class TestHealthStatus:
+            key = "health_status"
+            path = "/" + ROOT + "/observations/" + key
+
+            def test_create_health_status_event(
+                self, test_client, health_status_payload
+            ):
+                common.create_get(
+                    test_client, self.path, health_status_payload, self.key
+                )
+
+            def test_create_delete_health_status_event(
+                self, test_client, health_status_payload
+            ):
+                common.create_delete(
+                    test_client, self.path, health_status_payload, self.key
+                )
+
+            def test_get_health_status_event_not_found(self, test_client, object_id):
+                common.get_not_found(test_client, self.path, object_id)
+
+            def test_create_health_status_wrong_payload(self, test_client):
+                common.create_wrong_payload(test_client, self.path)
+
+        class TestLactationStatus:
+            key = "lactation_status"
+            path = "/" + ROOT + "/observations/" + key
+
+            def test_create_lactation_status_event(
+                self, test_client, lactation_status_payload
+            ):
+                common.create_get(
+                    test_client, self.path, lactation_status_payload, self.key
+                )
+
+            def test_create_delete_lactation_status_event(
+                self, test_client, lactation_status_payload
+            ):
+                common.create_delete(
+                    test_client, self.path, lactation_status_payload, self.key
+                )
+
+            def test_get_lactation_status_event_not_found(self, test_client, object_id):
+                common.get_not_found(test_client, self.path, object_id)
+
+            def test_create_lactation_status_wrong_payload(self, test_client):
+                common.create_wrong_payload(test_client, self.path)
+
+        class TestPositionStatus:
+            key = "position"
+            path = "/" + ROOT + "/observations/" + key
+
+            def test_create_position_event(self, test_client, position_payload):
+                common.create_get(test_client, self.path, position_payload, self.key)
+
+            def test_create_delete_position_event(self, test_client, position_payload):
+                common.create_delete(test_client, self.path, position_payload, self.key)
+
+            def test_get_position_event_not_found(self, test_client, object_id):
+                common.get_not_found(test_client, self.path, object_id)
+
+            def test_create_position_wrong_payload(self, test_client):
+                common.create_wrong_payload(test_client, self.path)
+
+        class TestReproStatus:
+            key = "repro_status"
+            path = "/" + ROOT + "/observations/" + key
+
+            def test_create_repro_status_event(self, test_client, repro_status_payload):
+                common.create_get(
+                    test_client, self.path, repro_status_payload, self.key
+                )
+
+            def test_create_delete_repro_status_event(
+                self, test_client, repro_status_payload
+            ):
+                common.create_delete(
+                    test_client, self.path, repro_status_payload, self.key
+                )
+
+            def test_get_repro_status_event_not_found(self, test_client, object_id):
+                common.get_not_found(test_client, self.path, object_id)
+
+            def test_create_repro_status_wrong_payload(self, test_client):
+                common.create_wrong_payload(test_client, self.path)

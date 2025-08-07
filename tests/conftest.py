@@ -7,6 +7,8 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 
+from . import common
+
 
 @pytest.fixture()
 def test_client():
@@ -121,6 +123,58 @@ def withdrawal_payload():
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "endDateTime": datetime.now(timezone.utc).isoformat(),
         "productType": "Eggs",
+        "resourceType": "icarWithdrawalEventResource",
+    }
+
+
+@pytest.fixture()
+def carcass_payload():
+    """Generate a withdrawal payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "side": "Left",
+        "resourceType": "icarWithdrawalEventResource",
+    }
+
+
+@pytest.fixture()
+def health_status_payload():
+    """Generate a health status payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "observedStatus": "Healthy",
+        "resourceType": "icarWithdrawalEventResource",
+    }
+
+
+@pytest.fixture()
+def lactation_status_payload():
+    """Generate a lactation status payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "observedStatus": "Open",
+        "eventDateTime": datetime.now(timezone.utc).isoformat(),
+        "resourceType": "icarWithdrawalEventResource",
+    }
+
+
+@pytest.fixture()
+def position_payload():
+    """Generate a position payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "positionName": "Yard",
+        "eventDateTime": datetime.now(timezone.utc).isoformat(),
+        "resourceType": "icarWithdrawalEventResource",
+    }
+
+
+@pytest.fixture()
+def repro_status_payload():
+    """Generate a repro status payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "observedStatus": "Pregnant",
         "resourceType": "icarWithdrawalEventResource",
     }
 
