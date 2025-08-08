@@ -6,6 +6,11 @@ See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/enums
 from enum import Enum
 
 
+class icarFeedDurationTypeUnitCode(str, Enum):
+    _sec = ("SEC",)
+    _min = ("MIN",)
+
+
 class icarAnimalLactationStatusType(str, Enum):
     _dry = ("Dry",)
     _lead = ("Lead",)

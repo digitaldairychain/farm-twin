@@ -13,7 +13,7 @@ from . import icarEnums
 
 
 class icarFeedDurationType(BaseModel):
-    unitCode: Optional[str] = Field(
+    unitCode: Optional[icarEnums.icarFeedDurationTypeUnitCode] = Field(
         default=None,
         json_schema_extra={
             "description": "UN/CEFACT Common Code for Units of Measurement."
@@ -31,12 +31,13 @@ class icarIdentifierType(BaseModel):
     id: str = Field(
         json_schema_extra={
             "description": "A unique identification for the resource issued under the auspices of the scheme."
-        },
+        }
     )
     scheme: str = Field(
         json_schema_extra={
             "description": "The identifier (in reverse domain format) of an official scheme that manages unique identifiers."
         },
+        examples=["uk.gov", "gov.fda"],
     )
 
 
@@ -1740,6 +1741,7 @@ class icarParentageType(BaseModel):
         json_schema_extra={
             "description": "Specifies Male or Female gender so you can recognise Sire or Dam."
         },
+        examples=["Male", "Female"],
     )
     relation: Optional[icarEnums.icarAnimalRelationType] = Field(
         default=None,

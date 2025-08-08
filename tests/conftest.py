@@ -180,6 +180,18 @@ def repro_status_payload():
 
 
 @pytest.fixture()
+def attention_payload():
+    """Generate a repro status payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "category": "Health",
+        "causes": ["Activity", "LyingTooLong"],
+        "priority": "Urgent",
+        "resourceType": "icarWithdrawalEventResource",
+    }
+
+
+@pytest.fixture()
 def object_id():
     """Generate a random uuid."""
     return str(ObjectId())
