@@ -20,12 +20,12 @@ from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
-from ..ftCommon import dateBuild, filterQuery
-from ..icar.icarResources import icarFeedIntakeEventResource as FeedIntake
+from ...ftCommon import dateBuild, filterQuery
+from ...icar.icarResources import icarFeedIntakeEventResource as FeedIntake
 
 router = APIRouter(
     prefix="/feed_intake",
-    tags=["events"],
+    tags=["events", "feeding"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -51,7 +51,8 @@ async def create_feed_intake_event(request: Request, feedintake: FeedIntake):
     try:
         new_fie = await request.app.state.feed_intake.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail="Feed intake already exists")
+        raise HTTPException(
+            status_code=404, detail="Feed intake already exists")
     if (
         created_feedintake_event := await request.app.state.feed_intake.find_one(
             {"_id": new_fie.inserted_id}
@@ -77,7 +78,8 @@ async def remove_feed_intake_event(request: Request, ft: str):
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(status_code=404, detail=f"Feed intake event {ft} not found")
+    raise HTTPException(
+        status_code=404, detail=f"Feed intake event {ft} not found")
 
 
 @router.get(

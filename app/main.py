@@ -8,7 +8,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from app import __version__
 
 from .routers import attachments
-from .routers.events import (attention, conformation, feed_intake, weights,
+from .routers.events.feeding import feed_intake
+from .routers.events.performance import conformation, weight
+from .routers.events import (attention,
                              withdrawal)
 from .routers.events.milking import (drying_off, lactation_status,
                                      test_day_result, visit)
@@ -34,11 +36,14 @@ app.include_router(polygons.router, prefix="/things")
 app.include_router(animals.router, prefix="/things")
 app.include_router(machines.router, prefix="/things")
 
+app.include_router(feed_intake.router, prefix="/events/feeding")
+
 app.include_router(attention.router, prefix="/events")
-app.include_router(conformation.router, prefix="/events")
-app.include_router(feed_intake.router, prefix="/events")
-app.include_router(weights.router, prefix="/events")
 app.include_router(withdrawal.router, prefix="/events")
+
+app.include_router(conformation.router, prefix="/events/performance")
+app.include_router(weight.router, prefix="/events/performance")
+
 
 app.include_router(drying_off.router, prefix="/events/milking")
 app.include_router(visit.router, prefix="/events/milking")
@@ -74,10 +79,12 @@ async def open_db() -> AsyncIOMotorClient:
     app.state.machines = _ft["things"]["machines"]
 
     app.state.attention = _ft["events"]["attention"]
-    app.state.conformation = _ft["events"]["conformation"]
-    app.state.feed_intake = _ft["events"]["feed_intake"]
-    app.state.weights = _ft["events"]["weights"]
     app.state.withdrawal = _ft["events"]["withdrawal"]
+
+    app.state.feed_intake = _ft["events"]["feeding"]["feed_intake"]
+
+    app.state.conformation = _ft["events"]["performance"]["conformation"]
+    app.state.weight = _ft["events"]["performance"]["weight"]
 
     app.state.drying_off = _ft["events"]["milking"]["drying_off"]
     app.state.visit = _ft["events"]["milking"]["visit"]
@@ -102,7 +109,8 @@ async def create_indexes():
     app.state.devices.create_index(["serial", "manufacturer"], unique=True)
     app.state.points.create_index({"point": "2dsphere"}, unique=True)
     app.state.polygons.create_index(["polygon"], unique=True)
-    app.state.sensors.create_index(["device", "serial", "measurement"], unique=True)
+    app.state.sensors.create_index(
+        ["device", "serial", "measurement"], unique=True)
     _attachment_index = ["device", "thing", "start"]
     app.state.attachments.create_index(_attachment_index, unique=True)
     _sample_index = ["device", "sensor", "timestamp", "predicted"]
