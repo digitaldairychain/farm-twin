@@ -152,7 +152,7 @@ def lactation_status_payload():
     """Generate a lactation status payload."""
     return {
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
-        "observedStatus": "Open",
+        "observedStatus": "Fresh",
         "eventDateTime": datetime.now(timezone.utc).isoformat(),
         "resourceType": "icarWithdrawalEventResource",
     }
@@ -187,6 +187,17 @@ def attention_payload():
         "category": "Health",
         "causes": ["Activity", "LyingTooLong"],
         "priority": "Urgent",
+        "resourceType": "icarWithdrawalEventResource",
+    }
+
+
+@pytest.fixture()
+def test_day_result_payload():
+    """Generate a test day result event payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "milkWeight24Hours": {"unitCode": "KGM", "value": 20},
+        "testDayCode": "Dry",
         "resourceType": "icarWithdrawalEventResource",
     }
 

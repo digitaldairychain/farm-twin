@@ -152,6 +152,54 @@ class TestEvents:
                 common.create_wrong_payload(test_client, self.path)
 
     class TestMilking:
+        class TestLactationStatus:
+            key = "lactation_status"
+            path = "/" + ROOT + "/milking/" + key
+
+            def test_create_lactation_status_event(
+                self, test_client, lactation_status_payload
+            ):
+                common.create_get(
+                    test_client, self.path, lactation_status_payload, self.key
+                )
+
+            def test_create_delete_lactation_status_event(
+                self, test_client, lactation_status_payload
+            ):
+                common.create_delete(
+                    test_client, self.path, lactation_status_payload, self.key
+                )
+
+            def test_get_lactation_status_event_not_found(self, test_client, object_id):
+                common.get_not_found(test_client, self.path, object_id)
+
+            def test_create_lactation_status_wrong_payload(self, test_client):
+                common.create_wrong_payload(test_client, self.path)
+
+        class TestTestDayResult:
+            key = "test_day_result"
+            path = "/" + ROOT + "/milking/" + key
+
+            def test_create_test_day_result_event(
+                self, test_client, test_day_result_payload
+            ):
+                common.create_get(
+                    test_client, self.path, test_day_result_payload, self.key
+                )
+
+            def test_create_delete_test_day_result_event(
+                self, test_client, test_day_result_payload
+            ):
+                common.create_delete(
+                    test_client, self.path, test_day_result_payload, self.key
+                )
+
+            def test_get_test_day_result_event_not_found(self, test_client, object_id):
+                common.get_not_found(test_client, self.path, object_id)
+
+            def test_create_test_day_result_wrong_payload(self, test_client):
+                common.create_wrong_payload(test_client, self.path)
+
         class TestDryingOff:
             key = "drying_off"
             path = "/" + ROOT + "/milking/" + key
@@ -235,30 +283,6 @@ class TestEvents:
                 common.get_not_found(test_client, self.path, object_id)
 
             def test_create_health_status_wrong_payload(self, test_client):
-                common.create_wrong_payload(test_client, self.path)
-
-        class TestLactationStatus:
-            key = "lactation_status"
-            path = "/" + ROOT + "/observations/" + key
-
-            def test_create_lactation_status_event(
-                self, test_client, lactation_status_payload
-            ):
-                common.create_get(
-                    test_client, self.path, lactation_status_payload, self.key
-                )
-
-            def test_create_delete_lactation_status_event(
-                self, test_client, lactation_status_payload
-            ):
-                common.create_delete(
-                    test_client, self.path, lactation_status_payload, self.key
-                )
-
-            def test_get_lactation_status_event_not_found(self, test_client, object_id):
-                common.get_not_found(test_client, self.path, object_id)
-
-            def test_create_lactation_status_wrong_payload(self, test_client):
                 common.create_wrong_payload(test_client, self.path)
 
         class TestPositionStatus:

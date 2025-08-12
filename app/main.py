@@ -10,10 +10,10 @@ from app import __version__
 from .routers import attachments
 from .routers.events import (attention, conformation, feed_intake, weights,
                              withdrawal)
-from .routers.events.milking import drying_off, visit
+from .routers.events.milking import (drying_off, lactation_status,
+                                     test_day_result, visit)
 from .routers.events.movement import arrival, birth, death, departure
-from .routers.events.observations import (carcass, health_status,
-                                          lactation_status, position,
+from .routers.events.observations import (carcass, health_status, position,
                                           repro_status)
 from .routers.measurements import devices, samples, sensors
 from .routers.things import animals, machines, points, polygons
@@ -42,6 +42,8 @@ app.include_router(withdrawal.router, prefix="/events")
 
 app.include_router(drying_off.router, prefix="/events/milking")
 app.include_router(visit.router, prefix="/events/milking")
+app.include_router(lactation_status.router, prefix="/events/milking")
+app.include_router(test_day_result.router, prefix="/events/milking")
 
 app.include_router(arrival.router, prefix="/events/movement")
 app.include_router(birth.router, prefix="/events/movement")
@@ -50,7 +52,7 @@ app.include_router(departure.router, prefix="/events/movement")
 
 app.include_router(carcass.router, prefix="/events/observations")
 app.include_router(health_status.router, prefix="/events/observations")
-app.include_router(lactation_status.router, prefix="/events/observations")
+
 app.include_router(position.router, prefix="/events/observations")
 app.include_router(repro_status.router, prefix="/events/observations")
 
@@ -79,6 +81,8 @@ async def open_db() -> AsyncIOMotorClient:
 
     app.state.drying_off = _ft["events"]["milking"]["drying_off"]
     app.state.visit = _ft["events"]["milking"]["visit"]
+    app.state.lactation_status = _ft["events"]["milking"]["lactation_status"]
+    app.state.test_day_result = _ft["events"]["milking"]["test_day_result"]
 
     app.state.arrival = _ft["events"]["movement"]["arrival"]
     app.state.birth = _ft["events"]["movement"]["birth"]
@@ -87,7 +91,7 @@ async def open_db() -> AsyncIOMotorClient:
 
     app.state.carcass = _ft["events"]["observations"]["carcass"]
     app.state.health_status = _ft["events"]["observations"]["health_status"]
-    app.state.lactation_status = _ft["events"]["observations"]["lactation_status"]
+
     app.state.position = _ft["events"]["observations"]["position"]
     app.state.repro_status = _ft["events"]["observations"]["repro_status"]
 

@@ -1,11 +1,11 @@
 """
-Collects API calls related to animal lactation status events.
+Collects API calls related to lactation status based on observation.
 
 This collection of endpoints allows for the addition, deletion
 and finding of those events.
 
 Compliant with ICAR data standards:
-https://github.com/adewg/ICAR/blob/ADE-1/resources/icarReproStatusObservedEventResource.json
+https://github.com/adewg/ICAR/blob/ADE-1/resources/icarLactationStatusObservedEventResource.json
 """
 
 from datetime import datetime
@@ -19,35 +19,35 @@ from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
                          find_in_db)
 from ...icar import icarEnums
 from ...icar.icarResources import \
-    icarReproStatusObservedEventResource as ReproStatus
+    icarLactationStatusObservedEventResource as LactationStatus
 
-ERROR_MSG_OBJECT = "Repro Status"
+ERROR_MSG_OBJECT = "Lactation Status"
 
 router = APIRouter(
     prefix="/lactation_status",
-    tags=["observations", "lactation"],
+    tags=["events", "milking"],
     responses={404: {"description": "Not found"}},
 )
 
 
-class ReproStatusCollection(BaseModel):
-    lactation_status: List[ReproStatus]
+class LactationStatusCollection(BaseModel):
+    lactation_status: List[LactationStatus]
 
 
 @router.post(
     "/",
     response_description="Add lactation status event",
-    response_model=ReproStatus,
+    response_model=LactationStatus,
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
 async def create_lactation_status_event(
-    request: Request, lactation_status: ReproStatus
+    request: Request, lactation_status: LactationStatus
 ):
     """
     Create a new lactation status event.
 
-    :param lactation_status: Repro Status to be added
+    :param lactation_status: Lactation Status to be added
     """
     model = lactation_status.model_dump(by_alias=True, exclude=["ft"])
     return await add_one_to_db(
@@ -72,7 +72,7 @@ async def remove_lactation_status_event(
 @router.get(
     "/",
     response_description="Search for lactation status event",
-    response_model=ReproStatusCollection,
+    response_model=LactationStatusCollection,
     response_model_by_alias=False,
 )
 async def lactation_status_event_query(
@@ -91,4 +91,4 @@ async def lactation_status_event_query(
         "created": dateBuild(createdStart, createdEnd),
     }
     result = await find_in_db(request.app.state.lactation_status, query)
-    return ReproStatusCollection(lactation_status=result)
+    return LactationStatusCollection(lactation_status=result)

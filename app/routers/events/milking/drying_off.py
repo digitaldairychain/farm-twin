@@ -1,8 +1,5 @@
 """
-Collects API calls related to drying off of animals in milk.
-
-Records that the animal has been dried off from milking.
-If necessary, also record a separate health treatment event.
+Collects API calls related to an animal being dried off at the end of a lactation.
 
 This collection of endpoints allows for the addition, deletion
 and finding of those events.

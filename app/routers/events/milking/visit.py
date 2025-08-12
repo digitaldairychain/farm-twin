@@ -1,5 +1,5 @@
 """
-Collects API calls related to animal milking visit events.
+Collects API calls related to an animal's visit to a robot or manual milking.
 
 This collection of endpoints allows for the addition, deletion
 and finding of those events.
