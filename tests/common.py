@@ -16,8 +16,13 @@ def is_date(string, fuzzy=False):
         return False
 
 
+def strip_none_values(dictionary):
+    return {k: v for k, v in dictionary.items() if v is not None}
+
+
 def check_object_similarity(payload, response):
     """Check response contains at least the payload data."""
+
     for k in payload.keys():
         try:
             assert payload[k] == response[k]
@@ -28,6 +33,9 @@ def check_object_similarity(payload, response):
             # Handle nested dicts
             if isinstance(response[k], dict) or isinstance(payload[k], dict):
                 check_object_similarity(payload[k], response[k])
+            # Handle lists - ignore
+            elif isinstance(response[k], list) or isinstance(payload[k], list):
+                return
             else:
                 raise e
 

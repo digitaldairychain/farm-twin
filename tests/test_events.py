@@ -346,19 +346,38 @@ class TestEvents:
             def test_create_conformation_event_wrong_payload(self, test_client):
                 common.create_wrong_payload(test_client, self.path)
 
-    class TestWeight:
-        key = "weight"
-        path = "/" + ROOT + "/performance/" + key
+        class TestWeight:
+            key = "weight"
+            path = "/" + ROOT + "/performance/" + key
 
-        def test_create_weight_event(self, test_client, weight_payload):
-            common.create_get(test_client, self.path, weight_payload, self.key)
+            def test_create_weight_event(self, test_client, weight_payload):
+                common.create_get(test_client, self.path,
+                                  weight_payload, self.key)
 
-        def test_create_delete_weight_event(self, test_client, weight_payload):
-            common.create_delete(test_client, self.path,
-                                 weight_payload, self.key)
+            def test_create_delete_weight_event(self, test_client, weight_payload):
+                common.create_delete(test_client, self.path,
+                                     weight_payload, self.key)
 
-        def test_get_weight_event_not_found(self, test_client, object_id):
-            common.get_not_found(test_client, self.path, object_id)
+            def test_get_weight_event_not_found(self, test_client, object_id):
+                common.get_not_found(test_client, self.path, object_id)
 
-        def test_create_weight_event_wrong_payload(self, test_client):
-            common.create_wrong_payload(test_client, self.path)
+            def test_create_weight_event_wrong_payload(self, test_client):
+                common.create_wrong_payload(test_client, self.path)
+
+        class TestGroupWeight:
+            key = "group_weight"
+            path = "/" + ROOT + "/performance/" + key
+
+            def test_create_group_weight_event(self, test_client, group_weight_payload):
+                common.create_get(test_client, self.path,
+                                  group_weight_payload, self.key)
+
+            def test_create_delete_group_weight_event(self, test_client, group_weight_payload):
+                common.create_delete(test_client, self.path,
+                                     group_weight_payload, self.key)
+
+            def test_get_group_weight_event_not_found(self, test_client, object_id):
+                common.get_not_found(test_client, self.path, object_id)
+
+            def test_create_group_weight_event_wrong_payload(self, test_client):
+                common.create_wrong_payload(test_client, self.path)

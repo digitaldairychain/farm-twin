@@ -103,6 +103,39 @@ def weight_payload():
 
 
 @pytest.fixture()
+def group_weight_payload(object_id):
+    """Generate a group weight event payload."""
+    return {
+        "groupMethod": "EmbeddedAnimalSet",
+        "embeddedAnimalSet": {
+            "resourceType": "icarWeightEventResource",
+            "id": object_id,
+            "member": [
+                {
+                    "id": "UK230011200123",
+                    "scheme": "gov.uk"
+                }
+            ]
+        },
+        "statistics": [
+            {
+                "unit": "KGM",
+                "aggregation": "Average",
+                "value": float(randint(453, 816)),
+            }
+        ],
+        "units": "KGM",
+        "method": "LoadCell",
+        "resolution": float(randint(1, 9) / 10),
+        "device": {
+            "manufacturerName": "Acme Sensor Co."
+        },
+        "timeOffFeed": float(randint(1, 5)),
+        "resourceType": "icarWeightEventResource"
+    }
+
+
+@pytest.fixture()
 def feed_intake_payload():
     """Generate a feed intake event payload."""
     return {

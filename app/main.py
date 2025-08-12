@@ -9,7 +9,7 @@ from app import __version__
 
 from .routers import attachments
 from .routers.events.feeding import feed_intake
-from .routers.events.performance import conformation, weight
+from .routers.events.performance import conformation, weight, group_weight
 from .routers.events import (attention,
                              withdrawal)
 from .routers.events.milking import (drying_off, lactation_status,
@@ -43,6 +43,7 @@ app.include_router(withdrawal.router, prefix="/events")
 
 app.include_router(conformation.router, prefix="/events/performance")
 app.include_router(weight.router, prefix="/events/performance")
+app.include_router(group_weight.router, prefix="/events/performance")
 
 
 app.include_router(drying_off.router, prefix="/events/milking")
@@ -85,6 +86,7 @@ async def open_db() -> AsyncIOMotorClient:
 
     app.state.conformation = _ft["events"]["performance"]["conformation"]
     app.state.weight = _ft["events"]["performance"]["weight"]
+    app.state.group_weight = _ft["events"]["performance"]["group_weight"]
 
     app.state.drying_off = _ft["events"]["milking"]["drying_off"]
     app.state.visit = _ft["events"]["milking"]["visit"]

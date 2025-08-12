@@ -31,3 +31,5 @@ align ft device/machine? -> https://github.com/adewg/ICAR/blob/ADE-1/types/icarD
 Does Birth Event allow for duplication of data? animalDetail field
 implementation of complex types in search
 implementation of searching in arrays
+
+Improve list handling in object checking tests
