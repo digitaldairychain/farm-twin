@@ -21,8 +21,8 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 
 from ...ftCommon import dateBuild, filterQuery
-from ...icar.icarResources import icarGroupWeightEventResource as GroupWeight
 from ...icar import icarEnums
+from ...icar.icarResources import icarGroupWeightEventResource as GroupWeight
 
 router = APIRouter(
     prefix="/group_weight",
@@ -56,7 +56,8 @@ async def create_group_weight_event(request: Request, group_weight: GroupWeight)
         new_we = await request.app.state.group_weight.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
         raise HTTPException(
-            status_code=404, detail=f"Group Weight {group_weight} already exists")
+            status_code=404, detail=f"Group Weight {group_weight} already exists"
+        )
     if (
         created_group_weight_event := await request.app.state.group_weight.find_one(
             {"_id": new_we.inserted_id}
@@ -75,13 +76,14 @@ async def remove_group_weight_event(request: Request, ft: str):
 
     :param ft: ObjectID of the group weight event to delete
     """
-    delete_result = await request.app.state.group_weight.delete_one({"_id": ObjectId(ft)})
+    delete_result = await request.app.state.group_weight.delete_one(
+        {"_id": ObjectId(ft)}
+    )
 
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(
-        status_code=404, detail=f"Group weight event {ft} not found")
+    raise HTTPException(status_code=404, detail=f"Group weight event {ft} not found")
 
 
 @router.get(

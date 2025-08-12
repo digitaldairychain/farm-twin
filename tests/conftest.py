@@ -110,12 +110,7 @@ def group_weight_payload(object_id):
         "embeddedAnimalSet": {
             "resourceType": "icarWeightEventResource",
             "id": object_id,
-            "member": [
-                {
-                    "id": "UK230011200123",
-                    "scheme": "gov.uk"
-                }
-            ]
+            "member": [{"id": "UK230011200123", "scheme": "gov.uk"}],
         },
         "statistics": [
             {
@@ -127,11 +122,9 @@ def group_weight_payload(object_id):
         "units": "KGM",
         "method": "LoadCell",
         "resolution": float(randint(1, 9) / 10),
-        "device": {
-            "manufacturerName": "Acme Sensor Co."
-        },
+        "device": {"manufacturerName": "Acme Sensor Co."},
         "timeOffFeed": float(randint(1, 5)),
-        "resourceType": "icarWeightEventResource"
+        "resourceType": "icarWeightEventResource",
     }
 
 
