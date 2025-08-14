@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from random import randint
 
 import pytest
@@ -309,7 +309,7 @@ def arrival_payload(object_id):
         "arrivalReason": "ShowReturn",
         "animalState": {
             "currentLactationParity": 2,
-            "lastCalvingDate": datetime.now(timezone.utc).isoformat(),
+            "lastCalvingDate": str(date.today() - timedelta(days=1)),
         },
         "resourceType": "icarMovementArrivalEventResource",
     }

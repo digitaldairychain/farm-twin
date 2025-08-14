@@ -10,8 +10,8 @@ An on-farm example is a single dairy cow, Hilda.
 This collection of endpoints allows for the addition, deletion
 and finding of those animals.
 
-Compliant with ICAR data standards:
-https://github.com/adewg/ICAR/blob/ADE-1/resources/icarAnimalCoreResource.json
+Compliant with v1.4.1 ICAR Animal Data Exchange standards:
+https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarAnimalCoreResource.json
 """
 
 from datetime import datetime

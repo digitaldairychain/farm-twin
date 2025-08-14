@@ -1,14 +1,9 @@
 """
 Collection of enums used in ICAR data standards.
-See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/enums
+See here for more details: https://github.com/adewg/ICAR/blob/v1.4.1/enums
 """
 
 from enum import Enum
-
-
-class icarFeedDurationTypeUnitCode(str, Enum):
-    _sec = ("SEC",)
-    _min = ("MIN",)
 
 
 class icarAnimalLactationStatusType(str, Enum):
@@ -542,7 +537,6 @@ class icarObservationStatusType(str, Enum):
 class icarAnimalGenderType(str, Enum):
     _female = ("Female",)
     _femaleNeuter = ("FemaleNeuter",)
-    _freemartin = ("Freemartin",)
     _male = ("Male",)
     _maleCryptorchid = ("MaleCryptorchid",)
     _maleNeuter = ("MaleNeuter",)

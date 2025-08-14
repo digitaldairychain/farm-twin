@@ -15,8 +15,11 @@ pip install -r requirements.txt
 ```bash
 docker compose -f deploy/docker-compose.yml up -d
 ```
-
 This uses a set of default credentials in `deploy/.env`. Do not use this in production.
+
+### ICAR ADE ###
+
+{ farm-twin } aligns (mostly) with v1.4.1 of the [ICAR Animal Data Exchange Standard](https://github.com/adewg/ICAR/blob/v1.4.1).
 
 ## Testing ## 
 

@@ -1,12 +1,12 @@
 """
 Collection of types used in ICAR data standards.
-See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/enums
+See here for more details: https://github.com/adewg/ICAR/blob/v1.4.1/enums
 """
 
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from ..ftCommon import FTModel
 from . import icarEnums, icarTypes
@@ -104,12 +104,12 @@ class icarStatisticsResource(icarResource):
     purpose: icarEnums.icarStatisticsPurposeType = Field(
         json_schema_extra={"description": "Defines the purpose for these statistics."},
     )
-    dateFrom: datetime = Field(
+    dateFrom: icarTypes.icarDateType = Field(
         json_schema_extra={
             "description": "The start of the period for which statistics are calculated."
         },
     )
-    dateTo: datetime = Field(
+    dateTo: icarTypes.icarDateType = Field(
         json_schema_extra={
             "description": "The end of the period for which statistics are calculated."
         },
@@ -311,7 +311,7 @@ class icarDailyMilkingAveragesResource(icarResource):
             "description": "Unique animal scheme and identifier combination."
         },
     )
-    averageDate: datetime = Field(
+    averageDate: icarTypes.icarDateType = Field(
         json_schema_extra={
             "description": "The date on which the average has been calculated."
         },
@@ -404,6 +404,42 @@ class icarReproMatingRecommendationResource(icarAnimalEventCoreResource):
     )
 
 
+class exampleErrorResource(FTModel):
+    id: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "description": "A unique identifier for this particular occurrence of the problem"
+        },
+    )
+    status: Optional[int] = Field(
+        default=None,
+        json_schema_extra={
+            "description": "The HTTP status code applicable to this problem, expressed as a string value"
+        },
+    )
+    code: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "description": "An application-specific error code, expressed as a string value."
+        },
+    )
+    title: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "description": "A short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization."
+        },
+    )
+    detail: Optional[str] = Field(
+        default=None,
+        json_schema_extra={
+            "description": "A human-readable explanation specific to this occurrence of the problem. Like title, this field’s value can be localized."
+        },
+    )
+    meta: Optional[None] = Field(
+        default=None,
+    )
+
+
 class icarResourceCollectionReference(FTModel):
     id: str = Field(
         json_schema_extra={
@@ -436,6 +472,12 @@ class icarResourceCollectionReference(FTModel):
         default=None,
         json_schema_extra={
             "description": "Provides the number of pages in the collection, if known."
+        },
+    )
+    operations: Optional[list[(None, None)]] = Field(
+        default=None,
+        json_schema_extra={
+            "description": "Defines the operations that may be carried out on the collection (POST) or its members (PUT/PATCH/DELETE)."
         },
     )
 
@@ -778,7 +820,7 @@ class icarDeviceResource(icarResource):
             "description": "Indicates whether the device is active at this moment."
         },
     )
-    supportedMessages: Optional[list[icarEnums.icarMessageType]] = Field(
+    supportedMessages: Optional[list[(None, None)]] = Field(
         default=None,
         json_schema_extra={
             "description": "Identifies message types supported for the device"
@@ -942,42 +984,6 @@ class icarFeedRecommendationResource(icarResource):
     )
 
 
-class icarVisualDetection(BaseModel):
-    heatSigns: Optional[list[icarEnums.icarReproHeatSignType]] = Field(
-        default=None,
-        json_schema_extra={"description": "Array of heat signs."},
-    )
-    heatIntensity: Optional[icarEnums.icarReproHeatIntensityType] = Field(default=None)
-
-
-class icarheatReportScrSenseTime(BaseModel):
-    breedingWindow: Optional[int] = Field(
-        default=None,
-        json_schema_extra={"description": "Number of hours to AI."},
-    )
-    heatIndex: Optional[int] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Gives an indication of the certainty of the heat indication."
-        },
-    )
-
-
-class icarheatReportNedapCowControl(BaseModel):
-    expirationDateTime: Optional[datetime] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "RFC3339 UTC date/time when the heat will start (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
-        },
-    )
-    heatChance: Optional[int] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Gives an indication of the certainty of the heat indication."
-        },
-    )
-
-
 class icarReproHeatEventResource(icarAnimalEventCoreResource):
     heatDetectionMethod: Optional[icarEnums.icarReproHeatDetectionMethodType] = Field(
         default=None,
@@ -997,7 +1003,7 @@ class icarReproHeatEventResource(icarAnimalEventCoreResource):
             "description": "RFC3339 UTC date/time when the heat will end (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    visualDetection: Optional[icarVisualDetection] = Field(
+    visualDetection: Optional[None] = Field(
         default=None,
         json_schema_extra={
             "description": "Specific info when the heat was visually detected."
@@ -1749,7 +1755,7 @@ class icarGroupPositionObservationEventResource(
 
 
 class icarProgenyDetailsResource(icarResource):
-    identifier: Optional[icarTypes.icarAnimalIdentifierType] = Field(
+    identifier: Optional[None] = Field(
         default=None,
         json_schema_extra={
             "description": "Unique animal scheme and identifier combination."
@@ -1781,21 +1787,21 @@ class icarProgenyDetailsResource(icarResource):
         default=None,
         json_schema_extra={"description": "Official herdbook name."},
     )
-    taggingDate: Optional[datetime] = Field(
+    taggingDate: Optional[str] = Field(
         default=None,
         json_schema_extra={
             "description": "Progeny tagging date in RFC3339 UTC (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    birthStatus: Optional[icarEnums.icarParturitionBirthStatusType] = Field(
+    birthStatus: Optional[str] = Field(
         default=None,
         json_schema_extra={"description": "Birth status of the progeny."},
     )
-    birthSize: Optional[icarEnums.icarParturitionBirthSizeType] = Field(
+    birthSize: Optional[str] = Field(
         default=None,
         json_schema_extra={"description": "Size of the progeny."},
     )
-    birthWeight: Optional[icarTypes.icarMassMeasureType] = Field(
+    birthWeight: Optional[None] = Field(
         default=None,
         json_schema_extra={"description": "Weight of the progeny."},
     )

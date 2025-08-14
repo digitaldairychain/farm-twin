@@ -7,8 +7,8 @@ A conformation resource used to indicate that product should be separated
 This collection of endpoints allows for the addition, deletion
 and finding of those events.
 
-Compliant with ICAR data standards:
-https://github.com/adewg/ICAR/blob/ADE-1/resources/icarConformationScoreEventResource.json
+Compliant with v1.4.1 ICAR Animal Data Exchange standards:
+https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarConformationScoreEventResource.json
 """
 
 from datetime import datetime

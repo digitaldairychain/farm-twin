@@ -1,19 +1,18 @@
 """
 Collection of types used in ICAR data standards.
-See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/enums
+See here for more details: https://github.com/adewg/ICAR/blob/v1.4.1/enums
 """
 
-from datetime import datetime
 from typing import Optional
 
 from geojson_pydantic import GeometryCollection
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PastDate, PastDatetime
 
 from . import icarEnums
 
 
 class icarFeedDurationType(BaseModel):
-    unitCode: Optional[icarEnums.icarFeedDurationTypeUnitCode] = Field(
+    unitCode: Optional[str] = Field(
         default=None,
         json_schema_extra={
             "description": "UN/CEFACT Common Code for Units of Measurement."
@@ -31,13 +30,12 @@ class icarIdentifierType(BaseModel):
     id: str = Field(
         json_schema_extra={
             "description": "A unique identification for the resource issued under the auspices of the scheme."
-        }
+        },
     )
     scheme: str = Field(
         json_schema_extra={
             "description": "The identifier (in reverse domain format) of an official scheme that manages unique identifiers."
         },
-        examples=["uk.gov", "gov.fda"],
     )
 
 
@@ -138,7 +136,7 @@ class icarMilkingMilkWeightType(BaseModel):
 class icarMilkCharacteristicsType(BaseModel):
     characteristic: str = Field(
         json_schema_extra={
-            "description": "Treat this field as an enum, with the list and units in https://github.com/adewg/ICAR/blob/ADE-1/enums/icarMilkCharacteristicCodeType.json."
+            "description": "Treat this field as an enum, with the list and units in https://github.com/adewg/ICAR/blob/v1.4.1/enums/icarMilkCharacteristicCodeType.json."
         },
     )
     value: str = Field(
@@ -147,7 +145,7 @@ class icarMilkCharacteristicsType(BaseModel):
     unit: Optional[str] = Field(
         default=None,
         json_schema_extra={
-            "description": "Use the units for characteristics in https://github.com/adewg/ICAR/blob/ADE-1/enums/icarMilkCharacteristicCodeType.json. Only override when your units for a characteristic are different. Use UN/CEFACT codes."
+            "description": "Use the units for characteristics in https://github.com/adewg/ICAR/blob/v1.4.1/enums/icarMilkCharacteristicCodeType.json. Only override when your units for a characteristic are different. Use UN/CEFACT codes."
         },
     )
     measuringDevice: Optional[str] = Field(
@@ -326,6 +324,10 @@ class icarOrganizationType(icarOrganizationIdentityType):
     )
 
 
+class icarDateTimeType(PastDatetime):
+    pass
+
+
 class icarInterestedPartyType(icarOrganizationType):
     pass
 
@@ -400,13 +402,13 @@ class icarConsignmentType(BaseModel):
             "description": "The organisational details of the destination, including any necessary identifiers."
         },
     )
-    loadingDateTime: Optional[datetime] = Field(
+    loadingDateTime: Optional[icarDateTimeType] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date and time animals were loaded for transport (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    unloadingDateTime: Optional[datetime] = Field(
+    unloadingDateTime: Optional[icarDateTimeType] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date and time animals were unloaded after transport (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -526,7 +528,7 @@ class icarProcessingLotType(BaseModel):
             "description": "The processing plant and chain for this lot."
         },
     )
-    killDateTime: Optional[datetime] = Field(
+    killDateTime: Optional[icarDateTimeType] = Field(
         default=None,
         json_schema_extra={
             "description": "The date and time at which killing on the lot started"
@@ -595,7 +597,7 @@ class icarCarcassType(BaseModel):
             "description": "The lot in which the carcass was processed. "
         },
     )
-    killDateTime: Optional[datetime] = Field(
+    killDateTime: Optional[icarDateTimeType] = Field(
         default=None,
         json_schema_extra={
             "description": "Date/time the animal was killed. Ideally this should be a precise date and time. However, older systems may only be able to supply the date."
@@ -617,7 +619,7 @@ class icarCarcassType(BaseModel):
             "description": "The sex of the animal as assessed at the processing plant."
         },
     )
-    birthDate: Optional[datetime] = Field(
+    birthDate: Optional[icarDateTimeType] = Field(
         default=None,
         json_schema_extra={
             "description": "Assessed date of birth of the animal represented using RFC3339 (UTC)."
@@ -722,7 +724,7 @@ class icarMetaDataType(BaseModel):
             "description": "Boolean value indicating if this resource has been deleted in the source system."
         },
     )
-    modified: datetime = Field(
+    modified: icarDateTimeType = Field(
         json_schema_extra={
             "description": "RFC3339 UTC date/time of last modification (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
@@ -768,7 +770,7 @@ class icarMedicineWithdrawalType(BaseModel):
             "description": "Product or food item affected by this withdrawal."
         },
     )
-    endDate: Optional[datetime] = Field(
+    endDate: Optional[icarDateTimeType] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC end date of withdrawal calculated based on treatment date and medicine rules (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -1006,7 +1008,7 @@ class icarMedicineBatchType(BaseModel):
         default=None,
         json_schema_extra={"description": "The ID, batch or lot number."},
     )
-    expiryDate: Optional[datetime] = Field(
+    expiryDate: Optional[icarDateTimeType] = Field(
         default=None,
         json_schema_extra={
             "description": "The RFC3339 UTC expiry date of the batch (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -1111,8 +1113,13 @@ class icarProductIdentifierType(icarIdentifierType):
     pass
 
 
+class icarDateType(PastDatetime):
+    pass
+
+
 class icarProductReferenceType(icarResourceReferenceType):
-    identifiers: list[icarProductIdentifierType] = Field(
+    identifiers: Optional[list[icarProductIdentifierType]] = Field(
+        default=None,
         json_schema_extra={
             "description": "An array of product identifiers. This allows a product to have multiple identifiers for manufacturers, distributors, official registrations, etc."
         },
@@ -1244,7 +1251,6 @@ class icarSireRecommendationType(BaseModel):
     )
 
 
-# Removed icarResources.icarEventCoreResource to prevent circular import
 class icarInventoryTransactionType(BaseModel):
     transactionKind: icarEnums.icarInventoryTransactionKindType = Field(
         json_schema_extra={"description": "Identifies the transaction kind."},
@@ -1265,7 +1271,7 @@ class icarInventoryTransactionType(BaseModel):
             "description": "The supplier of the product in this transaction.  This is particularly relevant if the transaction is a receipt."
         },
     )
-    expiryDate: Optional[datetime] = Field(
+    expiryDate: Optional[icarDateTimeType] = Field(
         default=None,
         json_schema_extra={
             "description": "The expiry date of the product supplied in the transaction."
@@ -1330,13 +1336,13 @@ class icarMedicineReferenceType(icarProductReferenceType):
 
 
 class icarMedicineCourseSummaryType(BaseModel):
-    startDate: Optional[datetime] = Field(
+    startDate: Optional[icarDateTimeType] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC start date of the treatment course (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)"
         },
     )
-    endDate: Optional[datetime] = Field(
+    endDate: Optional[icarDateTimeType] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC End date of the treatment course (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)"
@@ -1458,19 +1464,19 @@ class icarAnimalStateType(BaseModel):
         default=None,
         json_schema_extra={"description": "The current parity of the animal."},
     )
-    lastCalvingDate: Optional[datetime] = Field(
+    lastCalvingDate: Optional[icarDateType] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date (see https://ijmacd.github.io/rfc3339-iso8601/)."
         },
     )
-    lastInseminationDate: Optional[datetime] = Field(
+    lastInseminationDate: Optional[icarDateType] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date (see https://ijmacd.github.io/rfc3339-iso8601/)."
         },
     )
-    lastDryingOffDate: Optional[datetime] = Field(
+    lastDryingOffDate: Optional[icarDateType] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date (see https://ijmacd.github.io/rfc3339-iso8601/)."
@@ -1527,18 +1533,13 @@ class icarTraitAmountType(BaseModel):
     value: float = Field()
 
 
-class icarBreedFraction(BaseModel):
-    breed: icarBreedIdentifierType
-    fraction: float
-
-
 class icarBreedFractionsType(BaseModel):
     denominator: int = Field(
         json_schema_extra={
             "description": "The denominator of breed fractions - for instance 16, 64, or 100."
         },
     )
-    fractions: Optional[list[icarBreedFraction]] = Field(
+    fractions: Optional[list[(None, None)]] = Field(
         default=None,
         json_schema_extra={
             "description": "The numerators of breed fractions for each breed proportion."
@@ -1712,12 +1713,12 @@ class icarDiagnosisType(BaseModel):
 
 
 class icarReproHeatWindowType(BaseModel):
-    startDateTime: datetime = Field(
+    startDateTime: icarDateTimeType = Field(
         json_schema_extra={
             "description": "RFC3339 UTC date/time when the optimum insemination window starts (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    endDateTime: Optional[datetime] = Field(
+    endDateTime: Optional[icarDateTimeType] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date/time when the optimum insemination window ends (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -1741,7 +1742,6 @@ class icarParentageType(BaseModel):
         json_schema_extra={
             "description": "Specifies Male or Female gender so you can recognise Sire or Dam."
         },
-        examples=["Male", "Female"],
     )
     relation: Optional[icarEnums.icarAnimalRelationType] = Field(
         default=None,
