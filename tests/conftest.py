@@ -35,7 +35,6 @@ def animal_payload():
         "reproductionStatus": "Open",
         "lactationStatus": "Fresh",
         "healthStatus": "Healthy",
-        "resourceType": "icarAnimalCoreResource",
     }
 
 
@@ -51,7 +50,6 @@ def animal_payload_updated():
         "reproductionStatus": "Open",
         "lactationStatus": "Fresh",
         "healthStatus": "InTreatment",
-        "resourceType": "icarAnimalCoreResource",
     }
 
 
@@ -98,7 +96,6 @@ def weight_payload():
         },
         "device": {"manufacturerName": "Acme Sensor Co."},
         "timeOffFeed": float(randint(1, 5)),
-        "resourceType": "icarWeightEventResource",
     }
 
 
@@ -108,7 +105,6 @@ def group_weight_payload(object_id):
     return {
         "groupMethod": "EmbeddedAnimalSet",
         "embeddedAnimalSet": {
-            "resourceType": "icarWeightEventResource",
             "id": object_id,
             "member": [{"id": "UK230011200123", "scheme": "gov.uk"}],
         },
@@ -124,7 +120,6 @@ def group_weight_payload(object_id):
         "resolution": float(randint(1, 9) / 10),
         "device": {"manufacturerName": "Acme Sensor Co."},
         "timeOffFeed": float(randint(1, 5)),
-        "resourceType": "icarWeightEventResource",
     }
 
 
@@ -138,7 +133,6 @@ def feed_intake_payload():
         "consumedFeed": [
             {"feedId": {"id": "test", "scheme": "ft.org"}, "dryMatterPercentage": 10}
         ],
-        "resourceType": "icarFeedIntakeEventResource",
     }
 
 
@@ -149,18 +143,13 @@ def withdrawal_payload():
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "endDateTime": datetime.now(timezone.utc).isoformat(),
         "productType": "Eggs",
-        "resourceType": "icarWithdrawalEventResource",
     }
 
 
 @pytest.fixture()
 def carcass_payload():
     """Generate a withdrawal payload."""
-    return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
-        "side": "Left",
-        "resourceType": "icarWithdrawalEventResource",
-    }
+    return {"animal": {"id": "UK230011200123", "scheme": "gov.uk"}, "side": "Left"}
 
 
 @pytest.fixture()
@@ -169,7 +158,6 @@ def health_status_payload():
     return {
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "observedStatus": "Healthy",
-        "resourceType": "icarWithdrawalEventResource",
     }
 
 
@@ -180,7 +168,6 @@ def lactation_status_payload():
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "observedStatus": "Fresh",
         "eventDateTime": datetime.now(timezone.utc).isoformat(),
-        "resourceType": "icarWithdrawalEventResource",
     }
 
 
@@ -191,7 +178,6 @@ def position_payload():
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "positionName": "Yard",
         "eventDateTime": datetime.now(timezone.utc).isoformat(),
-        "resourceType": "icarWithdrawalEventResource",
     }
 
 
@@ -201,7 +187,6 @@ def repro_status_payload():
     return {
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "observedStatus": "Pregnant",
-        "resourceType": "icarWithdrawalEventResource",
     }
 
 
@@ -213,7 +198,6 @@ def attention_payload():
         "category": "Health",
         "causes": ["Activity", "LyingTooLong"],
         "priority": "Urgent",
-        "resourceType": "icarWithdrawalEventResource",
     }
 
 
@@ -224,7 +208,6 @@ def test_day_result_payload():
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "milkWeight24Hours": {"unitCode": "KGM", "value": 20},
         "testDayCode": "Dry",
-        "resourceType": "icarWithdrawalEventResource",
     }
 
 
@@ -277,7 +260,6 @@ def conformation_payload(object_id):
         "score": 47,
         "traitScored": "BodyLength",
         "method": "Automated",
-        "resourceType": "icarConformationScoreEvent",
     }
 
 
@@ -286,7 +268,6 @@ def drying_off_payload(object_id):
     """Generate a drying off payload."""
     return {
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
-        "resourceType": "icarMilkingDryOffEventResource",
     }
 
 
@@ -297,7 +278,6 @@ def milking_visit_payload(object_id):
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "milkingStartingDateTime": str(datetime.now()),
         "milkingMilkWeight": {"unitCode": "KGM", "value": 10},
-        "resourceType": "icarMilkingVisitEventResource",
     }
 
 
@@ -309,9 +289,8 @@ def arrival_payload(object_id):
         "arrivalReason": "ShowReturn",
         "animalState": {
             "currentLactationParity": 2,
-            "lastCalvingDate": str(date.today() - timedelta(days=1)),
+            "lastCalvingDate": str(datetime.now() - timedelta(days=1)),
         },
-        "resourceType": "icarMovementArrivalEventResource",
     }
 
 
@@ -321,7 +300,6 @@ def birth_payload(object_id):
     return {
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "registrationReason": "Born",
-        "resourceType": "icarMovementBirthEventResource",
     }
 
 
@@ -331,7 +309,6 @@ def death_payload(object_id):
     return {
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "deathReason": "Age",
-        "resourceType": "icarMovementDeathEventResource",
     }
 
 
@@ -342,7 +319,6 @@ def departure_payload(object_id):
         "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
         "departureReason": "Sale",
         "departureKind": "Sale",
-        "resourceType": "icarMovementDepartureEventResource",
     }
 
 
