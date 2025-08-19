@@ -258,6 +258,18 @@ def repro_parturition_payload():
 
 
 @pytest.fixture()
+def repro_pregnancy_check_payload():
+    """Generate a repro pregnancy check payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "method": "Palpation",
+        "result": "Pregnant",
+        "foetalAge": 1,
+        "foestusCount": 3
+    }
+
+
+@pytest.fixture()
 def attention_payload():
     """Generate a repro status payload."""
     return {

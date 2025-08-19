@@ -17,7 +17,7 @@ from .routers.events.observations import carcass, health_status, position
 from .routers.events.performance import conformation, group_weight, weight
 from .routers.events.reproduction import (repro_abortion, repro_do_not_breed,
                                           repro_heat, repro_insemination,
-                                          repro_status, repro_mating_recommendation, repro_parturition)
+                                          repro_status, repro_mating_recommendation, repro_parturition, repro_pregnancy_check)
 from .routers.measurements import devices, samples, sensors
 from .routers.things import animals, machines, points, polygons
 
@@ -69,6 +69,7 @@ app.include_router(repro_insemination.router, prefix="/events/reproduction")
 app.include_router(repro_mating_recommendation.router,
                    prefix="/events/reproduction")
 app.include_router(repro_parturition.router, prefix="/events/reproduction")
+app.include_router(repro_pregnancy_check.router, prefix="/events/reproduction")
 
 app.include_router(attachments.router)
 
@@ -117,6 +118,7 @@ async def open_db() -> AsyncIOMotorClient:
     app.state.repro_insemination = _ft["events"]["reproduction"]["repro_insemination"]
     app.state.repro_mating_recommendation = _ft["events"]["reproduction"]["repro_mating_recommendation"]
     app.state.repro_parturition = _ft["events"]["reproduction"]["repro_parturition"]
+    app.state.repro_pregnancy_check = _ft["events"]["reproduction"]["repro_pregnancy_check"]
 
     app.state.attachments = _ft["attachments"]
 
