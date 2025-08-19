@@ -203,6 +203,18 @@ def repro_do_not_breed_payload():
 
 
 @pytest.fixture()
+def repro_heat_payload():
+    """Generate a repro heat payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "heatDetectionMethod": "Visual",
+        "certainty": "Suspect",
+        "commencementDateTime": str(datetime.now() - timedelta(days=1)),
+        "expirationDateTime": str(datetime.now() + timedelta(days=1)),
+    }
+
+
+@pytest.fixture()
 def attention_payload():
     """Generate a repro status payload."""
     return {
