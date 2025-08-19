@@ -246,6 +246,18 @@ def repro_mating_recommendation_payload():
 
 
 @pytest.fixture()
+def repro_parturition_payload():
+    """Generate a repro parturition payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "isEmbryoImplant": True,
+        "damParity": 3,
+        "liveProgeny": 2,
+        "calvingEase": "EasyAssisted"
+    }
+
+
+@pytest.fixture()
 def attention_payload():
     """Generate a repro status payload."""
     return {

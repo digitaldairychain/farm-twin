@@ -405,7 +405,7 @@ class TestEvents:
             def test_create_repro_insemination_wrong_payload(self, test_client):
                 common.create_wrong_payload(test_client, self.path)
 
-        class TestReproMating_recommendation:
+        class TestReproMatingRecommendation:
             key = "repro_mating_recommendation"
             path = "/" + ROOT + "/reproduction/" + key
 
@@ -429,6 +429,30 @@ class TestEvents:
                 common.get_not_found(test_client, self.path, object_id)
 
             def test_create_repro_mating_recommendation_wrong_payload(self, test_client):
+                common.create_wrong_payload(test_client, self.path)
+
+        class TestReproParturition:
+            key = "repro_parturition"
+            path = "/" + ROOT + "/reproduction/" + key
+
+            def test_create_repro_parturition_event(
+                self, test_client, repro_parturition_payload
+            ):
+                common.create_get(
+                    test_client, self.path, repro_parturition_payload, self.key
+                )
+
+            def test_create_delete_repro_parturition_event(
+                self, test_client, repro_parturition_payload
+            ):
+                common.create_delete(
+                    test_client, self.path, repro_parturition_payload, self.key
+                )
+
+            def test_get_repro_parturition_event_not_found(self, test_client, object_id):
+                common.get_not_found(test_client, self.path, object_id)
+
+            def test_create_repro_parturition_wrong_payload(self, test_client):
                 common.create_wrong_payload(test_client, self.path)
 
     class TestAttention:
