@@ -40,14 +40,17 @@ class ReproMatingRecommendationCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_repro_mating_recommendation_event(request: Request, repro_mating_recommendation: ReproMatingRecommendation):
+async def create_repro_mating_recommendation_event(
+    request: Request, repro_mating_recommendation: ReproMatingRecommendation
+):
     """
     Create a new repro mating recommendation event.
 
     :param repro_mating_recommendation: Mating recommendation to be added
     """
     model = repro_mating_recommendation.model_dump(
-        by_alias=True, exclude=["ft", "resourceType"])
+        by_alias=True, exclude=["ft", "resourceType"]
+    )
     return await add_one_to_db(
         model, request.app.state.repro_mating_recommendation, ERROR_MSG_OBJECT
     )

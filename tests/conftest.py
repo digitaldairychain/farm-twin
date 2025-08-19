@@ -233,15 +233,10 @@ def repro_mating_recommendation_payload():
         "sireRecommendations": [
             {
                 "recommendationType": "SireRecommended",
-                "sireIdentifiers": [
-                    {
-                        "id": "UK23001120014",
-                        "scheme": "gov.uk"
-                    }
-                ],
-                "sireOfficialName": "Camelot"
+                "sireIdentifiers": [{"id": "UK23001120014", "scheme": "gov.uk"}],
+                "sireOfficialName": "Camelot",
             }
-        ]
+        ],
     }
 
 
@@ -253,7 +248,7 @@ def repro_parturition_payload():
         "isEmbryoImplant": True,
         "damParity": 3,
         "liveProgeny": 2,
-        "calvingEase": "EasyAssisted"
+        "calvingEase": "EasyAssisted",
     }
 
 
@@ -265,7 +260,7 @@ def repro_pregnancy_check_payload():
         "method": "Palpation",
         "result": "Pregnant",
         "foetalAge": 1,
-        "foestusCount": 3
+        "foestusCount": 3,
     }
 
 

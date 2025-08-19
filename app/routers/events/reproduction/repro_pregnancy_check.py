@@ -40,14 +40,17 @@ class ReproPregnancyCheckCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_repro_pregnancy_check_event(request: Request, repro_pregnancy_check: ReproPregnancyCheck):
+async def create_repro_pregnancy_check_event(
+    request: Request, repro_pregnancy_check: ReproPregnancyCheck
+):
     """
     Create a new repro pregnancy check event.
 
     :param repro_pregnancy_check: Repro pregnancy check to be added
     """
     model = repro_pregnancy_check.model_dump(
-        by_alias=True, exclude=["ft", "resourceType"])
+        by_alias=True, exclude=["ft", "resourceType"]
+    )
     return await add_one_to_db(
         model, request.app.state.repro_pregnancy_check, ERROR_MSG_OBJECT
     )

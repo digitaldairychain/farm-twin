@@ -17,9 +17,9 @@ from pydantic_extra_types import mongo_object_id
 
 from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
                          find_in_db)
+from ...icar import icarEnums
 from ...icar.icarResources import \
     icarReproParturitionEventResource as ReproParturition
-from ...icar import icarEnums
 
 ERROR_MSG_OBJECT = "Repro Parturition"
 
@@ -41,14 +41,15 @@ class ReproParturitionCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_repro_parturition_event(request: Request, repro_parturition: ReproParturition):
+async def create_repro_parturition_event(
+    request: Request, repro_parturition: ReproParturition
+):
     """
     Create a new repro parturition event.
 
     :param repro_parturition: Repro Parturition to be added
     """
-    model = repro_parturition.model_dump(
-        by_alias=True, exclude=["ft", "resourceType"])
+    model = repro_parturition.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(
         model, request.app.state.repro_parturition, ERROR_MSG_OBJECT
     )
