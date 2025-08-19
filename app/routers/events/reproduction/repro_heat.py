@@ -17,8 +17,8 @@ from pydantic_extra_types import mongo_object_id
 
 from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
                          find_in_db)
-from ...icar.icarResources import \
-    icarReproHeatEventResource as ReproHeat
+from ...icar import icarEnums
+from ...icar.icarResources import icarReproHeatEventResource as ReproHeat
 
 ERROR_MSG_OBJECT = "Repro Heat"
 
@@ -46,25 +46,18 @@ async def create_repro_heat_event(request: Request, repro_heat: ReproHeat):
 
     :param repro_heat: Repro Heat to be added
     """
-    model = repro_heat.model_dump(
-        by_alias=True, exclude=["ft", "resourceType"])
-    return await add_one_to_db(
-        model, request.app.state.repro_heat, ERROR_MSG_OBJECT
-    )
+    model = repro_heat.model_dump(by_alias=True, exclude=["ft", "resourceType"])
+    return await add_one_to_db(model, request.app.state.repro_heat, ERROR_MSG_OBJECT)
 
 
 @router.delete("/{ft}", response_description="Delete event")
-async def remove_repro_heat_event(
-    request: Request, ft: mongo_object_id.MongoObjectId
-):
+async def remove_repro_heat_event(request: Request, ft: mongo_object_id.MongoObjectId):
     """
     Delete a repro_heat event.
 
     :param ft: ObjectID of the repro heat event to delete
     """
-    return await delete_one_from_db(
-        request.app.state.repro_heat, ft, ERROR_MSG_OBJECT
-    )
+    return await delete_one_from_db(request.app.state.repro_heat, ft, ERROR_MSG_OBJECT)
 
 
 @router.get(
@@ -77,6 +70,11 @@ async def repro_heat_event_query(
     request: Request,
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
+    heatDetectionMethod: icarEnums.icarReproHeatDetectionMethodType | None = None,
+    commencementDateTime: datetime | None = None,
+    expirationDateTime: datetime | None = None,
+    deviceHeatProbability: int | None = None,
+    device: str | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
 ):
@@ -84,6 +82,11 @@ async def repro_heat_event_query(
     query = {
         "_id": ft,
         "animal.id": animal,
+        "heatDetectionMethod": heatDetectionMethod,
+        "commencementDateTime": commencementDateTime,
+        "expirationDateTime": expirationDateTime,
+        "deviceHeatProbability": deviceHeatProbability,
+        "device.id": device,
         "created": dateBuild(createdStart, createdEnd),
     }
     result = await find_in_db(request.app.state.repro_heat, query)

@@ -215,6 +215,17 @@ def repro_heat_payload():
 
 
 @pytest.fixture()
+def repro_insemination_payload():
+    """Generate a repro insemination payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "inseminationType": "NaturalService",
+        "sireOfficialName": "Frankel",
+        "eventDateTime": str(datetime.now()),
+    }
+
+
+@pytest.fixture()
 def attention_payload():
     """Generate a repro status payload."""
     return {

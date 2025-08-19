@@ -39,4 +39,5 @@ Improve list handling in object checking tests
 
 icarInventoryTransactionType -> BaseModel to avoid circular import
 icarDateTimeType -> PastDatetime
-icarDateType -> PastDate
+icarDateType -> PastDatetime (bson does not support date objects)
+HeatEvent expirationDate -> FutureDatetime
