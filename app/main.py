@@ -17,7 +17,7 @@ from .routers.events.observations import carcass, health_status, position
 from .routers.events.performance import conformation, group_weight, weight
 from .routers.events.reproduction import (repro_abortion, repro_do_not_breed,
                                           repro_heat, repro_insemination,
-                                          repro_status)
+                                          repro_status, repro_mating_recommendation)
 from .routers.measurements import devices, samples, sensors
 from .routers.things import animals, machines, points, polygons
 
@@ -66,6 +66,8 @@ app.include_router(repro_abortion.router, prefix="/events/reproduction")
 app.include_router(repro_do_not_breed.router, prefix="/events/reproduction")
 app.include_router(repro_heat.router, prefix="/events/reproduction")
 app.include_router(repro_insemination.router, prefix="/events/reproduction")
+app.include_router(repro_mating_recommendation.router,
+                   prefix="/events/reproduction")
 
 app.include_router(attachments.router)
 
@@ -112,6 +114,7 @@ async def open_db() -> AsyncIOMotorClient:
     app.state.repro_do_not_breed = _ft["events"]["reproduction"]["repro_do_not_breed"]
     app.state.repro_heat = _ft["events"]["reproduction"]["repro_heat"]
     app.state.repro_insemination = _ft["events"]["reproduction"]["repro_insemination"]
+    app.state.repro_mating_recommendation = _ft["events"]["reproduction"]["repro_mating_recommendation"]
 
     app.state.attachments = _ft["attachments"]
 
@@ -120,7 +123,8 @@ async def create_indexes():
     app.state.devices.create_index(["serial", "manufacturer"], unique=True)
     app.state.points.create_index({"point": "2dsphere"}, unique=True)
     app.state.polygons.create_index(["polygon"], unique=True)
-    app.state.sensors.create_index(["device", "serial", "measurement"], unique=True)
+    app.state.sensors.create_index(
+        ["device", "serial", "measurement"], unique=True)
     _attachment_index = ["device", "thing", "start"]
     app.state.attachments.create_index(_attachment_index, unique=True)
     _sample_index = ["device", "sensor", "timestamp", "predicted"]

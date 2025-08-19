@@ -226,6 +226,26 @@ def repro_insemination_payload():
 
 
 @pytest.fixture()
+def repro_mating_recommendation_payload():
+    """Generate a repro mating recommendation payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "sireRecommendations": [
+            {
+                "recommendationType": "SireRecommended",
+                "sireIdentifiers": [
+                    {
+                        "id": "UK23001120014",
+                        "scheme": "gov.uk"
+                    }
+                ],
+                "sireOfficialName": "Camelot"
+            }
+        ]
+    }
+
+
+@pytest.fixture()
 def attention_payload():
     """Generate a repro status payload."""
     return {
