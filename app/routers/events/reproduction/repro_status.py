@@ -25,7 +25,7 @@ ERROR_MSG_OBJECT = "Repro Status"
 
 router = APIRouter(
     prefix="/repro_status",
-    tags=["observations", "repro"],
+    tags=["reproduction", "status"],
     responses={404: {"description": "Not found"}},
 )
 

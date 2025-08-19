@@ -13,8 +13,8 @@ from .routers.events.feeding import feed_intake
 from .routers.events.milking import (drying_off, lactation_status,
                                      test_day_result, visit)
 from .routers.events.movement import arrival, birth, death, departure
-from .routers.events.observations import (carcass, health_status, position,
-                                          repro_status)
+from .routers.events.observations import (carcass, health_status, position)
+from .routers.events.reproduction import repro_status
 from .routers.events.performance import conformation, group_weight, weight
 from .routers.measurements import devices, samples, sensors
 from .routers.things import animals, machines, points, polygons
@@ -57,9 +57,9 @@ app.include_router(departure.router, prefix="/events/movement")
 
 app.include_router(carcass.router, prefix="/events/observations")
 app.include_router(health_status.router, prefix="/events/observations")
-
 app.include_router(position.router, prefix="/events/observations")
-app.include_router(repro_status.router, prefix="/events/observations")
+
+app.include_router(repro_status.router, prefix="/events/reproduction")
 
 app.include_router(attachments.router)
 
@@ -99,9 +99,9 @@ async def open_db() -> AsyncIOMotorClient:
 
     app.state.carcass = _ft["events"]["observations"]["carcass"]
     app.state.health_status = _ft["events"]["observations"]["health_status"]
-
     app.state.position = _ft["events"]["observations"]["position"]
-    app.state.repro_status = _ft["events"]["observations"]["repro_status"]
+
+    app.state.repro_status = _ft["events"]["reproduction"]["repro_status"]
 
     app.state.attachments = _ft["attachments"]
 
@@ -110,7 +110,8 @@ async def create_indexes():
     app.state.devices.create_index(["serial", "manufacturer"], unique=True)
     app.state.points.create_index({"point": "2dsphere"}, unique=True)
     app.state.polygons.create_index(["polygon"], unique=True)
-    app.state.sensors.create_index(["device", "serial", "measurement"], unique=True)
+    app.state.sensors.create_index(
+        ["device", "serial", "measurement"], unique=True)
     _attachment_index = ["device", "thing", "start"]
     app.state.attachments.create_index(_attachment_index, unique=True)
     _sample_index = ["device", "sensor", "timestamp", "predicted"]
