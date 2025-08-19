@@ -47,7 +47,7 @@ async def create_test_day_result_event(request: Request, testdayresult: TestDayR
 
     :param testdayresult: Test day result to be added
     """
-    model = testdayresult.model_dump(by_alias=True, exclude=["ft"])
+    model = testdayresult.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(
         model, request.app.state.test_day_result, ERROR_MSG_OBJECT
     )

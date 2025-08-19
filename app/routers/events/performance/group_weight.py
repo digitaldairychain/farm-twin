@@ -51,7 +51,7 @@ async def create_group_weight_event(request: Request, group_weight: GroupWeight)
 
     :param group_weight: Group weight to be added
     """
-    model = group_weight.model_dump(by_alias=True, exclude=["ft"])
+    model = group_weight.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     try:
         new_we = await request.app.state.group_weight.insert_one(model)
     except pymongo.errors.DuplicateKeyError:

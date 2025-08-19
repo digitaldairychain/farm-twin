@@ -46,7 +46,7 @@ async def create_visit_event(request: Request, visit: Visit):
 
     :param visit: Visit to be added
     """
-    model = visit.model_dump(by_alias=True, exclude=["ft"])
+    model = visit.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(model, request.app.state.visit, ERROR_MSG_OBJECT)
 
 

@@ -47,7 +47,7 @@ async def create_arrival_event(request: Request, arrival: Arrival):
 
     :param arrival: Arrival to be added
     """
-    model = arrival.model_dump(by_alias=True, exclude=["ft"])
+    model = arrival.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(model, request.app.state.arrival, ERROR_MSG_OBJECT)
 
 

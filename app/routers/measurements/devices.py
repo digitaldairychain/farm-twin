@@ -127,7 +127,7 @@ async def create_device(request: Request, device: Device):
     """
     try:
         new_device = await request.app.state.devices.insert_one(
-            device.model_dump(by_alias=True, exclude=["ft"])
+            device.model_dump(by_alias=True, exclude=["ft", "resourceType"])
         )
     except pymongo.errors.DuplicateKeyError:
         raise HTTPException(status_code=404, detail="Device already exists")

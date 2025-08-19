@@ -13,9 +13,10 @@ from .routers.events.feeding import feed_intake
 from .routers.events.milking import (drying_off, lactation_status,
                                      test_day_result, visit)
 from .routers.events.movement import arrival, birth, death, departure
-from .routers.events.observations import (carcass, health_status, position)
-from .routers.events.reproduction import repro_status, repro_abortion, repro_do_not_breed
+from .routers.events.observations import carcass, health_status, position
 from .routers.events.performance import conformation, group_weight, weight
+from .routers.events.reproduction import (repro_abortion, repro_do_not_breed,
+                                          repro_status)
 from .routers.measurements import devices, samples, sensors
 from .routers.things import animals, machines, points, polygons
 
@@ -114,8 +115,7 @@ async def create_indexes():
     app.state.devices.create_index(["serial", "manufacturer"], unique=True)
     app.state.points.create_index({"point": "2dsphere"}, unique=True)
     app.state.polygons.create_index(["polygon"], unique=True)
-    app.state.sensors.create_index(
-        ["device", "serial", "measurement"], unique=True)
+    app.state.sensors.create_index(["device", "serial", "measurement"], unique=True)
     _attachment_index = ["device", "thing", "start"]
     app.state.attachments.create_index(_attachment_index, unique=True)
     _sample_index = ["device", "sensor", "timestamp", "predicted"]

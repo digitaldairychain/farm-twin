@@ -45,7 +45,7 @@ async def create_drying_off_event(request: Request, dryingoff: DryingOff):
 
     :param dryingoff: Drying off to be added
     """
-    model = dryingoff.model_dump(by_alias=True, exclude=["ft"])
+    model = dryingoff.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(model, request.app.state.drying_off, ERROR_MSG_OBJECT)
 
 

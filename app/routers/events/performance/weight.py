@@ -50,7 +50,7 @@ async def create_weight_event(request: Request, weight: Weight):
 
     :param weight: Weight to be added
     """
-    model = weight.model_dump(by_alias=True, exclude=["ft"])
+    model = weight.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     try:
         new_we = await request.app.state.weight.insert_one(model)
     except pymongo.errors.DuplicateKeyError:

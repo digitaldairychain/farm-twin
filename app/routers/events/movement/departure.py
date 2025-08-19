@@ -47,7 +47,7 @@ async def create_departure_event(request: Request, departure: Departure):
 
     :param departure: Departure to be added
     """
-    model = departure.model_dump(by_alias=True, exclude=["ft"])
+    model = departure.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(model, request.app.state.departure, ERROR_MSG_OBJECT)
 
 

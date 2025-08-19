@@ -48,7 +48,7 @@ async def create_attention_event(request: Request, attention: Attention):
 
     :param attention: Attention to be added
     """
-    model = attention.model_dump(by_alias=True, exclude=["ft"])
+    model = attention.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     try:
         new_we = await request.app.state.attention.insert_one(model)
     except pymongo.errors.DuplicateKeyError:

@@ -47,7 +47,7 @@ async def create_position_event(request: Request, position: Position):
 
     :param position: Position to be added
     """
-    model = position.model_dump(by_alias=True, exclude=["ft"])
+    model = position.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(model, request.app.state.position, ERROR_MSG_OBJECT)
 
 

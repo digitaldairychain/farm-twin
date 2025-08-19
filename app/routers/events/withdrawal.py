@@ -48,7 +48,7 @@ async def create_withdrawal_event(request: Request, withdrawal: Withdrawal):
 
     :param withdrawal: Withdrawal to be added
     """
-    model = withdrawal.model_dump(by_alias=True, exclude=["ft"])
+    model = withdrawal.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     try:
         new_we = await request.app.state.withdrawal.insert_one(model)
     except pymongo.errors.DuplicateKeyError:

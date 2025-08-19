@@ -83,7 +83,7 @@ async def create_sample(request: Request, sample: Sample):
 
     :param sample: Sample to be added
     """
-    model = sample.model_dump(by_alias=True, exclude=["ft"])
+    model = sample.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     if model["timestamp"] is None:
         model["timestamp"] = datetime.now()
     try:

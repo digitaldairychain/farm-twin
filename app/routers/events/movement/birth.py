@@ -46,7 +46,7 @@ async def create_birth_event(request: Request, birth: Birth):
 
     :param birth: Birth to be added
     """
-    model = birth.model_dump(by_alias=True, exclude=["ft"])
+    model = birth.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(model, request.app.state.birth, ERROR_MSG_OBJECT)
 
 

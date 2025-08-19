@@ -193,18 +193,13 @@ def repro_status_payload():
 @pytest.fixture()
 def repro_abortion_payload():
     """Generate a repro abortion payload."""
-    return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"}
-    }
+    return {"animal": {"id": "UK230011200123", "scheme": "gov.uk"}}
 
 
 @pytest.fixture()
 def repro_do_not_breed_payload():
     """Generate a repro do not breed payload."""
-    return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
-        "doNotBreed": True
-    }
+    return {"animal": {"id": "UK230011200123", "scheme": "gov.uk"}, "doNotBreed": True}
 
 
 @pytest.fixture()

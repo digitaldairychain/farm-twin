@@ -47,7 +47,7 @@ async def create_feed_intake_event(request: Request, feedintake: FeedIntake):
 
     :param feedintake: Feed intake to be added
     """
-    model = feedintake.model_dump(by_alias=True, exclude=["ft"])
+    model = feedintake.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     try:
         new_fie = await request.app.state.feed_intake.insert_one(model)
     except pymongo.errors.DuplicateKeyError:

@@ -46,7 +46,7 @@ async def create_death_event(request: Request, death: Death):
 
     :param death: Death to be added
     """
-    model = death.model_dump(by_alias=True, exclude=["ft"])
+    model = death.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(model, request.app.state.death, ERROR_MSG_OBJECT)
 
 

@@ -72,7 +72,7 @@ async def create_sensor(request: Request, sensor: Sensor):
     """
     try:
         new_sensor = await request.app.state.sensors.insert_one(
-            sensor.model_dump(by_alias=True, exclude=["ft"])
+            sensor.model_dump(by_alias=True, exclude=["ft", "resourceType"])
         )
     except pymongo.errors.DuplicateKeyError:
         raise HTTPException(status_code=404, detail="Sensor already exists")

@@ -52,7 +52,7 @@ async def create_animal(request: Request, animal: Animal):
     :param animal: Animal to be added
     """
     new_animal = await request.app.state.animals.insert_one(
-        animal.model_dump(by_alias=True, exclude=["ft"])
+        animal.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     )
 
     if (

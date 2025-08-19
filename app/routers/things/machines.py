@@ -75,7 +75,7 @@ async def create_machine(request: Request, machine: Machine):
     :param machine: Machine to be added
     """
     new_machine = await request.app.state.machines.insert_one(
-        machine.model_dump(by_alias=True, exclude=["ft"])
+        machine.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     )
     if (
         created_machine := await request.app.state.machines.find_one(

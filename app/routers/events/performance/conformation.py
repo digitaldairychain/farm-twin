@@ -48,7 +48,7 @@ async def create_conformation_event(request: Request, conformation: Conformation
 
     :param conformation: Conformation to be added
     """
-    model = conformation.model_dump(by_alias=True, exclude=["ft"])
+    model = conformation.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     try:
         new_ce = await request.app.state.conformation.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
