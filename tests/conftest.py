@@ -191,6 +191,14 @@ def repro_status_payload():
 
 
 @pytest.fixture()
+def repro_abortion_payload():
+    """Generate a repro abortion payload."""
+    return {
+        "animal": {"id": "UK230011200123", "scheme": "gov.uk"}
+    }
+
+
+@pytest.fixture()
 def attention_payload():
     """Generate a repro status payload."""
     return {

@@ -14,7 +14,7 @@ from .routers.events.milking import (drying_off, lactation_status,
                                      test_day_result, visit)
 from .routers.events.movement import arrival, birth, death, departure
 from .routers.events.observations import (carcass, health_status, position)
-from .routers.events.reproduction import repro_status
+from .routers.events.reproduction import repro_status, repro_abortion
 from .routers.events.performance import conformation, group_weight, weight
 from .routers.measurements import devices, samples, sensors
 from .routers.things import animals, machines, points, polygons
@@ -60,6 +60,7 @@ app.include_router(health_status.router, prefix="/events/observations")
 app.include_router(position.router, prefix="/events/observations")
 
 app.include_router(repro_status.router, prefix="/events/reproduction")
+app.include_router(repro_abortion.router, prefix="/events/reproduction")
 
 app.include_router(attachments.router)
 
@@ -102,6 +103,7 @@ async def open_db() -> AsyncIOMotorClient:
     app.state.position = _ft["events"]["observations"]["position"]
 
     app.state.repro_status = _ft["events"]["reproduction"]["repro_status"]
+    app.state.repro_abortion = _ft["events"]["reproduction"]["repro_abortion"]
 
     app.state.attachments = _ft["attachments"]
 
