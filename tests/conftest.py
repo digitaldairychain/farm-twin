@@ -26,7 +26,7 @@ def serial():
 def animal_payload():
     """Generate an animal payload."""
     return {
-        "identifier": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "identifier": {"id": "UK230011200123", "scheme": "uk.gov"},
         "specie": "Cattle",
         "gender": "Female",
         "birthDate": "2025-04-24 12:18:06.625573",
@@ -42,7 +42,7 @@ def animal_payload():
 def animal_payload_updated():
     """Generate an animal payload."""
     return {
-        "identifier": {"id": "UK230011200124", "scheme": "gov.uk"},
+        "identifier": {"id": "UK230011200124", "scheme": "uk.gov"},
         "specie": "Cattle",
         "gender": "Male",
         "productionPurpose": "Wool",
@@ -87,7 +87,7 @@ def device_payload_updated(serial):
 def weight_payload():
     """Generate a weight event payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "weight": {
             "measurement": float(randint(453, 816)),
             "units": "KGM",
@@ -106,7 +106,7 @@ def group_weight_payload(object_id):
         "groupMethod": "EmbeddedAnimalSet",
         "embeddedAnimalSet": {
             "id": object_id,
-            "member": [{"id": "UK230011200123", "scheme": "gov.uk"}],
+            "member": [{"id": "UK230011200123", "scheme": "uk.gov"}],
         },
         "statistics": [
             {
@@ -127,7 +127,7 @@ def group_weight_payload(object_id):
 def feed_intake_payload():
     """Generate a feed intake event payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "feedingStartingDateTime": datetime.now(timezone.utc).isoformat(),
         "feedVisitDuration": {"unitCode": "MIN", "value": 10},
         "consumedFeed": [
@@ -140,7 +140,7 @@ def feed_intake_payload():
 def withdrawal_payload():
     """Generate a withdrawal payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "endDateTime": datetime.now(timezone.utc).isoformat(),
         "productType": "Eggs",
     }
@@ -149,14 +149,14 @@ def withdrawal_payload():
 @pytest.fixture()
 def carcass_payload():
     """Generate a withdrawal payload."""
-    return {"animal": {"id": "UK230011200123", "scheme": "gov.uk"}, "side": "Left"}
+    return {"animal": {"id": "UK230011200123", "scheme": "uk.gov"}, "side": "Left"}
 
 
 @pytest.fixture()
 def health_status_payload():
     """Generate a health status payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "observedStatus": "Healthy",
     }
 
@@ -165,7 +165,7 @@ def health_status_payload():
 def lactation_status_payload():
     """Generate a lactation status payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "observedStatus": "Fresh",
         "eventDateTime": datetime.now(timezone.utc).isoformat(),
     }
@@ -175,7 +175,7 @@ def lactation_status_payload():
 def position_payload():
     """Generate a position payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "positionName": "Yard",
         "eventDateTime": datetime.now(timezone.utc).isoformat(),
     }
@@ -185,7 +185,7 @@ def position_payload():
 def repro_status_payload():
     """Generate a repro status payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "observedStatus": "Pregnant",
     }
 
@@ -193,20 +193,20 @@ def repro_status_payload():
 @pytest.fixture()
 def repro_abortion_payload():
     """Generate a repro abortion payload."""
-    return {"animal": {"id": "UK230011200123", "scheme": "gov.uk"}}
+    return {"animal": {"id": "UK230011200123", "scheme": "uk.gov"}}
 
 
 @pytest.fixture()
 def repro_do_not_breed_payload():
     """Generate a repro do not breed payload."""
-    return {"animal": {"id": "UK230011200123", "scheme": "gov.uk"}, "doNotBreed": True}
+    return {"animal": {"id": "UK230011200123", "scheme": "uk.gov"}, "doNotBreed": True}
 
 
 @pytest.fixture()
 def repro_heat_payload():
     """Generate a repro heat payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "heatDetectionMethod": "Visual",
         "certainty": "Suspect",
         "commencementDateTime": str(datetime.now() - timedelta(days=1)),
@@ -218,7 +218,7 @@ def repro_heat_payload():
 def repro_insemination_payload():
     """Generate a repro insemination payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "inseminationType": "NaturalService",
         "sireOfficialName": "Frankel",
         "eventDateTime": str(datetime.now()),
@@ -229,11 +229,11 @@ def repro_insemination_payload():
 def repro_mating_recommendation_payload():
     """Generate a repro mating recommendation payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "sireRecommendations": [
             {
                 "recommendationType": "SireRecommended",
-                "sireIdentifiers": [{"id": "UK23001120014", "scheme": "gov.uk"}],
+                "sireIdentifiers": [{"id": "UK23001120014", "scheme": "uk.gov"}],
                 "sireOfficialName": "Camelot",
             }
         ],
@@ -244,7 +244,7 @@ def repro_mating_recommendation_payload():
 def repro_parturition_payload():
     """Generate a repro parturition payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "isEmbryoImplant": True,
         "damParity": 3,
         "liveProgeny": 2,
@@ -256,7 +256,7 @@ def repro_parturition_payload():
 def repro_pregnancy_check_payload():
     """Generate a repro pregnancy check payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "method": "Palpation",
         "result": "Pregnant",
         "foetalAge": 1,
@@ -268,7 +268,7 @@ def repro_pregnancy_check_payload():
 def attention_payload():
     """Generate a repro status payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "category": "Health",
         "causes": ["Activity", "LyingTooLong"],
         "priority": "Urgent",
@@ -279,7 +279,7 @@ def attention_payload():
 def test_day_result_payload():
     """Generate a test day result event payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "milkWeight24Hours": {"unitCode": "KGM", "value": 20},
         "testDayCode": "Dry",
     }
@@ -329,7 +329,7 @@ def machine_payload():
 def conformation_payload(object_id):
     """Generate a conformation payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "traitGroup": "Composite",
         "score": 47,
         "traitScored": "BodyLength",
@@ -341,7 +341,7 @@ def conformation_payload(object_id):
 def drying_off_payload(object_id):
     """Generate a drying off payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
     }
 
 
@@ -349,7 +349,7 @@ def drying_off_payload(object_id):
 def milking_visit_payload(object_id):
     """Generate a milking visit payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "milkingStartingDateTime": str(datetime.now()),
         "milkingMilkWeight": {"unitCode": "KGM", "value": 10},
     }
@@ -359,7 +359,7 @@ def milking_visit_payload(object_id):
 def arrival_payload(object_id):
     """Generate an arrival payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "arrivalReason": "ShowReturn",
         "animalState": {
             "currentLactationParity": 2,
@@ -372,7 +372,7 @@ def arrival_payload(object_id):
 def birth_payload(object_id):
     """Generate a birth payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "registrationReason": "Born",
     }
 
@@ -381,7 +381,7 @@ def birth_payload(object_id):
 def death_payload(object_id):
     """Generate a death payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "deathReason": "Age",
     }
 
@@ -390,7 +390,7 @@ def death_payload(object_id):
 def departure_payload(object_id):
     """Generate an departure payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "gov.uk"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "departureReason": "Sale",
         "departureKind": "Sale",
     }
@@ -403,4 +403,26 @@ def machine_payload_updated():
         "manufacturer": "Generic Machine Ltd.",
         "model": "IronHorse XT-450",
         "type": ["Vehicle", "Tractor"],
+    }
+
+
+@pytest.fixture()
+def feed_payload(object_id):
+    """Generate an feed payload."""
+    return {
+        "id": object_id,
+        "category": "Roughage",
+        "type": {"id": "FC0303", "scheme": "org.fao"},
+        "active": True,
+    }
+
+
+@pytest.fixture()
+def feed_payload_updated(object_id):
+    """Generate an feed payload."""
+    return {
+        "id": object_id,
+        "category": "Additives",
+        "name": "LactoMaxx",
+        "active": False,
     }

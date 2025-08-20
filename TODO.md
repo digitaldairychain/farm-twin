@@ -11,7 +11,6 @@ Stop modified and created values being passed
 Stop ft being changed in updates (need to check)
 
 Compliance with ICAR: https://github.com/adewg/ICAR/wiki/Resource-entities
-    - (!) events
     - animal set/collections?
     - feed
     - medicine

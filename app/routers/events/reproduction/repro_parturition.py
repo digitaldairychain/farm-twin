@@ -49,8 +49,7 @@ async def create_repro_parturition_event(
 
     :param repro_parturition: Repro Parturition to be added
     """
-    model = repro_parturition.model_dump(
-        by_alias=True, exclude=["ft", "resourceType"])
+    model = repro_parturition.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(
         model, request.app.state.repro_parturition, ERROR_MSG_OBJECT
     )

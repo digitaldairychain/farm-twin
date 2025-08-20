@@ -21,7 +21,7 @@ from .routers.events.reproduction import (repro_abortion, repro_do_not_breed,
                                           repro_parturition,
                                           repro_pregnancy_check, repro_status)
 from .routers.measurements import devices, samples, sensors
-from .routers.things import animals, machines, points, polygons
+from .routers.things import animals, feed, machines, points, polygons
 
 load_dotenv()
 DB_USER = os.getenv("MONGO_INITDB_ROOT_USERNAME")
@@ -38,6 +38,7 @@ app.include_router(points.router, prefix="/things")
 app.include_router(polygons.router, prefix="/things")
 app.include_router(animals.router, prefix="/things")
 app.include_router(machines.router, prefix="/things")
+app.include_router(feed.router, prefix="/things")
 
 app.include_router(feed_intake.router, prefix="/events/feeding")
 
@@ -88,6 +89,7 @@ async def open_db() -> AsyncIOMotorClient:
     app.state.polygons = _ft["things"]["polygons"]
     app.state.animals = _ft["things"]["animals"]
     app.state.machines = _ft["things"]["machines"]
+    app.state.feed = _ft["things"]["feed"]
 
     app.state.attention = _ft["events"]["attention"]
     app.state.withdrawal = _ft["events"]["withdrawal"]

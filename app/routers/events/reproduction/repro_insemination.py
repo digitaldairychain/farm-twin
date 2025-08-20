@@ -48,8 +48,7 @@ async def create_repro_insemination_event(
 
     :param repro_insemination: Repro Insemination to be added
     """
-    model = repro_insemination.model_dump(
-        by_alias=True, exclude=["ft", "resourceType"])
+    model = repro_insemination.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(
         model, request.app.state.repro_insemination, ERROR_MSG_OBJECT
     )

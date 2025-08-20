@@ -46,8 +46,7 @@ async def create_repro_heat_event(request: Request, repro_heat: ReproHeat):
 
     :param repro_heat: Repro Heat to be added
     """
-    model = repro_heat.model_dump(
-        by_alias=True, exclude=["ft", "resourceType"])
+    model = repro_heat.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(model, request.app.state.repro_heat, ERROR_MSG_OBJECT)
 
 

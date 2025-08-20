@@ -46,8 +46,7 @@ async def create_repro_abortion_event(request: Request, repro_abortion: ReproAbo
 
     :param repro_abortion: Repro Abortion to be added
     """
-    model = repro_abortion.model_dump(
-        by_alias=True, exclude=["ft", "resourceType"])
+    model = repro_abortion.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(
         model, request.app.state.repro_abortion, ERROR_MSG_OBJECT
     )

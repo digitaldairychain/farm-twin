@@ -48,13 +48,11 @@ async def create_conformation_event(request: Request, conformation: Conformation
 
     :param conformation: Conformation to be added
     """
-    model = conformation.model_dump(
-        by_alias=True, exclude=["ft", "resourceType"])
+    model = conformation.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     try:
         new_ce = await request.app.state.conformation.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(
-            status_code=404, detail="Conformation event already exists")
+        raise HTTPException(status_code=404, detail="Conformation event already exists")
     if (
         created_conformation_event := await request.app.state.conformation.find_one(
             {"_id": new_ce.inserted_id}
@@ -80,8 +78,7 @@ async def remove_conformation_event(request: Request, ft: str):
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(
-        status_code=404, detail=f"Conformation event {ft} not found")
+    raise HTTPException(status_code=404, detail=f"Conformation event {ft} not found")
 
 
 @router.get(
