@@ -25,7 +25,7 @@ ERROR_MSG_OBJECT = "Lactation Status"
 
 router = APIRouter(
     prefix="/lactation_status",
-    tags=["events", "milking"],
+    tags=["milking"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -49,7 +49,8 @@ async def create_lactation_status_event(
 
     :param lactation_status: Lactation Status to be added
     """
-    model = lactation_status.model_dump(by_alias=True, exclude=["ft", "resourceType"])
+    model = lactation_status.model_dump(
+        by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(
         model, request.app.state.lactation_status, ERROR_MSG_OBJECT
     )

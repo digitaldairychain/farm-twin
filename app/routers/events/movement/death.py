@@ -24,7 +24,7 @@ ERROR_MSG_OBJECT = "Death"
 
 router = APIRouter(
     prefix="/death",
-    tags=["events", "movement"],
+    tags=["movement"],
     responses={404: {"description": "Not found"}},
 )
 

@@ -24,7 +24,7 @@ ERROR_MSG_OBJECT = "Repro Pregnancy Check"
 
 router = APIRouter(
     prefix="/repro_pregnancy_check",
-    tags=["reproduction", "pregnancy_check"],
+    tags=["reproduction"],
     responses={404: {"description": "Not found"}},
 )
 

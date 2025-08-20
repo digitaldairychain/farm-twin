@@ -25,7 +25,7 @@ ERROR_MSG_OBJECT = "Test Day Result"
 
 router = APIRouter(
     prefix="/test_day_result",
-    tags=["events", "milking"],
+    tags=["milking"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -47,7 +47,8 @@ async def create_test_day_result_event(request: Request, testdayresult: TestDayR
 
     :param testdayresult: Test day result to be added
     """
-    model = testdayresult.model_dump(by_alias=True, exclude=["ft", "resourceType"])
+    model = testdayresult.model_dump(
+        by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(
         model, request.app.state.test_day_result, ERROR_MSG_OBJECT
     )

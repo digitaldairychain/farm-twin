@@ -25,7 +25,7 @@ ERROR_MSG_OBJECT = "Health Status"
 
 router = APIRouter(
     prefix="/health_status",
-    tags=["observations", "health"],
+    tags=["observations"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -47,7 +47,8 @@ async def create_health_status_event(request: Request, health_status: HealthStat
 
     :param health_status: Health Status to be added
     """
-    model = health_status.model_dump(by_alias=True, exclude=["ft", "resourceType"])
+    model = health_status.model_dump(
+        by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(model, request.app.state.health_status, ERROR_MSG_OBJECT)
 
 

@@ -25,7 +25,7 @@ ERROR_MSG_OBJECT = "Repro Status"
 
 router = APIRouter(
     prefix="/repro_status",
-    tags=["reproduction", "status"],
+    tags=["reproduction"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -47,7 +47,8 @@ async def create_repro_status_event(request: Request, repro_status: ReproStatus)
 
     :param repro_status: Repro Status to be added
     """
-    model = repro_status.model_dump(by_alias=True, exclude=["ft", "resourceType"])
+    model = repro_status.model_dump(
+        by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(model, request.app.state.repro_status, ERROR_MSG_OBJECT)
 
 

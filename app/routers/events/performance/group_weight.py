@@ -26,7 +26,7 @@ from ...icar.icarResources import icarGroupWeightEventResource as GroupWeight
 
 router = APIRouter(
     prefix="/group_weight",
-    tags=["events", "performance"],
+    tags=["performance"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -51,7 +51,8 @@ async def create_group_weight_event(request: Request, group_weight: GroupWeight)
 
     :param group_weight: Group weight to be added
     """
-    model = group_weight.model_dump(by_alias=True, exclude=["ft", "resourceType"])
+    model = group_weight.model_dump(
+        by_alias=True, exclude=["ft", "resourceType"])
     try:
         new_we = await request.app.state.group_weight.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
@@ -83,7 +84,8 @@ async def remove_group_weight_event(request: Request, ft: str):
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(status_code=404, detail=f"Group weight event {ft} not found")
+    raise HTTPException(
+        status_code=404, detail=f"Group weight event {ft} not found")
 
 
 @router.get(

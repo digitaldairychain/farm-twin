@@ -25,7 +25,7 @@ ERROR_MSG_OBJECT = "Arrival"
 
 router = APIRouter(
     prefix="/arrival",
-    tags=["events", "movement"],
+    tags=["movement"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -74,7 +74,8 @@ async def arrival_event_query(
     arrivalReason: icarEnums.icarArrivalReasonType | None = None,
     currentLactationParity: int | None = None,
     lastCalvingDateStart: datetime | None = None,
-    lastCalvingDateEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+    lastCalvingDateEnd: Annotated[datetime, Query(
+        default_factory=datetime.now)] = None,
     lastInseminationDateStart: datetime | None = None,
     lastInseminationDateEnd: datetime | None = None,
     lastDryingOffDateStart: datetime | None = None,

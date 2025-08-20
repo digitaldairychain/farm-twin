@@ -25,7 +25,7 @@ from ...icar.icarResources import icarWeightEventResource as Weight
 
 router = APIRouter(
     prefix="/weight",
-    tags=["events", "performance"],
+    tags=["performance"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -54,7 +54,8 @@ async def create_weight_event(request: Request, weight: Weight):
     try:
         new_we = await request.app.state.weight.insert_one(model)
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail=f"Weight {weight} already exists")
+        raise HTTPException(
+            status_code=404, detail=f"Weight {weight} already exists")
     if (
         created_weight_event := await request.app.state.weight.find_one(
             {"_id": new_we.inserted_id}

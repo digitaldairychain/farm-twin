@@ -23,7 +23,7 @@ ERROR_MSG_OBJECT = "Drying Off"
 
 router = APIRouter(
     prefix="/drying_off",
-    tags=["events", "milking"],
+    tags=["milking"],
     responses={404: {"description": "Not found"}},
 )
 

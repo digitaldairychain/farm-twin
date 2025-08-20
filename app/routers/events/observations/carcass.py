@@ -25,7 +25,7 @@ ERROR_MSG_OBJECT = "Carcass"
 
 router = APIRouter(
     prefix="/carcass",
-    tags=["observations", "carcass"],
+    tags=["observations"],
     responses={404: {"description": "Not found"}},
 )
 

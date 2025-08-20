@@ -24,7 +24,7 @@ ERROR_MSG_OBJECT = "Milking Visit"
 
 router = APIRouter(
     prefix="/visit",
-    tags=["events", "milking"],
+    tags=["milking"],
     responses={404: {"description": "Not found"}},
 )
 

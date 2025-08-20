@@ -23,7 +23,7 @@ ERROR_MSG_OBJECT = "Repro DNB"
 
 router = APIRouter(
     prefix="/repro_do_not_breed",
-    tags=["reproduction", "DNB"],
+    tags=["reproduction"],
     responses={404: {"description": "Not found"}},
 )
 

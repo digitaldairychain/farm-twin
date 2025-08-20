@@ -25,7 +25,7 @@ ERROR_MSG_OBJECT = "Position"
 
 router = APIRouter(
     prefix="/position",
-    tags=["observations", "position"],
+    tags=["observations"],
     responses={404: {"description": "Not found"}},
 )
 

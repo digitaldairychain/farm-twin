@@ -24,7 +24,7 @@ ERROR_MSG_OBJECT = "Birth"
 
 router = APIRouter(
     prefix="/birth",
-    tags=["events", "movement"],
+    tags=["movement"],
     responses={404: {"description": "Not found"}},
 )
 
