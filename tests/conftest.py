@@ -426,3 +426,20 @@ def feed_payload_updated(object_id):
         "name": "LactoMaxx",
         "active": False,
     }
+
+
+@pytest.fixture()
+def feed_storage_payload(object_id):
+    """Generate an feed storage payload."""
+    return {"id": object_id, "feedId": object_id, "name": "Feed Storage 9000"}
+
+
+@pytest.fixture()
+def feed_storage_payload_updated(object_id):
+    """Generate an feed storage payload."""
+    return {
+        "id": object_id,
+        "feedId": object_id,
+        "name": "Feed Storage 3000",
+        "isActive": False,
+    }

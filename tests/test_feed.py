@@ -38,9 +38,11 @@ class TestAnimals:
 
     def test_create_feed_incorrect_enum(self, test_client, feed_payload):
         feed_payload["category"] = "BreakfastCereal"
-        common.create_get(test_client, PATH, feed_payload, KEY, expected_code=422)
+        common.create_get(test_client, PATH, feed_payload,
+                          KEY, expected_code=422)
 
     def test_update_feed_doesnt_exist(
         self, test_client, object_id, feed_payload_updated
     ):
-        common.update_doesnt_exist(test_client, PATH, feed_payload_updated, object_id)
+        common.update_doesnt_exist(
+            test_client, PATH, feed_payload_updated, object_id)

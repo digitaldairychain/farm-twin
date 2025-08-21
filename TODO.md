@@ -40,3 +40,4 @@ icarInventoryTransactionType -> BaseModel to avoid circular import
 icarDateTimeType -> PastDatetime
 icarDateType -> PastDatetime (bson does not support date objects)
 HeatEvent expirationDate -> FutureDatetime
+icarFeedResource has both feedId and id? It inherits from icarDeviceResource yet isn't a device
