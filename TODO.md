@@ -32,6 +32,7 @@ implementation of searching in arrays
 
 Improve list handling in object checking tests
 
+Test for future or past date
 
 ### Changes to ADE ###
 
@@ -44,5 +45,7 @@ icarRationIdType -> inherits from icarIdentifierType
 ### ADE Issues ###
 
 An icarMedicineResource can be created empty
+An icarReproEmbryoResource can be created empty
+An icarReproSemenStrawResource can be created empty
 icarFeedStorageResource feedId is not of type icarFeedIdentifierType (which it is in icarFeedsInRationType, for example)
 active and isActive used in different resources

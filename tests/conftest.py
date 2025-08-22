@@ -481,3 +481,56 @@ def ration_payload_updated(object_id):
         ],
         "active": False,
     }
+
+
+@pytest.fixture()
+def embryo_payload(object_id):
+    """Generate an embryo payload."""
+    return {
+        "id": {"id": object_id, "scheme": "uk.gov"},
+        "dateCollected": str(datetime.now()),
+        "donorURI": object_id,
+        "sireOfficialName": "Frankenstein",
+    }
+
+
+@pytest.fixture()
+def embryo_payload_updated(object_id):
+    """Generate an embryo payload."""
+    return {
+        "id": {"id": object_id, "scheme": "uk.gov"},
+        "sireURI": object_id,
+        "donorIdentifiers": [
+            {"id": object_id, "scheme": "uk.gov"},
+            {"id": object_id, "scheme": "uk.gov"},
+        ],
+    }
+
+
+@pytest.fixture()
+def semen_straw_payload(object_id):
+    """Generate an semen straw payload."""
+    return {
+        "id": {"id": object_id, "scheme": "uk.gov"},
+        "collectionCentre": "London, UK",
+        "dateCollected": str(datetime.now()),
+        "sireURI": object_id,
+        "preservationType": "Liquid",
+        "isSexedSemen": True,
+        "sexedGender": "Male",
+        "sexedPercentage": 95,
+    }
+
+
+@pytest.fixture()
+def semen_straw_payload_updated(object_id):
+    """Generate an semen straw payload."""
+    return {
+        "id": {"id": object_id, "scheme": "uk.gov"},
+        "sireOfficialName": "Spongebob",
+        "sireIdentifiers": [
+            {"id": object_id, "scheme": "uk.gov"},
+            {"id": object_id, "scheme": "uk.gov"},
+        ],
+        "preservationType": "Frozen",
+    }
