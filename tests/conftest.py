@@ -443,3 +443,22 @@ def feed_storage_payload_updated(object_id):
         "name": "Feed Storage 3000",
         "isActive": False,
     }
+
+
+@pytest.fixture()
+def medicine_payload():
+    """Generate an medicine storage payload."""
+    return {
+        "name": "Betamox LA Injection",
+        "approved": "Approved",
+    }
+
+
+@pytest.fixture()
+def medicine_payload_updated():
+    """Generate an medicine storage payload."""
+    return {
+        "name": "Betamox LA Injection",
+        "approved": "Approved",
+        "registeredID": {"id": "6142-50B", "scheme": "gov.uk"},
+    }
