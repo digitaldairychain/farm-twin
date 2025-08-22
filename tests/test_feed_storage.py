@@ -5,7 +5,7 @@ KEY = "feed_storage"
 PATH = "/" + ROOT + "/" + KEY
 
 
-class TestAnimals:
+class TestFeedStorage:
     def test_create_get_feed_storage(self, test_client, feed_storage_payload):
         common.create_get(test_client, PATH, feed_storage_payload, KEY)
 

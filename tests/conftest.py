@@ -460,5 +460,24 @@ def medicine_payload_updated():
     return {
         "name": "Betamox LA Injection",
         "approved": "Approved",
-        "registeredID": {"id": "6142-50B", "scheme": "gov.uk"},
+        "registeredID": {"id": "6142-50B", "scheme": "uk.gov"},
+    }
+
+
+@pytest.fixture()
+def ration_payload(object_id):
+    """Generate an ration storage payload."""
+    return {"id": {"id": object_id, "scheme": "uk.gov"}, "name": "Super Ration 1000"}
+
+
+@pytest.fixture()
+def ration_payload_updated(object_id):
+    """Generate an ration storage payload."""
+    return {
+        "id": {"id": object_id, "scheme": "uk.gov"},
+        "name": "Super Ration 1000",
+        "feeds": [
+            {"feedId": {"id": object_id, "scheme": "uk.gov"}, "percentage": 10.0}
+        ],
+        "active": False,
     }

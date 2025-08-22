@@ -39,4 +39,10 @@ icarInventoryTransactionType -> BaseModel to avoid circular import
 icarDateTimeType -> PastDatetime
 icarDateType -> PastDatetime (bson does not support date objects)
 HeatEvent expirationDate -> FutureDatetime
+icarRationIdType -> inherits from icarIdentifierType
+
+### ADE Issues ###
+
 An icarMedicineResource can be created empty
+icarFeedStorageResource feedId is not of type icarFeedIdentifierType (which it is in icarFeedsInRationType, for example)
+active and isActive used in different resources

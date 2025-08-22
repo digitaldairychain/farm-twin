@@ -5,7 +5,7 @@ KEY = "medicine"
 PATH = "/" + ROOT + "/" + KEY
 
 
-class TestAnimals:
+class TestMedicine:
     def test_create_get_medicine(self, test_client, medicine_payload):
         common.create_get(test_client, PATH, medicine_payload, KEY)
 

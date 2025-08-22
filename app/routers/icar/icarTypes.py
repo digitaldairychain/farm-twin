@@ -935,7 +935,7 @@ class icarMassMeasureType(BaseModel):
     )
 
 
-class icarRationIdType(BaseModel):
+class icarRationIdType(icarIdentifierType):
     pass
 
 
