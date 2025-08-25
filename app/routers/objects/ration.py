@@ -19,7 +19,7 @@ from ..icar.icarResources import icarRationResource as Ration
 
 router = APIRouter(
     prefix="/ration",
-    tags=["things"],
+    tags=["objects"],
     responses={404: {"description": "Not found"}},
 )
 

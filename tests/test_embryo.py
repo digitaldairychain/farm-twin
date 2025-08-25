@@ -1,6 +1,6 @@
 from . import common
 
-ROOT = "things"
+ROOT = "objects"
 KEY = "embryo"
 PATH = "/" + ROOT + "/" + KEY
 
@@ -41,4 +41,5 @@ class TestSemenStraw:
     def test_update_embryo_doesnt_exist(
         self, test_client, object_id, embryo_payload_updated
     ):
-        common.update_doesnt_exist(test_client, PATH, embryo_payload_updated, object_id)
+        common.update_doesnt_exist(
+            test_client, PATH, embryo_payload_updated, object_id)

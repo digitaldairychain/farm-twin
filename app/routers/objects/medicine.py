@@ -18,7 +18,7 @@ from ..icar.icarResources import icarMedicineResource as Medicine
 
 router = APIRouter(
     prefix="/medicine",
-    tags=["things"],
+    tags=["objects"],
     responses={404: {"description": "Not found"}},
 )
 

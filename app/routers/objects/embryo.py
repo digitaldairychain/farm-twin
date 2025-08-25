@@ -18,7 +18,7 @@ from ..icar.icarResources import icarReproEmbryoResource as Embryo
 
 router = APIRouter(
     prefix="/embryo",
-    tags=["things"],
+    tags=["objects"],
     responses={404: {"description": "Not found"}},
 )
 

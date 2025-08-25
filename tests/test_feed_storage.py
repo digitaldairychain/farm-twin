@@ -1,6 +1,6 @@
 from . import common
 
-ROOT = "things"
+ROOT = "objects"
 KEY = "feed_storage"
 PATH = "/" + ROOT + "/" + KEY
 

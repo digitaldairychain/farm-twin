@@ -23,7 +23,7 @@ from pydantic_extra_types import mongo_object_id
 
 router = APIRouter(
     prefix="/points",
-    tags=["things"],
+    tags=["objects"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -38,7 +38,8 @@ class Point(BaseModel):
         },
     )
     point: Point = Field(
-        json_schema_extra={"description": "GeoJSON Point, a fixed point on earth"}
+        json_schema_extra={
+            "description": "GeoJSON Point, a fixed point on earth"}
     )
     tags: Optional[List[str]] = Field(default=[])
 
@@ -61,7 +62,8 @@ async def create_point(request: Request, point: Point):
             point.model_dump(by_alias=True, exclude=["id"])
         )
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail=f"Point {point} already exists")
+        raise HTTPException(
+            status_code=404, detail=f"Point {point} already exists")
     if (
         created_point := await request.app.state.points.find_one(
             {"_id": new_point.inserted_id}
@@ -116,7 +118,8 @@ async def point_query(
     if tag:
         query["tags"] = {"$in": [tag]}
     if lat is not None and long is not None:
-        query["point"] = {"bbox": None, "type": "Point", "coordinates": [lat, long]}
+        query["point"] = {"bbox": None,
+                          "type": "Point", "coordinates": [lat, long]}
     if tag:
         query["tags"] = {"$in": [tag]}
     result = await request.app.state.points.find(query).to_list(1000)

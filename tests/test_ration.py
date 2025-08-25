@@ -1,6 +1,6 @@
 from . import common
 
-ROOT = "things"
+ROOT = "objects"
 KEY = "ration"
 PATH = "/" + ROOT + "/" + KEY
 
@@ -41,4 +41,5 @@ class TestRation:
     def test_update_ration_doesnt_exist(
         self, test_client, object_id, ration_payload_updated
     ):
-        common.update_doesnt_exist(test_client, PATH, ration_payload_updated, object_id)
+        common.update_doesnt_exist(
+            test_client, PATH, ration_payload_updated, object_id)

@@ -19,7 +19,7 @@ from ..icar.icarResources import icarFeedResource as Feed
 
 router = APIRouter(
     prefix="/feed",
-    tags=["things"],
+    tags=["objects"],
     responses={404: {"description": "Not found"}},
 )
 

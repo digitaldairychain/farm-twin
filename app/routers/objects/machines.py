@@ -24,7 +24,7 @@ from ..ftCommon import FTModel, dateBuild, filterQuery
 
 router = APIRouter(
     prefix="/machines",
-    tags=["things"],
+    tags=["objects"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -83,7 +83,8 @@ async def create_machine(request: Request, machine: Machine):
         )
     ) is not None:
         return created_machine
-    raise HTTPException(status_code=404, detail="Machine not successfully added")
+    raise HTTPException(
+        status_code=404, detail="Machine not successfully added")
 
 
 @router.delete("/{ft}", response_description="Delete a machine")

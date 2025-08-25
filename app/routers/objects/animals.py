@@ -29,7 +29,7 @@ from ..icar.icarResources import icarAnimalCoreResource as Animal
 
 router = APIRouter(
     prefix="/animals",
-    tags=["things"],
+    tags=["objects"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -61,7 +61,8 @@ async def create_animal(request: Request, animal: Animal):
         )
     ) is not None:
         return created_animal
-    raise HTTPException(status_code=404, detail="Animal not successfully added")
+    raise HTTPException(
+        status_code=404, detail="Animal not successfully added")
 
 
 @router.delete("/{ft}", response_description="Delete an animal")
@@ -104,7 +105,8 @@ async def update_animal(request: Request, ft: str, animal: Animal):
         )
     ) is not None:
         return updated_animal
-    raise HTTPException(status_code=404, detail=f"Animal {ft} not successfully updated")
+    raise HTTPException(
+        status_code=404, detail=f"Animal {ft} not successfully updated")
 
 
 @router.get(

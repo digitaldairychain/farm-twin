@@ -18,7 +18,7 @@ from ..icar.icarResources import icarFeedStorageResource as FeedStorage
 
 router = APIRouter(
     prefix="/feed_storage",
-    tags=["things"],
+    tags=["objects"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -42,7 +42,8 @@ async def create_feed_storage(request: Request, feed_storage: FeedStorage):
 
     :param feed_storage: Feed Storage to be added
     """
-    model = feed_storage.model_dump(by_alias=True, exclude=["ft", "resourceType"])
+    model = feed_storage.model_dump(
+        by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(model, request.app.state.feed_storage, ERROR_MSG_OBJECT)
 
 

@@ -1,6 +1,6 @@
 from . import common
 
-ROOT = "things"
+ROOT = "objects"
 KEY = "animals"
 PATH = "/" + ROOT + "/" + KEY
 
@@ -40,9 +40,11 @@ class TestAnimals:
 
     def test_create_animal_incorrect_enum(self, test_client, animal_payload):
         animal_payload["productionPurpose"] = "Astronaut"
-        common.create_get(test_client, PATH, animal_payload, KEY, expected_code=422)
+        common.create_get(test_client, PATH, animal_payload,
+                          KEY, expected_code=422)
 
     def test_update_animal_doesnt_exist(
         self, test_client, object_id, animal_payload_updated
     ):
-        common.update_doesnt_exist(test_client, PATH, animal_payload_updated, object_id)
+        common.update_doesnt_exist(
+            test_client, PATH, animal_payload_updated, object_id)

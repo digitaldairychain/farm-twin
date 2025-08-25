@@ -1,6 +1,6 @@
 # { farm-twin } TODO #
 
-- Add experiment endpoint as a collection of things and attachments
+- Add experiment endpoint as a collection of objects and attachments
 - Add a documentation endpoint for adding context to data - captured in MD
 - Interface for managing data - related object discovery?
 - Ensure UTC conformance for times

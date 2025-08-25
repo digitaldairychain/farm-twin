@@ -1,6 +1,6 @@
 from . import common
 
-ROOT = "things"
+ROOT = "objects"
 KEY = "medicine"
 PATH = "/" + ROOT + "/" + KEY
 

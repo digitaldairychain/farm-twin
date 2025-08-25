@@ -21,8 +21,8 @@ from .routers.events.reproduction import (repro_abortion, repro_do_not_breed,
                                           repro_parturition,
                                           repro_pregnancy_check, repro_status)
 from .routers.measurements import devices, samples, sensors
-from .routers.things import (animals, embryo, feed, feed_storage, machines,
-                             medicine, points, polygons, ration, semen_straw)
+from .routers.objects import (animals, embryo, feed, feed_storage, machines,
+                              medicine, points, polygons, ration, semen_straw)
 
 load_dotenv()
 DB_USER = os.getenv("MONGO_INITDB_ROOT_USERNAME")
@@ -35,16 +35,16 @@ app.include_router(sensors.router, prefix="/measurements")
 app.include_router(devices.router, prefix="/measurements")
 app.include_router(samples.router, prefix="/measurements")
 
-app.include_router(points.router, prefix="/things")
-app.include_router(polygons.router, prefix="/things")
-app.include_router(animals.router, prefix="/things")
-app.include_router(machines.router, prefix="/things")
-app.include_router(feed.router, prefix="/things")
-app.include_router(feed_storage.router, prefix="/things")
-app.include_router(medicine.router, prefix="/things")
-app.include_router(ration.router, prefix="/things")
-app.include_router(embryo.router, prefix="/things")
-app.include_router(semen_straw.router, prefix="/things")
+app.include_router(points.router, prefix="/objects")
+app.include_router(polygons.router, prefix="/objects")
+app.include_router(animals.router, prefix="/objects")
+app.include_router(machines.router, prefix="/objects")
+app.include_router(feed.router, prefix="/objects")
+app.include_router(feed_storage.router, prefix="/objects")
+app.include_router(medicine.router, prefix="/objects")
+app.include_router(ration.router, prefix="/objects")
+app.include_router(embryo.router, prefix="/objects")
+app.include_router(semen_straw.router, prefix="/objects")
 
 app.include_router(feed_intake.router, prefix="/events/feeding")
 
@@ -75,7 +75,8 @@ app.include_router(repro_abortion.router, prefix="/events/reproduction")
 app.include_router(repro_do_not_breed.router, prefix="/events/reproduction")
 app.include_router(repro_heat.router, prefix="/events/reproduction")
 app.include_router(repro_insemination.router, prefix="/events/reproduction")
-app.include_router(repro_mating_recommendation.router, prefix="/events/reproduction")
+app.include_router(repro_mating_recommendation.router,
+                   prefix="/events/reproduction")
 app.include_router(repro_parturition.router, prefix="/events/reproduction")
 app.include_router(repro_pregnancy_check.router, prefix="/events/reproduction")
 
@@ -91,16 +92,16 @@ async def open_db() -> AsyncIOMotorClient:
     app.state.sensors = _ft["measurements"]["sensors"]
     app.state.samples = _ft["measurements"]["samples"]
 
-    app.state.points = _ft["things"]["points"]
-    app.state.polygons = _ft["things"]["polygons"]
-    app.state.animals = _ft["things"]["animals"]
-    app.state.machines = _ft["things"]["machines"]
-    app.state.feed = _ft["things"]["feed"]
-    app.state.feed_storage = _ft["things"]["feed_storage"]
-    app.state.medicine = _ft["things"]["medicine"]
-    app.state.ration = _ft["things"]["ration"]
-    app.state.embryo = _ft["things"]["embryo"]
-    app.state.semen_straw = _ft["things"]["semen_straw"]
+    app.state.points = _ft["objects"]["points"]
+    app.state.polygons = _ft["objects"]["polygons"]
+    app.state.animals = _ft["objects"]["animals"]
+    app.state.machines = _ft["objects"]["machines"]
+    app.state.feed = _ft["objects"]["feed"]
+    app.state.feed_storage = _ft["objects"]["feed_storage"]
+    app.state.medicine = _ft["objects"]["medicine"]
+    app.state.ration = _ft["objects"]["ration"]
+    app.state.embryo = _ft["objects"]["embryo"]
+    app.state.semen_straw = _ft["objects"]["semen_straw"]
 
     app.state.attention = _ft["events"]["attention"]
     app.state.withdrawal = _ft["events"]["withdrawal"]
@@ -145,7 +146,8 @@ async def create_indexes():
     app.state.devices.create_index(["serial", "manufacturer"], unique=True)
     app.state.points.create_index({"point": "2dsphere"}, unique=True)
     app.state.polygons.create_index(["polygon"], unique=True)
-    app.state.sensors.create_index(["device", "serial", "measurement"], unique=True)
+    app.state.sensors.create_index(
+        ["device", "serial", "measurement"], unique=True)
     _attachment_index = ["device", "thing", "start"]
     app.state.attachments.create_index(_attachment_index, unique=True)
     _sample_index = ["device", "sensor", "timestamp", "predicted"]
