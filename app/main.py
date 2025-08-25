@@ -20,9 +20,10 @@ from .routers.events.reproduction import (repro_abortion, repro_do_not_breed,
                                           repro_mating_recommendation,
                                           repro_parturition,
                                           repro_pregnancy_check, repro_status)
-from .routers.measurements import devices, samples, sensors
-from .routers.objects import (animals, embryo, feed, feed_storage, machines,
-                              medicine, points, polygons, ration, semen_straw)
+from .routers.measurements import samples, sensors
+from .routers.objects import (animals, devices, embryo, feed, feed_storage,
+                              machines, medicine, points, polygons, ration,
+                              semen_straw)
 
 load_dotenv()
 DB_USER = os.getenv("MONGO_INITDB_ROOT_USERNAME")
@@ -32,7 +33,6 @@ DB_URL = f"mongodb://{DB_USER}:{DB_PASS}@localhost"
 app = FastAPI(title="{ farm-twin }", version=__version__)
 
 app.include_router(sensors.router, prefix="/measurements")
-app.include_router(devices.router, prefix="/measurements")
 app.include_router(samples.router, prefix="/measurements")
 
 app.include_router(points.router, prefix="/objects")
@@ -45,6 +45,7 @@ app.include_router(medicine.router, prefix="/objects")
 app.include_router(ration.router, prefix="/objects")
 app.include_router(embryo.router, prefix="/objects")
 app.include_router(semen_straw.router, prefix="/objects")
+app.include_router(devices.router, prefix="/objects")
 
 app.include_router(feed_intake.router, prefix="/events/feeding")
 
@@ -75,8 +76,7 @@ app.include_router(repro_abortion.router, prefix="/events/reproduction")
 app.include_router(repro_do_not_breed.router, prefix="/events/reproduction")
 app.include_router(repro_heat.router, prefix="/events/reproduction")
 app.include_router(repro_insemination.router, prefix="/events/reproduction")
-app.include_router(repro_mating_recommendation.router,
-                   prefix="/events/reproduction")
+app.include_router(repro_mating_recommendation.router, prefix="/events/reproduction")
 app.include_router(repro_parturition.router, prefix="/events/reproduction")
 app.include_router(repro_pregnancy_check.router, prefix="/events/reproduction")
 
@@ -88,7 +88,6 @@ async def open_db() -> AsyncIOMotorClient:
 
     _ft = app.state.mongodb["farm-twin"]
 
-    app.state.devices = _ft["measurements"]["devices"]
     app.state.sensors = _ft["measurements"]["sensors"]
     app.state.samples = _ft["measurements"]["samples"]
 
@@ -102,6 +101,7 @@ async def open_db() -> AsyncIOMotorClient:
     app.state.ration = _ft["objects"]["ration"]
     app.state.embryo = _ft["objects"]["embryo"]
     app.state.semen_straw = _ft["objects"]["semen_straw"]
+    app.state.devices = _ft["objects"]["devices"]
 
     app.state.attention = _ft["events"]["attention"]
     app.state.withdrawal = _ft["events"]["withdrawal"]
@@ -146,8 +146,7 @@ async def create_indexes():
     app.state.devices.create_index(["serial", "manufacturer"], unique=True)
     app.state.points.create_index({"point": "2dsphere"}, unique=True)
     app.state.polygons.create_index(["polygon"], unique=True)
-    app.state.sensors.create_index(
-        ["device", "serial", "measurement"], unique=True)
+    app.state.sensors.create_index(["device", "serial", "measurement"], unique=True)
     _attachment_index = ["device", "thing", "start"]
     app.state.attachments.create_index(_attachment_index, unique=True)
     _sample_index = ["device", "sensor", "timestamp", "predicted"]

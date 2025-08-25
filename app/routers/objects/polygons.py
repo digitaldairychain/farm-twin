@@ -65,8 +65,7 @@ async def create_polygon(request: Request, polygon: Polygon):
             polygon.model_dump(by_alias=True, exclude=["id"])
         )
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(
-            status_code=404, detail=f"Polygon {polygon} already exists")
+        raise HTTPException(status_code=404, detail=f"Polygon {polygon} already exists")
     if (
         created_polygon := await request.app.state.polygons.find_one(
             {"_id": new_polygon.inserted_id}

@@ -15,97 +15,23 @@ https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarDeviceResource.json
 """
 
 from datetime import datetime
-from typing import Annotated, List, Optional
+from typing import Annotated, List
 
 import pymongo
 from bson.objectid import ObjectId
 from fastapi import APIRouter, HTTPException, Query, Request, Response, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
-from ..ftCommon import FTModel, dateBuild, filterQuery
-from ..icar import icarEnums, icarTypes
+from ..ftCommon import dateBuild, filterQuery
+from ..icar import icarTypes
+from ..icar.icarResources import icarDeviceResource as Device
 
 router = APIRouter(
     prefix="/devices",
     tags=["measurements"],
     responses={404: {"description": "Not found"}},
 )
-
-
-class Device(FTModel):
-    id: str = Field(
-        json_schema_extra={
-            "description": "Unique identifier on location level in the source"
-            + " system for this device.",
-        }
-    )
-
-    serial: Optional[str] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Optionally, the serial number of the device.",
-            "example": "12345",
-        },
-    )
-
-    name: Optional[str] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Name given to the device by the farmer.",
-        },
-    )
-
-    description: Optional[str] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Description of the device by the farmer.",
-        },
-    )
-    softwareVersion: Optional[str] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Version of the software installed on the device.",
-        },
-    )
-
-    hardwareVersion: Optional[str] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Version of the hardware installed in the device.",
-        },
-    )
-
-    isActive: Optional[bool] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Indicates whether the device is active at "
-            + "this moment.",
-        },
-    )
-
-    supportedMessages: Optional[List[icarEnums.icarMessageType]] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Identifies message types supported for the device",
-        },
-    )
-
-    manufacturer: Optional[icarTypes.icarDeviceManufacturerType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "The device data as defined by the manufacturer.",
-        },
-    )
-
-    registration: Optional[icarTypes.icarDeviceRegistrationIdentifierType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": " registration identifier for the device "
-            + "(most devices should eventually have a registration "
-            + "issued by `org.icar` or other entity",
-        },
-    )
 
 
 class DeviceCollection(BaseModel):

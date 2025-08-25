@@ -5,6 +5,4 @@
 - Interface for managing data - related object discovery?
 - Ensure UTC conformance for times
 - Confirm modified and created values cannot be passed
-- Confirm ft ID is not changed in updates
-- Confirm ft device/machine alignment -> https://github.com/adewg/ICAR/blob/v1.4.1/types/icarDeviceReferenceType.json
 - Implement complex searches

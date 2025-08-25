@@ -83,8 +83,7 @@ async def create_machine(request: Request, machine: Machine):
         )
     ) is not None:
         return created_machine
-    raise HTTPException(
-        status_code=404, detail="Machine not successfully added")
+    raise HTTPException(status_code=404, detail="Machine not successfully added")
 
 
 @router.delete("/{ft}", response_description="Delete a machine")

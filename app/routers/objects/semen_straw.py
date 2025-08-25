@@ -43,8 +43,7 @@ async def create_semen_straw(request: Request, semen_straw: SemenStraw):
 
     :param semen_straw: SemenStraw to be added
     """
-    model = semen_straw.model_dump(
-        by_alias=True, exclude=["ft", "resourceType"])
+    model = semen_straw.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(model, request.app.state.semen_straw, ERROR_MSG_OBJECT)
 
 
