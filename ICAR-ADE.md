@@ -65,7 +65,7 @@ Following that, we outline any changes that have been made to the specification 
 - icarDateTimeType -> PastDatetime
 - icarDateType -> PastDatetime (bson does not support date objects)
 - icarReproHeatEventResource expirationDate -> FutureDatetime
-- icarRationIdType -> inherits from - [ ] - [ ] icarIdentifierType
+- icarRationIdType -> inherits from icarIdentifierType
 
 ### ADE Issues ###
 
