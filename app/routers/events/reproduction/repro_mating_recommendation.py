@@ -48,11 +48,10 @@ async def create_repro_mating_recommendation_event(
 
     :param repro_mating_recommendation: Mating recommendation to be added
     """
-    model = repro_mating_recommendation.model_dump(
-        by_alias=True, exclude=["ft", "resourceType"]
-    )
     return await add_one_to_db(
-        model, request.app.state.repro_mating_recommendation, ERROR_MSG_OBJECT
+        repro_mating_recommendation,
+        request.app.state.repro_mating_recommendation,
+        ERROR_MSG_OBJECT,
     )
 
 

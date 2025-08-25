@@ -24,13 +24,16 @@ from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 
-from ..ftCommon import FTModel, dateBuild, filterQuery
+from ..ftCommon import (FTModel, add_one_to_db, dateBuild, delete_one_from_db,
+                        filterQuery, find_in_db)
 
 router = APIRouter(
     prefix="/samples",
     tags=["measurements"],
     responses={404: {"description": "Not found"}},
 )
+
+ERROR_MSG_OBJECT = "Sample"
 
 
 class Sample(FTModel):
@@ -83,38 +86,17 @@ async def create_sample(request: Request, sample: Sample):
 
     :param sample: Sample to be added
     """
-    model = sample.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    if model["timestamp"] is None:
-        model["timestamp"] = datetime.now()
-    try:
-        new_sample = await request.app.state.samples.insert_one(model)
-    except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail="Sample already exists")
-    if (
-        created_sample := await request.app.state.samples.find_one(
-            {"_id": new_sample.inserted_id}
-        )
-    ) is not None:
-        return created_sample
-    raise HTTPException(
-        status_code=404,
-        detail=f"Sample {new_sample.ft}" + " not successfully added",
-    )
+    return await add_one_to_db(sample, request.app.state.samples, ERROR_MSG_OBJECT)
 
 
 @router.delete("/{ft}", response_description="Delete a samples")
-async def remove_samples(request: Request, ft: str):
+async def remove_samples(request: Request, ft: mongo_object_id.MongoObjectId):
     """
     Delete a sample.
 
     :param ft: ObjectID of the sample to delete
     """
-    delete_result = await request.app.state.samples.delete_one({"_id": ObjectId(ft)})
-
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-    raise HTTPException(status_code=404, detail=f"Sample {ft} not found")
+    return await delete_one_from_db(request.app.state.samples, ft, ERROR_MSG_OBJECT)
 
 
 @router.get(
@@ -141,7 +123,5 @@ async def sample_query(
         "timestamp": dateBuild(timestampStart, timestampEnd),
         "created": dateBuild(createdStart, createdEnd),
     }
-    result = await request.app.state.samples.find(filterQuery(query)).to_list(1000)
-    if len(result) > 0:
-        return SampleCollection(samples=result)
-    raise HTTPException(status_code=404, detail="No match found")
+    result = await find_in_db(request.app.state.samples, query)
+    return SampleCollection(samples=result)

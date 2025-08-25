@@ -23,7 +23,8 @@ from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
-from ..ftCommon import dateBuild, filterQuery
+from ..ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
+                        filterQuery, find_in_db, update_one_in_db)
 from ..icar import icarTypes
 from ..icar.icarResources import icarDeviceResource as Device
 
@@ -32,6 +33,8 @@ router = APIRouter(
     tags=["measurements"],
     responses={404: {"description": "Not found"}},
 )
+
+ERROR_MSG_OBJECT = "Device"
 
 
 class DeviceCollection(BaseModel):
@@ -51,19 +54,7 @@ async def create_device(request: Request, device: Device):
 
     :param device: Device to be added
     """
-    try:
-        new_device = await request.app.state.devices.insert_one(
-            device.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-        )
-    except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail="Device already exists")
-    if (
-        created_device := await request.app.state.devices.find_one(
-            {"_id": new_device.inserted_id}
-        )
-    ) is not None:
-        return created_device
-    raise HTTPException(status_code=404, detail="Device not successfully added")
+    return await add_one_to_db(device, request.app.state.devices, ERROR_MSG_OBJECT)
 
 
 @router.patch(
@@ -72,40 +63,28 @@ async def create_device(request: Request, device: Device):
     response_model=Device,
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def update_device(request: Request, ft: str, device: Device):
+async def update_device(
+    request: Request, ft: mongo_object_id.MongoObjectId, device: Device
+):
     """
     Update an existing device if it exists.
 
     :param id: ObjectID of the device to update
     :param device: Device to update this device with
     """
-    await request.app.state.devices.update_one(
-        {"_id": ObjectId(ft)},
-        {"$set": device.model_dump(by_alias=True, exclude=["ft", "created"])},
-        upsert=False,
+    return await update_one_in_db(
+        device, request.app.state.devices, ft, ERROR_MSG_OBJECT
     )
-    if (
-        updated_device := await request.app.state.devices.find_one(
-            {"_id": ObjectId(ft)}
-        )
-    ) is not None:
-        return updated_device
-    raise HTTPException(status_code=404, detail=f"Device {id} not successfully updated")
 
 
 @router.delete("/{ft}", response_description="Delete a device")
-async def remove_device(request: Request, ft: str):
+async def remove_device(request: Request, ft: mongo_object_id.MongoObjectId):
     """
     Delete a device.
 
     :param ft: ObjectID of the device to delete
     """
-    delete_result = await request.app.state.devices.delete_one({"_id": ObjectId(ft)})
-
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-    raise HTTPException(status_code=404, detail=f"Device {ft} not found")
+    return await delete_one_from_db(request.app.state.devices, ft, ERROR_MSG_OBJECT)
 
 
 @router.get(
@@ -148,7 +127,5 @@ async def device_query(
         "created": dateBuild(createdStart, createdEnd),
         "modified": dateBuild(modifiedStart, modifiedEnd),
     }
-    result = await request.app.state.devices.find(filterQuery(query)).to_list(1000)
-    if len(result) > 0:
-        return DeviceCollection(devices=result)
-    raise HTTPException(status_code=404, detail="No match found")
+    result = await find_in_db(request.app.state.devices, query)
+    return DeviceCollection(devices=result)

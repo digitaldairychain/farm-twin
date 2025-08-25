@@ -47,8 +47,7 @@ async def create_carcass_event(request: Request, carcass: Carcass):
 
     :param carcass: Carcass to be added
     """
-    model = carcass.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    return await add_one_to_db(model, request.app.state.carcass, ERROR_MSG_OBJECT)
+    return await add_one_to_db(carcass, request.app.state.carcass, ERROR_MSG_OBJECT)
 
 
 @router.delete("/{ft}", response_description="Delete event")

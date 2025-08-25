@@ -17,7 +17,6 @@ from pydantic_extra_types import mongo_object_id
 
 from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
                          find_in_db)
-from ...icar import icarEnums
 from ...icar.icarResources import \
     icarPositionObservationEventResource as Position
 
@@ -47,8 +46,7 @@ async def create_position_event(request: Request, position: Position):
 
     :param position: Position to be added
     """
-    model = position.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    return await add_one_to_db(model, request.app.state.position, ERROR_MSG_OBJECT)
+    return await add_one_to_db(position, request.app.state.position, ERROR_MSG_OBJECT)
 
 
 @router.delete("/{ft}", response_description="Delete event")

@@ -14,18 +14,21 @@ and finding of those points.
 import uuid
 from typing import List, Optional
 
-import pymongo
 from bson.objectid import ObjectId
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from geojson_pydantic import FeatureCollection, Point
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 
+from ..ftCommon import add_one_to_db, delete_one_from_db
+
 router = APIRouter(
     prefix="/points",
     tags=["objects"],
     responses={404: {"description": "Not found"}},
 )
+
+ERROR_MSG_OBJECT = "Point"
 
 
 class Point(BaseModel):
@@ -56,36 +59,17 @@ async def create_point(request: Request, point: Point):
 
     :param point: Point to be added
     """
-    try:
-        new_point = await request.app.state.points.insert_one(
-            point.model_dump(by_alias=True, exclude=["id"])
-        )
-    except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail=f"Point {point} already exists")
-    if (
-        created_point := await request.app.state.points.find_one(
-            {"_id": new_point.inserted_id}
-        )
-    ) is not None:
-        return created_point
-    raise HTTPException(
-        status_code=404, detail=f"Point {point._id}" + " not successfully added"
-    )
+    return await add_one_to_db(point, request.app.state.points, ERROR_MSG_OBJECT)
 
 
 @router.delete("/{id}", response_description="Delete a point")
-async def remove_point(request: Request, id: str):
+async def remove_point(request: Request, ft: mongo_object_id.MongoObjectId):
     """
     Delete a point.
 
     :param id: UUID of the point to delete
     """
-    delete_result = await request.app.state.points.delete_one({"_id": ObjectId(id)})
-
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-    raise HTTPException(status_code=404, detail=f"Point {id} not found")
+    return await delete_one_from_db(request.app.state.points, ft, ERROR_MSG_OBJECT)
 
 
 @router.get(

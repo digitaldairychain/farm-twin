@@ -43,8 +43,7 @@ async def create_ration(request: Request, ration: Ration):
 
     :param ration: Ration to be added
     """
-    model = ration.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    return await add_one_to_db(model, request.app.state.ration, ERROR_MSG_OBJECT)
+    return await add_one_to_db(ration, request.app.state.ration, ERROR_MSG_OBJECT)
 
 
 @router.delete("/{ft}", response_description="Delete a ration")

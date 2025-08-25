@@ -17,13 +17,13 @@ https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarAnimalCoreResource.json
 from datetime import datetime
 from typing import List
 
-from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Query, Request, Response, status
+from fastapi import APIRouter, Query, Request, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ..ftCommon import dateBuild, filterQuery
+from ..ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
+                        find_in_db, update_one_in_db)
 from ..icar import icarEnums, icarTypes
 from ..icar.icarResources import icarAnimalCoreResource as Animal
 
@@ -32,6 +32,8 @@ router = APIRouter(
     tags=["objects"],
     responses={404: {"description": "Not found"}},
 )
+
+ERROR_MSG_OBJECT = "Animal"
 
 
 class AnimalCollection(BaseModel):
@@ -51,32 +53,17 @@ async def create_animal(request: Request, animal: Animal):
 
     :param animal: Animal to be added
     """
-    new_animal = await request.app.state.animals.insert_one(
-        animal.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    )
-
-    if (
-        created_animal := await request.app.state.animals.find_one(
-            {"_id": new_animal.inserted_id}
-        )
-    ) is not None:
-        return created_animal
-    raise HTTPException(status_code=404, detail="Animal not successfully added")
+    return await add_one_to_db(animal, request.app.state.animals, ERROR_MSG_OBJECT)
 
 
 @router.delete("/{ft}", response_description="Delete an animal")
-async def remove_animal(request: Request, ft: str):
+async def remove_animal(request: Request, ft: mongo_object_id.MongoObjectId):
     """
     Delete an animal.
 
     :param id: UUID of the animal to delete
     """
-    delete_result = await request.app.state.animals.delete_one({"_id": ObjectId(ft)})
-
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-    raise HTTPException(status_code=404, detail=f"Animal {ft} not found")
+    return await delete_one_from_db(request.app.state.animals, ft, ERROR_MSG_OBJECT)
 
 
 @router.patch(
@@ -85,26 +72,18 @@ async def remove_animal(request: Request, ft: str):
     response_model=Animal,
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def update_animal(request: Request, ft: str, animal: Animal):
+async def update_animal(
+    request: Request, ft: mongo_object_id.MongoObjectId, animal: Animal
+):
     """
     Update an existing animal if it exists.
 
     :param id: UUID of the animal to update
     :param animal: Animal to update with
     """
-    await request.app.state.animals.update_one(
-        {"_id": ObjectId(ft)},
-        {"$set": animal.model_dump(by_alias=True, exclude=["ft", "created"])},
-        upsert=False,
+    return await update_one_in_db(
+        animal, request.app.state.animals, ft, ERROR_MSG_OBJECT
     )
-
-    if (
-        updated_animal := await request.app.state.animals.find_one(
-            {"_id": ObjectId(ft)}
-        )
-    ) is not None:
-        return updated_animal
-    raise HTTPException(status_code=404, detail=f"Animal {ft} not successfully updated")
 
 
 @router.get(
@@ -164,8 +143,5 @@ async def animal_query(
         "created": dateBuild(createdStart, createdEnd),
         "modified": dateBuild(modifiedStart, modifiedEnd),
     }
-    result = await request.app.state.animals.find(filterQuery(query)).to_list(1000)
-    if len(result) > 0:
-        return AnimalCollection(animals=result)
-    else:
-        raise HTTPException(status_code=404, detail="No match found")
+    result = await find_in_db(request.app.state.animals, query)
+    return AnimalCollection(animals=result)

@@ -39,14 +39,15 @@ class DryingOffCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_drying_off_event(request: Request, dryingoff: DryingOff):
+async def create_drying_off_event(request: Request, drying_off: DryingOff):
     """
     Create a new drying off event.
 
-    :param dryingoff: Drying off to be added
+    :param drying_off: Drying off to be added
     """
-    model = dryingoff.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    return await add_one_to_db(model, request.app.state.drying_off, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        drying_off, request.app.state.drying_off, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete a drying off event")

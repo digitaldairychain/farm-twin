@@ -43,8 +43,7 @@ async def create_feed(request: Request, feed: Feed):
 
     :param feed: Feed to be added
     """
-    model = feed.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    return await add_one_to_db(model, request.app.state.feed, ERROR_MSG_OBJECT)
+    return await add_one_to_db(feed, request.app.state.feed, ERROR_MSG_OBJECT)
 
 
 @router.delete("/{ft}", response_description="Delete a feed")

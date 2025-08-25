@@ -42,8 +42,7 @@ async def create_medicine(request: Request, medicine: Medicine):
 
     :param medicine: Medicine to be added
     """
-    model = medicine.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    return await add_one_to_db(model, request.app.state.medicine, ERROR_MSG_OBJECT)
+    return await add_one_to_db(medicine, request.app.state.medicine, ERROR_MSG_OBJECT)
 
 
 @router.delete("/{ft}", response_description="Delete a medicine")

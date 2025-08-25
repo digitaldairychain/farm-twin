@@ -22,13 +22,16 @@ from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 
-from ..ftCommon import FTModel, dateBuild, filterQuery
+from ..ftCommon import (FTModel, add_one_to_db, dateBuild, delete_one_from_db,
+                        filterQuery, find_in_db, update_one_in_db)
 
 router = APIRouter(
     prefix="/sensors",
     tags=["measurements"],
     responses={404: {"description": "Not found"}},
 )
+
+ERROR_MSG_OBJECT = "Sensor"
 
 
 class Sensor(FTModel):
@@ -70,21 +73,7 @@ async def create_sensor(request: Request, sensor: Sensor):
 
     :param sensor: Sensor to be added.
     """
-    try:
-        new_sensor = await request.app.state.sensors.insert_one(
-            sensor.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-        )
-    except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail="Sensor already exists")
-    if (
-        created_sensor := await request.app.state.sensors.find_one(
-            {"_id": new_sensor.inserted_id}
-        )
-    ) is not None:
-        return created_sensor
-    raise HTTPException(
-        status_code=404, detail=f"Sensor {new_sensor.ft} not " + "successfully added"
-    )
+    return await add_one_to_db(sensor, request.app.state.sensors, ERROR_MSG_OBJECT)
 
 
 @router.patch(
@@ -93,41 +82,28 @@ async def create_sensor(request: Request, sensor: Sensor):
     response_model=Sensor,
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def update_sensor(request: Request, ft: str, sensor: Sensor):
+async def update_sensor(
+    request: Request, ft: mongo_object_id.MongoObjectId, sensor: Sensor
+):
     """
     Update an existing sensor if it exists.
 
     :param ft: ObjectID of the sensor to update
     :param sensor: Sensor to update this sensor with
     """
-    await request.app.state.sensors.update_one(
-        {"_id": ObjectId(ft)},
-        {"$set": sensor.model_dump(by_alias=True, exclude=["ft", "created"])},
-        upsert=False,
+    return await update_one_in_db(
+        sensor, request.app.state.sensors, ft, ERROR_MSG_OBJECT
     )
-
-    if (
-        updated_sensor := await request.app.state.sensors.find_one(
-            {"_id": ObjectId(ft)}
-        )
-    ) is not None:
-        return updated_sensor
-    raise HTTPException(status_code=404, detail=f"Sensor {id} not successfully updated")
 
 
 @router.delete("/{ft}", response_description="Delete a sensor")
-async def remove_sensor(request: Request, ft: str):
+async def remove_sensor(request: Request, ft: mongo_object_id.MongoObjectId):
     """
     Delete a sensor.
 
     :param ft: ObjectID of the sensor to delete
     """
-    delete_result = await request.app.state.sensors.delete_one({"_id": ObjectId(ft)})
-
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-    raise HTTPException(status_code=404, detail=f"Sensor {ft} not found")
+    return await delete_one_from_db(request.app.state.sensors, ft, ERROR_MSG_OBJECT)
 
 
 @router.get(
@@ -156,7 +132,5 @@ async def sensor_query(
         "created": dateBuild(createdStart, createdEnd),
         "modified": dateBuild(modifiedStart, modifiedEnd),
     }
-    result = await request.app.state.sensors.find(filterQuery(query)).to_list(1000)
-    if len(result) > 0:
-        return SensorCollection(sensors=result)
-    raise HTTPException(status_code=404, detail="No match found")
+    result = await find_in_db(request.app.state.sensors, query)
+    return SensorCollection(sensors=result)

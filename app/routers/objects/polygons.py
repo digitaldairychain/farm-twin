@@ -23,11 +23,15 @@ from geojson_pydantic import FeatureCollection, MultiPolygon
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 
+from ..ftCommon import add_one_to_db, delete_one_from_db
+
 router = APIRouter(
     prefix="/polygons",
     tags=["objects"],
     responses={404: {"description": "Not found"}},
 )
+
+ERROR_MSG_OBJECT = "Polygons"
 
 
 class Polygon(BaseModel):
@@ -60,36 +64,17 @@ async def create_polygon(request: Request, polygon: Polygon):
 
     :param polygon: Polygon to be added
     """
-    try:
-        new_polygon = await request.app.state.polygons.insert_one(
-            polygon.model_dump(by_alias=True, exclude=["id"])
-        )
-    except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail=f"Polygon {polygon} already exists")
-    if (
-        created_polygon := await request.app.state.polygons.find_one(
-            {"_id": new_polygon.inserted_id}
-        )
-    ) is not None:
-        return created_polygon
-    raise HTTPException(
-        status_code=404, detail=f"Polygon {polygon._id}" + " not successfully added"
-    )
+    return await add_one_to_db(polygon, request.app.state.polygons, ERROR_MSG_OBJECT)
 
 
 @router.delete("/{id}", response_description="Delete a polygon")
-async def remove_polygon(request: Request, id: str):
+async def remove_polygon(request: Request, ft: mongo_object_id.MongoObjectId):
     """
     Delete a polygon.
 
     :param id: UUID of the polygon to delete
     """
-    delete_result = await request.app.state.polygons.delete_one({"_id": ObjectId(id)})
-
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-    raise HTTPException(status_code=404, detail=f"Polygon {id} not found")
+    return await delete_one_from_db(request.app.state.polygons, ft, ERROR_MSG_OBJECT)
 
 
 @router.get(

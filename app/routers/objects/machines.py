@@ -20,13 +20,16 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ..ftCommon import FTModel, dateBuild, filterQuery
+from ..ftCommon import (FTModel, add_one_to_db, dateBuild, delete_one_from_db,
+                        filterQuery, find_in_db, update_one_in_db)
 
 router = APIRouter(
     prefix="/machines",
     tags=["objects"],
     responses={404: {"description": "Not found"}},
 )
+
+ERROR_MSG_OBJECT = "Machine"
 
 
 class Machine(FTModel):
@@ -74,31 +77,17 @@ async def create_machine(request: Request, machine: Machine):
 
     :param machine: Machine to be added
     """
-    new_machine = await request.app.state.machines.insert_one(
-        machine.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    )
-    if (
-        created_machine := await request.app.state.machines.find_one(
-            {"_id": new_machine.inserted_id}
-        )
-    ) is not None:
-        return created_machine
-    raise HTTPException(status_code=404, detail="Machine not successfully added")
+    return await add_one_to_db(machine, request.app.state.machines, ERROR_MSG_OBJECT)
 
 
 @router.delete("/{ft}", response_description="Delete a machine")
-async def remove_machine(request: Request, ft: str):
+async def remove_machine(request: Request, ft: mongo_object_id.MongoObjectId):
     """
     Delete an machine.
 
     :param ft: UUID of the machine to delete
     """
-    delete_result = await request.app.state.machines.delete_one({"_id": ObjectId(ft)})
-
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-    raise HTTPException(status_code=404, detail=f"Machine {ft} not found")
+    return await delete_one_from_db(request.app.state.machines, ft, ERROR_MSG_OBJECT)
 
 
 @router.patch(
@@ -107,7 +96,9 @@ async def remove_machine(request: Request, ft: str):
     response_model=Machine,
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def update_machine(request: Request, ft: str, machine: Machine):
+async def update_machine(
+    request: Request, ft: mongo_object_id.MongoObjectId, machine: Machine
+):
     """
     Update an existing machine if it exists.
 
@@ -168,7 +159,5 @@ async def machine_query(
         "created": dateBuild(createdStart, createdEnd),
         "modified": dateBuild(modifiedStart, modifiedEnd),
     }
-    result = await request.app.state.machines.find(filterQuery(query)).to_list(1000)
-    if len(result) > 0:
-        return MachineCollection(machines=result)
-    raise HTTPException(status_code=404, detail="No match found")
+    result = await find_in_db(request.app.state.machines, query)
+    return MachineCollection(machines=result)

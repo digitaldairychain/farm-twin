@@ -20,7 +20,8 @@ from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 
-from ...ftCommon import dateBuild, filterQuery
+from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
+                         filterQuery, find_in_db)
 from ...icar import icarEnums
 from ...icar.icarResources import icarGroupWeightEventResource as GroupWeight
 
@@ -29,6 +30,8 @@ router = APIRouter(
     tags=["performance"],
     responses={404: {"description": "Not found"}},
 )
+
+ERROR_MSG_OBJECT = "Group Weight"
 
 
 class GroupWeightCollection(BaseModel):
@@ -51,39 +54,23 @@ async def create_group_weight_event(request: Request, group_weight: GroupWeight)
 
     :param group_weight: Group weight to be added
     """
-    model = group_weight.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    try:
-        new_we = await request.app.state.group_weight.insert_one(model)
-    except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(
-            status_code=404, detail=f"Group Weight {group_weight} already exists"
-        )
-    if (
-        created_group_weight_event := await request.app.state.group_weight.find_one(
-            {"_id": new_we.inserted_id}
-        )
-    ) is not None:
-        return created_group_weight_event
-    raise HTTPException(
-        status_code=404, detail="Group weight event not successfully" + " added"
+    return await add_one_to_db(
+        group_weight, request.app.state.group_weight, ERROR_MSG_OBJECT
     )
 
 
 @router.delete("/{ft}", response_description="Delete a group weight event")
-async def remove_group_weight_event(request: Request, ft: str):
+async def remove_group_weight_event(
+    request: Request, ft: mongo_object_id.MongoObjectId
+):
     """
     Delete a weight event.
 
     :param ft: ObjectID of the group weight event to delete
     """
-    delete_result = await request.app.state.group_weight.delete_one(
-        {"_id": ObjectId(ft)}
+    return await delete_one_from_db(
+        request.app.state.group_weight, ft, ERROR_MSG_OBJECT
     )
-
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-    raise HTTPException(status_code=404, detail=f"Group weight event {ft} not found")
 
 
 @router.get(
@@ -109,7 +96,5 @@ async def group_weight_event_query(
         "device.id": device,
         "created": dateBuild(createdStart, createdEnd),
     }
-    result = await request.app.state.group_weight.find(filterQuery(query)).to_list(1000)
-    if len(result) > 0:
-        return GroupWeightCollection(group_weight=result)
-    raise HTTPException(status_code=404, detail="No match found")
+    result = await find_in_db(request.app.state.group_weight, query)
+    return GroupWeightCollection(group_weight=result)

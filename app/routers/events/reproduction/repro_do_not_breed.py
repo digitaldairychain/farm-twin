@@ -45,9 +45,8 @@ async def create_repro_dnb_event(request: Request, repro_dnb: ReproDNB):
 
     :param repro_dnb: Repro DNB to be added
     """
-    model = repro_dnb.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(
-        model, request.app.state.repro_do_not_breed, ERROR_MSG_OBJECT
+        repro_dnb, request.app.state.repro_do_not_breed, ERROR_MSG_OBJECT
     )
 
 

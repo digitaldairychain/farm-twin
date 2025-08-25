@@ -41,15 +41,16 @@ class TestDayResultCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_test_day_result_event(request: Request, testdayresult: TestDayResult):
+async def create_test_day_result_event(
+    request: Request, test_day_result: TestDayResult
+):
     """
     Create a new test day result event.
 
-    :param testdayresult: Test day result to be added
+    :param test_day_result: Test day result to be added
     """
-    model = testdayresult.model_dump(by_alias=True, exclude=["ft", "resourceType"])
     return await add_one_to_db(
-        model, request.app.state.test_day_result, ERROR_MSG_OBJECT
+        test_day_result, request.app.state.test_day_result, ERROR_MSG_OBJECT
     )
 
 

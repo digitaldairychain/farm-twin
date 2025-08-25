@@ -20,7 +20,8 @@ from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
-from ...ftCommon import dateBuild, filterQuery
+from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
+                         filterQuery, find_in_db)
 from ...icar.icarResources import \
     icarConformationScoreEventResource as Conformation
 
@@ -29,6 +30,8 @@ router = APIRouter(
     tags=["performance"],
     responses={404: {"description": "Not found"}},
 )
+
+ERROR_MSG_OBJECT = "Conformation"
 
 
 class ConformationCollection(BaseModel):
@@ -48,37 +51,23 @@ async def create_conformation_event(request: Request, conformation: Conformation
 
     :param conformation: Conformation to be added
     """
-    model = conformation.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    try:
-        new_ce = await request.app.state.conformation.insert_one(model)
-    except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(status_code=404, detail="Conformation event already exists")
-    if (
-        created_conformation_event := await request.app.state.conformation.find_one(
-            {"_id": new_ce.inserted_id}
-        )
-    ) is not None:
-        return created_conformation_event
-    raise HTTPException(
-        status_code=404, detail="Conformation event not successfully added"
+    return await add_one_to_db(
+        conformation, request.app.state.conformation, ERROR_MSG_OBJECT
     )
 
 
 @router.delete("/{ft}", response_description="Delete a conformation event")
-async def remove_conformation_event(request: Request, ft: str):
+async def remove_conformation_event(
+    request: Request, ft: mongo_object_id.MongoObjectId
+):
     """
     Delete a conformation event.
 
     :param ft: ObjectID of the conformation event to delete
     """
-    delete_result = await request.app.state.conformation.delete_one(
-        {"_id": ObjectId(ft)}
+    return await delete_one_from_db(
+        request.app.state.conformation, ft, ERROR_MSG_OBJECT
     )
-
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-    raise HTTPException(status_code=404, detail=f"Conformation event {ft} not found")
 
 
 @router.get(
@@ -100,7 +89,5 @@ async def conformation_event_query(
         "animal.id": animal,
         "created": dateBuild(createdStart, createdEnd),
     }
-    result = await request.app.state.conformation.find(filterQuery(query)).to_list(1000)
-    if len(result) > 0:
-        return ConformationCollection(conformation=result)
-    raise HTTPException(status_code=404, detail="No match found")
+    result = await find_in_db(request.app.state.conformation, query)
+    return ConformationCollection(conformation=result)

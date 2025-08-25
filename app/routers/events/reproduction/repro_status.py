@@ -47,8 +47,9 @@ async def create_repro_status_event(request: Request, repro_status: ReproStatus)
 
     :param repro_status: Repro Status to be added
     """
-    model = repro_status.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    return await add_one_to_db(model, request.app.state.repro_status, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        repro_status, request.app.state.repro_status, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete event")

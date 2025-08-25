@@ -42,8 +42,9 @@ async def create_feed_storage(request: Request, feed_storage: FeedStorage):
 
     :param feed_storage: Feed Storage to be added
     """
-    model = feed_storage.model_dump(by_alias=True, exclude=["ft", "resourceType"])
-    return await add_one_to_db(model, request.app.state.feed_storage, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        feed_storage, request.app.state.feed_storage, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete a feed storage")

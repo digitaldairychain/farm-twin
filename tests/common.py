@@ -1,5 +1,6 @@
+from datetime import datetime, timedelta, timezone
+
 from dateutil.parser import parse
-from datetime import datetime, timezone, timedelta
 
 
 def is_date(string, fuzzy=False):
@@ -147,8 +148,7 @@ def _modify_create_timestamp(test_client, path, payload, key, field):
 
 def _modify_update_timestamp(test_client, path, payload, payload_updated, key, field):
     payload_updated, time = _modify_payload(payload_updated, field)
-    response = create_get_update(
-        test_client, path, payload, payload_updated, key)
+    response = create_get_update(test_client, path, payload, payload_updated, key)
     original, modified = _convert_datetimes(response[field], time)
     assert original != modified
 
@@ -158,8 +158,12 @@ def create_get_unauthorised_metadata(test_client, path, payload, key):
     _modify_create_timestamp(test_client, path, payload, key, "modified")
 
 
-def create_get_update_unauthorised_metadata(test_client, path, payload, payload_updated, key):
-    _modify_update_timestamp(test_client, path, payload,
-                             payload_updated, key, "created")
-    _modify_update_timestamp(test_client, path, payload,
-                             payload_updated, key, "modified")
+def create_get_update_unauthorised_metadata(
+    test_client, path, payload, payload_updated, key
+):
+    _modify_update_timestamp(
+        test_client, path, payload, payload_updated, key, "created"
+    )
+    _modify_update_timestamp(
+        test_client, path, payload, payload_updated, key, "modified"
+    )
