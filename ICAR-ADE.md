@@ -74,4 +74,4 @@ Following that, we outline any changes that have been made to the specification 
 - icarReproSemenStrawResource can be created empty
 - icarFeedStorageResource feedId is not of type icarFeedIdentifierType (which it is in icarFeedsInRationType, for example)
 - active and isActive field names are not used consistently
-- A timestamp appears missing from some resources (such as icarConformationScoreEventResource) - do we rely on it's creation date?
+- A timestamp appears missing from some resources (such as icarConformationScoreEventResource) - do we rely on its creation date?
