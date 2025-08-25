@@ -66,7 +66,8 @@ async def delete_one_from_db(db, ft: mongo_object_id, error_msg_object: str):
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(status_code=404, detail=f"{error_msg_object} {ft} not found")
+    raise HTTPException(
+        status_code=404, detail=f"{error_msg_object} {ft} not found")
 
 
 async def find_in_db(db, query: dict):
@@ -81,7 +82,8 @@ async def find_in_db(db, query: dict):
 async def update_one_in_db(model, db, ft: mongo_object_id, error_msg_object: str):
     await db.update_one(
         {"_id": ft},
-        {"$set": model.model_dump(by_alias=True, exclude=["ft", "created"])},
+        {"$set": model.model_dump(by_alias=True, exclude=[
+                                  "ft", "created", "modified"])},
         upsert=False,
     )
     if (updated := await db.find_one({"_id": ft})) is not None:

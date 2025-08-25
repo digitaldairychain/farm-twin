@@ -42,7 +42,8 @@ async def create_embryo(request: Request, embryo: Embryo):
 
     :param embryo: Embryo to be added
     """
-    model = embryo.model_dump(by_alias=True, exclude=["ft", "resourceType"])
+    model = embryo.model_dump(by_alias=True, exclude=[
+                              "ft", "resourceType", "created", "modified"])
     return await add_one_to_db(model, request.app.state.embryo, ERROR_MSG_OBJECT)
 
 

@@ -1,4 +1,5 @@
 from dateutil.parser import parse
+from datetime import datetime, timezone, timedelta
 
 
 def is_date(string, fuzzy=False):
@@ -51,11 +52,10 @@ def create_get(test_client, path, payload, key, expected_code=201):
     if response.status_code == 201:
         response = test_client.get(path + f"/?ft={response_json['ft']}")
         assert response.status_code == 200
-        print(response.json())
         assert len(response.json()[key]) == 1
         response_json = response.json()[key][0]
         check_object_similarity(payload, response_json)
-        return response_json
+    return response_json
 
 
 def create_get_update(
@@ -75,6 +75,7 @@ def create_get_update(
     assert response.status_code == expected_code
     if expected_code == 202:
         check_object_similarity(payload_updated, response_json)
+    return response_json
 
 
 def create_delete(test_client, path, payload, key):
@@ -122,3 +123,43 @@ def test_endpoint(tc, path, payload, key, oid, update):
         create_delete(tc, path, payload, key)
         get_not_found(tc, path, oid)
         create_wrong_payload(tc, path)
+
+
+def _convert_datetimes(original, modified):
+    _dt_format = "%Y-%m-%dT%H:%M:%S"
+    original = datetime.strptime(original.split(".")[0], _dt_format)
+    modified = datetime.strptime(modified.split(".")[0], _dt_format)
+    return original, modified
+
+
+def _modify_payload(payload, field):
+    time = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
+    payload[field] = time
+    return payload, time
+
+
+def _modify_create_timestamp(test_client, path, payload, key, field):
+    payload, time = _modify_payload(payload, field)
+    response = create_get(test_client, path, payload, key)
+    original, modified = _convert_datetimes(response[field], time)
+    assert original != modified
+
+
+def _modify_update_timestamp(test_client, path, payload, payload_updated, key, field):
+    payload_updated, time = _modify_payload(payload_updated, field)
+    response = create_get_update(
+        test_client, path, payload, payload_updated, key)
+    original, modified = _convert_datetimes(response[field], time)
+    assert original != modified
+
+
+def create_get_unauthorised_metadata(test_client, path, payload, key):
+    _modify_create_timestamp(test_client, path, payload, key, "created")
+    _modify_create_timestamp(test_client, path, payload, key, "modified")
+
+
+def create_get_update_unauthorised_metadata(test_client, path, payload, payload_updated, key):
+    _modify_update_timestamp(test_client, path, payload,
+                             payload_updated, key, "created")
+    _modify_update_timestamp(test_client, path, payload,
+                             payload_updated, key, "modified")

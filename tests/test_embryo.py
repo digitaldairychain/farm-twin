@@ -5,7 +5,7 @@ KEY = "embryo"
 PATH = "/" + ROOT + "/" + KEY
 
 
-class TestSemenStraw:
+class TestEmbryo:
     def test_create_get_embryo(self, test_client, embryo_payload):
         common.create_get(test_client, PATH, embryo_payload, KEY)
 
@@ -41,4 +41,19 @@ class TestSemenStraw:
     def test_update_embryo_doesnt_exist(
         self, test_client, object_id, embryo_payload_updated
     ):
-        common.update_doesnt_exist(test_client, PATH, embryo_payload_updated, object_id)
+        common.update_doesnt_exist(
+            test_client, PATH, embryo_payload_updated, object_id)
+
+    def test_create_get_embryo_unauthorised_metadata(
+        self, test_client, embryo_payload
+    ):
+        common.create_get_unauthorised_metadata(
+            test_client, PATH, embryo_payload, KEY
+        )
+
+    def test_create_get_update_embryo_unauthorised_metadata(
+        self, test_client, embryo_payload, embryo_payload_updated
+    ):
+        common.create_get_update_unauthorised_metadata(
+            test_client, PATH, embryo_payload, embryo_payload_updated, KEY
+        )
