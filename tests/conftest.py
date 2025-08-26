@@ -1,6 +1,6 @@
+import uuid
 from datetime import date, datetime, timedelta, timezone
 from random import randint
-import uuid
 
 import pytest
 from bson.objectid import ObjectId
@@ -39,8 +39,8 @@ def animal_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -59,8 +59,8 @@ def animal_payload_updated():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -78,8 +78,8 @@ def device_payload(serial):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -99,8 +99,8 @@ def device_payload_updated(serial):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -120,8 +120,8 @@ def weight_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -132,15 +132,12 @@ def group_weight_payload(object_id):
         "groupMethod": "EmbeddedAnimalSet",
         "embeddedAnimalSet": {
             "id": object_id,
-            "member": [{
-                "id": "UK230011200123",
-                "scheme": "uk.gov"
-            }],
+            "member": [{"id": "UK230011200123", "scheme": "uk.gov"}],
             "meta": {
                 "source": "{ farm-twin } test",
                 "sourceId": str(uuid.uuid4()),
-                "modified": str(datetime.now())
-            }
+                "modified": str(datetime.now()),
+            },
         },
         "statistics": [
             {
@@ -157,8 +154,8 @@ def group_weight_payload(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -175,8 +172,8 @@ def feed_intake_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -190,8 +187,8 @@ def withdrawal_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -199,16 +196,13 @@ def withdrawal_payload():
 def carcass_payload():
     """Generate a withdrawal payload."""
     return {
-        "animal": {
-            "id": "UK230011200123",
-            "scheme": "uk.gov"
-        },
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "side": "Left",
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -221,8 +215,8 @@ def health_status_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -236,8 +230,8 @@ def lactation_status_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -251,8 +245,8 @@ def position_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -265,8 +259,8 @@ def repro_status_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -274,15 +268,12 @@ def repro_status_payload():
 def repro_abortion_payload():
     """Generate a repro abortion payload."""
     return {
-        "animal": {
-            "id": "UK230011200123",
-            "scheme": "uk.gov"
-        },
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -290,15 +281,13 @@ def repro_abortion_payload():
 def repro_do_not_breed_payload():
     """Generate a repro do not breed payload."""
     return {
-        "animal": {
-            "id": "UK230011200123",
-            "scheme": "uk.gov"},
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "doNotBreed": True,
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -314,8 +303,8 @@ def repro_heat_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -330,8 +319,8 @@ def repro_insemination_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -350,8 +339,8 @@ def repro_mating_recommendation_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -367,8 +356,8 @@ def repro_parturition_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -384,8 +373,8 @@ def repro_pregnancy_check_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -397,11 +386,12 @@ def attention_payload():
         "category": "Health",
         "causes": ["Activity", "LyingTooLong"],
         "priority": "Urgent",
-                    "meta": {
+        "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }}
+            "modified": str(datetime.now()),
+        },
+    }
 
 
 @pytest.fixture()
@@ -414,8 +404,8 @@ def test_day_result_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -488,8 +478,8 @@ def conformation_payload(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -497,15 +487,12 @@ def conformation_payload(object_id):
 def drying_off_payload(object_id):
     """Generate a drying off payload."""
     return {
-        "animal": {
-            "id": "UK230011200123",
-            "scheme": "uk.gov"
-        },
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -519,8 +506,8 @@ def milking_visit_payload(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -537,8 +524,8 @@ def arrival_payload(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -551,8 +538,8 @@ def birth_payload(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -565,8 +552,8 @@ def death_payload(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -580,8 +567,8 @@ def departure_payload(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -596,8 +583,8 @@ def feed_payload(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -612,8 +599,8 @@ def feed_payload_updated(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -627,8 +614,8 @@ def feed_storage_payload(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -643,8 +630,8 @@ def feed_storage_payload_updated(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -657,8 +644,8 @@ def medicine_payload():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -672,8 +659,8 @@ def medicine_payload_updated():
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -681,16 +668,13 @@ def medicine_payload_updated():
 def ration_payload(object_id):
     """Generate an ration storage payload."""
     return {
-        "id": {
-            "id": object_id,
-            "scheme": "uk.gov"
-        },
+        "id": {"id": object_id, "scheme": "uk.gov"},
         "name": "Super Ration 1000",
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -707,8 +691,8 @@ def ration_payload_updated(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -723,8 +707,8 @@ def embryo_payload(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -741,8 +725,8 @@ def embryo_payload_updated(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -761,8 +745,8 @@ def semen_straw_payload(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
 
 
@@ -780,6 +764,6 @@ def semen_straw_payload_updated(object_id):
         "meta": {
             "source": "{ farm-twin } test",
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
