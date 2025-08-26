@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta, timezone
-
 from dateutil.parser import parse
 
 
@@ -124,46 +122,3 @@ def test_endpoint(tc, path, payload, key, oid, update):
         create_delete(tc, path, payload, key)
         get_not_found(tc, path, oid)
         create_wrong_payload(tc, path)
-
-
-def _convert_datetimes(original, modified):
-    _dt_format = "%Y-%m-%dT%H:%M:%S"
-    original = datetime.strptime(original.split(".")[0], _dt_format)
-    modified = datetime.strptime(modified.split(".")[0], _dt_format)
-    return original, modified
-
-
-def _modify_payload(payload, field):
-    time = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
-    payload[field] = time
-    return payload, time
-
-
-def _modify_create_timestamp(test_client, path, payload, key, field):
-    payload, time = _modify_payload(payload, field)
-    response = create_get(test_client, path, payload, key)
-    original, modified = _convert_datetimes(response[field], time)
-    assert original != modified
-
-
-def _modify_update_timestamp(test_client, path, payload, payload_updated, key, field):
-    payload_updated, time = _modify_payload(payload_updated, field)
-    response = create_get_update(test_client, path, payload, payload_updated, key)
-    original, modified = _convert_datetimes(response[field], time)
-    assert original != modified
-
-
-def create_get_unauthorised_metadata(test_client, path, payload, key):
-    _modify_create_timestamp(test_client, path, payload, key, "created")
-    _modify_create_timestamp(test_client, path, payload, key, "modified")
-
-
-def create_get_update_unauthorised_metadata(
-    test_client, path, payload, payload_updated, key
-):
-    _modify_update_timestamp(
-        test_client, path, payload, payload_updated, key, "created"
-    )
-    _modify_update_timestamp(
-        test_client, path, payload, payload_updated, key, "modified"
-    )

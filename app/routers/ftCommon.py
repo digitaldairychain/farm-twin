@@ -13,15 +13,6 @@ class FTModel(BaseModel):
     ft: Optional[mongo_object_id.MongoObjectId] = Field(
         alias="_id", default=None, frozen=True
     )
-    predicted: Optional[bool] = Field(
-        default=False,
-        json_schema_extra={
-            "description": "Flag if the value is a predicted value or not",
-            "example": True,
-        },
-    )
-    created: PastDatetime = Path(default_factory=datetime.now, frozen=True)
-    modified: PastDatetime = Path(default_factory=datetime.now)
     model_config = ConfigDict(extra="forbid")
 
 
@@ -49,7 +40,7 @@ def dateBuild(start: datetime, end: datetime):
 
 async def add_one_to_db(model, db, error_msg_object: str):
     model = model.model_dump(
-        by_alias=True, exclude=["ft", "resourceType", "created", "modified"]
+        by_alias=True, exclude=["ft"]
     )
     try:
         new = await db.insert_one(model)
@@ -71,7 +62,8 @@ async def delete_one_from_db(db, ft: mongo_object_id, error_msg_object: str):
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-    raise HTTPException(status_code=404, detail=f"{error_msg_object} {ft} not found")
+    raise HTTPException(
+        status_code=404, detail=f"{error_msg_object} {ft} not found")
 
 
 async def find_in_db(db, query: dict):
@@ -88,7 +80,7 @@ async def update_one_in_db(model, db, ft: mongo_object_id, error_msg_object: str
         {"_id": ft},
         {
             "$set": model.model_dump(
-                by_alias=True, exclude=["ft", "resourceType", "created", "modified"]
+                by_alias=True, exclude=["ft", "created"]
             )
         },
         upsert=False,

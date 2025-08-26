@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta, timezone
 from random import randint
+import uuid
 
 import pytest
 from bson.objectid import ObjectId
@@ -35,6 +36,11 @@ def animal_payload():
         "reproductionStatus": "Open",
         "lactationStatus": "Fresh",
         "healthStatus": "Healthy",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -50,6 +56,11 @@ def animal_payload_updated():
         "reproductionStatus": "Open",
         "lactationStatus": "Fresh",
         "healthStatus": "InTreatment",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -64,6 +75,11 @@ def device_payload(serial):
             "id": "Acme Sensor Co.",
         },
         "isActive": True,
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -80,6 +96,11 @@ def device_payload_updated(serial):
             "deviceType": "Fantastic Mystery Machine",
         },
         "isActive": False,
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -96,6 +117,11 @@ def weight_payload():
         },
         "device": {"manufacturerName": "Acme Sensor Co."},
         "timeOffFeed": float(randint(1, 5)),
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -106,7 +132,15 @@ def group_weight_payload(object_id):
         "groupMethod": "EmbeddedAnimalSet",
         "embeddedAnimalSet": {
             "id": object_id,
-            "member": [{"id": "UK230011200123", "scheme": "uk.gov"}],
+            "member": [{
+                "id": "UK230011200123",
+                "scheme": "uk.gov"
+            }],
+            "meta": {
+                "source": "{ farm-twin } test",
+                "sourceId": str(uuid.uuid4()),
+                "modified": str(datetime.now())
+            }
         },
         "statistics": [
             {
@@ -120,6 +154,11 @@ def group_weight_payload(object_id):
         "resolution": float(randint(1, 9) / 10),
         "device": {"manufacturerName": "Acme Sensor Co."},
         "timeOffFeed": float(randint(1, 5)),
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -133,6 +172,11 @@ def feed_intake_payload():
         "consumedFeed": [
             {"feedId": {"id": "test", "scheme": "ft.org"}, "dryMatterPercentage": 10}
         ],
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -143,13 +187,29 @@ def withdrawal_payload():
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "endDateTime": datetime.now(timezone.utc).isoformat(),
         "productType": "Eggs",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
 @pytest.fixture()
 def carcass_payload():
     """Generate a withdrawal payload."""
-    return {"animal": {"id": "UK230011200123", "scheme": "uk.gov"}, "side": "Left"}
+    return {
+        "animal": {
+            "id": "UK230011200123",
+            "scheme": "uk.gov"
+        },
+        "side": "Left",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
+    }
 
 
 @pytest.fixture()
@@ -158,6 +218,11 @@ def health_status_payload():
     return {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "observedStatus": "Healthy",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -168,6 +233,11 @@ def lactation_status_payload():
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "observedStatus": "Fresh",
         "eventDateTime": datetime.now(timezone.utc).isoformat(),
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -178,6 +248,11 @@ def position_payload():
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "positionName": "Yard",
         "eventDateTime": datetime.now(timezone.utc).isoformat(),
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -187,19 +262,44 @@ def repro_status_payload():
     return {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "observedStatus": "Pregnant",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
 @pytest.fixture()
 def repro_abortion_payload():
     """Generate a repro abortion payload."""
-    return {"animal": {"id": "UK230011200123", "scheme": "uk.gov"}}
+    return {
+        "animal": {
+            "id": "UK230011200123",
+            "scheme": "uk.gov"
+        },
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
+    }
 
 
 @pytest.fixture()
 def repro_do_not_breed_payload():
     """Generate a repro do not breed payload."""
-    return {"animal": {"id": "UK230011200123", "scheme": "uk.gov"}, "doNotBreed": True}
+    return {
+        "animal": {
+            "id": "UK230011200123",
+            "scheme": "uk.gov"},
+        "doNotBreed": True,
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
+    }
 
 
 @pytest.fixture()
@@ -211,6 +311,11 @@ def repro_heat_payload():
         "certainty": "Suspect",
         "commencementDateTime": str(datetime.now() - timedelta(days=1)),
         "expirationDateTime": str(datetime.now() + timedelta(days=1)),
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -222,6 +327,11 @@ def repro_insemination_payload():
         "inseminationType": "NaturalService",
         "sireOfficialName": "Frankel",
         "eventDateTime": str(datetime.now()),
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -237,6 +347,11 @@ def repro_mating_recommendation_payload():
                 "sireOfficialName": "Camelot",
             }
         ],
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -249,6 +364,11 @@ def repro_parturition_payload():
         "damParity": 3,
         "liveProgeny": 2,
         "calvingEase": "EasyAssisted",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -261,6 +381,11 @@ def repro_pregnancy_check_payload():
         "result": "Pregnant",
         "foetalAge": 1,
         "foestusCount": 3,
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -272,7 +397,11 @@ def attention_payload():
         "category": "Health",
         "causes": ["Activity", "LyingTooLong"],
         "priority": "Urgent",
-    }
+                    "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }}
 
 
 @pytest.fixture()
@@ -282,6 +411,11 @@ def test_day_result_payload():
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "milkWeight24Hours": {"unitCode": "KGM", "value": 20},
         "testDayCode": "Dry",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -294,13 +428,20 @@ def object_id():
 @pytest.fixture()
 def sensor_payload(object_id, serial):
     """Generate a sensor payload."""
-    return {"device": object_id, "measurement": "Air Temperature"}
+    return {
+        "device": object_id,
+        "measurement": "Air Temperature",
+    }
 
 
 @pytest.fixture()
 def sensor_payload_updated(object_id, serial):
     """Generate an updated sensor payload."""
-    return {"device": object_id, "serial": serial, "measurement": "Soil Temperature"}
+    return {
+        "device": object_id,
+        "serial": serial,
+        "measurement": "Soil Temperature",
+    }
 
 
 @pytest.fixture()
@@ -326,6 +467,16 @@ def machine_payload():
 
 
 @pytest.fixture()
+def machine_payload_updated():
+    """Generate an updated machine payload."""
+    return {
+        "manufacturer": "Generic Machine Ltd.",
+        "model": "IronHorse XT-450",
+        "type": ["Vehicle", "Tractor"],
+    }
+
+
+@pytest.fixture()
 def conformation_payload(object_id):
     """Generate a conformation payload."""
     return {
@@ -334,6 +485,11 @@ def conformation_payload(object_id):
         "score": 47,
         "traitScored": "BodyLength",
         "method": "Automated",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -341,7 +497,15 @@ def conformation_payload(object_id):
 def drying_off_payload(object_id):
     """Generate a drying off payload."""
     return {
-        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
+        "animal": {
+            "id": "UK230011200123",
+            "scheme": "uk.gov"
+        },
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -352,6 +516,11 @@ def milking_visit_payload(object_id):
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "milkingStartingDateTime": str(datetime.now()),
         "milkingMilkWeight": {"unitCode": "KGM", "value": 10},
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -365,6 +534,11 @@ def arrival_payload(object_id):
             "currentLactationParity": 2,
             "lastCalvingDate": str(datetime.now() - timedelta(days=1)),
         },
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -374,6 +548,11 @@ def birth_payload(object_id):
     return {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "registrationReason": "Born",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -383,6 +562,11 @@ def death_payload(object_id):
     return {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "deathReason": "Age",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -393,16 +577,11 @@ def departure_payload(object_id):
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "departureReason": "Sale",
         "departureKind": "Sale",
-    }
-
-
-@pytest.fixture()
-def machine_payload_updated():
-    """Generate an updated machine payload."""
-    return {
-        "manufacturer": "Generic Machine Ltd.",
-        "model": "IronHorse XT-450",
-        "type": ["Vehicle", "Tractor"],
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -414,6 +593,11 @@ def feed_payload(object_id):
         "category": "Roughage",
         "type": {"id": "FC0303", "scheme": "org.fao"},
         "active": True,
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -425,13 +609,27 @@ def feed_payload_updated(object_id):
         "category": "Additives",
         "name": "LactoMaxx",
         "active": False,
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
 @pytest.fixture()
 def feed_storage_payload(object_id):
     """Generate an feed storage payload."""
-    return {"id": object_id, "feedId": object_id, "name": "Feed Storage 9000"}
+    return {
+        "id": object_id,
+        "feedId": object_id,
+        "name": "Feed Storage 9000",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
+    }
 
 
 @pytest.fixture()
@@ -442,6 +640,11 @@ def feed_storage_payload_updated(object_id):
         "feedId": object_id,
         "name": "Feed Storage 3000",
         "isActive": False,
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -451,6 +654,11 @@ def medicine_payload():
     return {
         "name": "Betamox LA Injection",
         "approved": "Approved",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -461,13 +669,29 @@ def medicine_payload_updated():
         "name": "Betamox LA Injection",
         "approved": "Approved",
         "registeredID": {"id": "6142-50B", "scheme": "uk.gov"},
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
 @pytest.fixture()
 def ration_payload(object_id):
     """Generate an ration storage payload."""
-    return {"id": {"id": object_id, "scheme": "uk.gov"}, "name": "Super Ration 1000"}
+    return {
+        "id": {
+            "id": object_id,
+            "scheme": "uk.gov"
+        },
+        "name": "Super Ration 1000",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
+    }
 
 
 @pytest.fixture()
@@ -480,6 +704,11 @@ def ration_payload_updated(object_id):
             {"feedId": {"id": object_id, "scheme": "uk.gov"}, "percentage": 10.0}
         ],
         "active": False,
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -491,6 +720,11 @@ def embryo_payload(object_id):
         "dateCollected": str(datetime.now()),
         "donorURI": object_id,
         "sireOfficialName": "Frankenstein",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -504,6 +738,11 @@ def embryo_payload_updated(object_id):
             {"id": object_id, "scheme": "uk.gov"},
             {"id": object_id, "scheme": "uk.gov"},
         ],
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -519,6 +758,11 @@ def semen_straw_payload(object_id):
         "isSexedSemen": True,
         "sexedGender": "Male",
         "sexedPercentage": 95,
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }
 
 
@@ -533,4 +777,9 @@ def semen_straw_payload_updated(object_id):
             {"id": object_id, "scheme": "uk.gov"},
         ],
         "preservationType": "Frozen",
+        "meta": {
+            "source": "{ farm-twin } test",
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
     }

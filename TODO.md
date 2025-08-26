@@ -6,3 +6,4 @@
 - Ensure UTC conformance for times
 - Confirm modified and created values cannot be passed
 - Implement complex searches
+- Machine, sample and sensor don't have meta data  - harmonise with ICAR ADE?

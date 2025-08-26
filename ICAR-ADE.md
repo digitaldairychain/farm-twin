@@ -61,6 +61,7 @@ Following that, we outline any changes that have been made to the specification 
 
 ## { farm-twin } changes to the ADE ###
 
+- As per the working group [discussion](https://github.com/adewg/ICAR/discussions/485), we have decided to make the 'meta' field required, and the 'source' and 'sourceId' within the icarMetaDataType also required.
 - icarInventoryTransactionType -> BaseModel to avoid circular import
 - icarDateTimeType -> PastDatetime
 - icarDateType -> PastDatetime (bson does not support date objects)
