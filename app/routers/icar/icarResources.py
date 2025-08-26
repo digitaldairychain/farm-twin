@@ -3,12 +3,12 @@ Collection of types used in ICAR data standards.
 See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/enums
 """
 
-from typing import List, Optional
+from typing import Optional
 
-from pydantic import BaseModel, Field, FutureDatetime
+from pydantic import Field, FutureDatetime
 
 from ..ftCommon import FTModel
-from . import icarEnums, icarResources, icarTypes
+from . import icarEnums, icarTypes
 
 
 class icarSchemeTypeResource(FTModel):
@@ -619,7 +619,6 @@ class icarMovementDepartureEventResource(icarAnimalEventCoreResource):
 
 class icarCarcassResource(icarResource, icarTypes.icarCarcassType):
     resourceType: str = Field(default_factory=lambda: icarCarcassResource.__name__)
-    pass
 
 
 class icarAnimalSetResource(icarResource):
@@ -827,7 +826,6 @@ class icarPositionObservationEventResource(
     resourceType: str = Field(
         default_factory=lambda: icarPositionObservationEventResource.__name__
     )
-    pass
 
 
 class icarSchemeValueResource(FTModel):
@@ -1452,7 +1450,6 @@ class icarConformationScoreEventResource(
     resourceType: str = Field(
         default_factory=lambda: icarConformationScoreEventResource.__name__
     )
-    pass
 
 
 class icarRationResource(icarResource):
@@ -1888,7 +1885,6 @@ class icarGroupPositionObservationEventResource(
     resourceType: str = Field(
         default_factory=lambda: icarGroupPositionObservationEventResource.__name__
     )
-    pass
 
 
 class icarProgenyDetailsResource(icarResource):
@@ -2076,7 +2072,6 @@ class icarMilkingDryOffEventResource(icarAnimalEventCoreResource):
     resourceType: str = Field(
         default_factory=lambda: icarMilkingDryOffEventResource.__name__
     )
-    pass
 
 
 class icarReproStatusObservedEventResource(icarAnimalEventCoreResource):
@@ -2131,7 +2126,6 @@ class icarProcessingLotResource(icarResource, icarTypes.icarProcessingLotType):
     resourceType: str = Field(
         default_factory=lambda: icarProcessingLotResource.__name__
     )
-    pass
 
 
 class icarGroupMovementDeathEventResource(icarGroupEventCoreResource):
@@ -2208,7 +2202,6 @@ class icarReproAbortionEventResource(icarAnimalEventCoreResource):
     resourceType: str = Field(
         default_factory=lambda: icarReproAbortionEventResource.__name__
     )
-    pass
 
 
 class icarTypeClassificationEventResource(icarAnimalEventCoreResource):

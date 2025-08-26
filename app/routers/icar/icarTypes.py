@@ -6,7 +6,7 @@ See here for more details: https://github.com/adewg/ICAR/blob/v1.4.1/enums
 from typing import Optional
 
 from geojson_pydantic import GeometryCollection
-from pydantic import BaseModel, Field, PastDate, PastDatetime
+from pydantic import BaseModel, Field, PastDatetime
 
 from . import icarEnums
 

@@ -1,5 +1,5 @@
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from random import randint
 
 import pytest
@@ -7,8 +7,6 @@ from bson.objectid import ObjectId
 from fastapi.testclient import TestClient
 
 from app.main import app
-
-from . import common
 
 
 @pytest.fixture()

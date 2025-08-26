@@ -16,7 +16,6 @@ and finding of those points.
 import uuid
 from typing import List, Optional
 
-import pymongo
 from bson.objectid import ObjectId
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from geojson_pydantic import FeatureCollection, MultiPolygon

@@ -17,14 +17,12 @@ https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarDeviceResource.json
 from datetime import datetime
 from typing import Annotated, List
 
-import pymongo
-from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Query, Request, Response, status
+from fastapi import APIRouter, Query, Request, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
 from ..ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                        filterQuery, find_in_db, update_one_in_db)
+                        find_in_db, update_one_in_db)
 from ..icar import icarTypes
 from ..icar.icarResources import icarDeviceResource as Device
 

@@ -14,14 +14,11 @@ https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarAttentionEventResource.j
 from datetime import datetime
 from typing import List
 
-import pymongo
-from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Request, Response, status
+from fastapi import APIRouter, Request, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 
-from ..ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                        filterQuery, find_in_db)
+from ..ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
 from ..icar import icarEnums
 from ..icar.icarResources import icarAttentionEventResource as Attention
 

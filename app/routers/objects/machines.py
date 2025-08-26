@@ -15,13 +15,13 @@ from datetime import datetime
 from typing import List, Optional
 
 from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Query, Request, Response, status
+from fastapi import APIRouter, HTTPException, Query, Request, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
 from ..ftCommon import (FTModel, add_one_to_db, dateBuild, delete_one_from_db,
-                        filterQuery, find_in_db, update_one_in_db)
+                        find_in_db)
 
 router = APIRouter(
     prefix="/machines",

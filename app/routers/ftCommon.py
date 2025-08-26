@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import Optional
 
 import pymongo
-from fastapi import HTTPException, Path, Response, status
-from pydantic import BaseModel, ConfigDict, Field, PastDatetime
+from fastapi import HTTPException, Response, status
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic_extra_types import mongo_object_id
 
 
