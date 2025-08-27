@@ -72,13 +72,17 @@ async def birth_event_query(
     registrationReason: icarEnums.icarRegistrationReasonType | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None
 ):
     """Search for a birth event given the provided criteria."""
     query = {
         "_id": ft,
         "animal.id": animal,
         "registrationReason": registrationReason,
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.birth, query)
     return BirthCollection(birth=result)

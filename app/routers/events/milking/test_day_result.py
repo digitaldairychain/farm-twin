@@ -81,13 +81,17 @@ async def test_day_result_event_query(
     testDayCode: icarEnums.icarTestDayCodeType | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None
 ):
     """Search for a test day result event given the provided criteria."""
     query = {
         "_id": ft,
         "animal.id": animal,
         "testDayCode": testDayCode,
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.test_day_result, query)
     return TestDayResultCollection(test_day_result=result)

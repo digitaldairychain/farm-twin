@@ -108,6 +108,8 @@ async def device_query(
     createdEnd: datetime | None = None,
     modifiedStart: datetime | None = None,
     modifiedEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None,
 ):
     """Search for a device given the provided criteria."""
     query = {
@@ -122,8 +124,10 @@ async def device_query(
         "manufacturer": manufacturer,
         "registration": registration,
         "supportedMessages": {"$in": supportedMessages},
-        "created": dateBuild(createdStart, createdEnd),
-        "modified": dateBuild(modifiedStart, modifiedEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.modified": dateBuild(modifiedStart, modifiedEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.devices, query)
     return DeviceCollection(devices=result)

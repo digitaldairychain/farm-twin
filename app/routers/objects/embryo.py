@@ -95,6 +95,8 @@ async def embryo_query(
     createdEnd: datetime | None = None,
     modifiedStart: datetime | None = None,
     modifiedEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None,
 ):
     """Search for a embryo given the provided criteria."""
     query = {
@@ -106,8 +108,10 @@ async def embryo_query(
         "donorURI": donorURI,
         "sireOfficialName": sireOfficialName,
         "sireURI": sireURI,
-        "modified": dateBuild(modifiedStart, modifiedEnd),
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.modified": dateBuild(modifiedStart, modifiedEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.embryo, query)
     return EmbryoCollection(embryo=result)

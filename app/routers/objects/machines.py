@@ -139,6 +139,8 @@ async def machine_query(
     createdEnd: datetime | None = None,
     modifiedStart: datetime | None = None,
     modifiedEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None
 ):
     """
     Search for a machine given the provided criteria.
@@ -156,8 +158,10 @@ async def machine_query(
         "model": model,
         "registration": registration,
         "type": {"$in": type},
-        "created": dateBuild(createdStart, createdEnd),
-        "modified": dateBuild(modifiedStart, modifiedEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.modified": dateBuild(modifiedStart, modifiedEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.machines, query)
     return MachineCollection(machines=result)

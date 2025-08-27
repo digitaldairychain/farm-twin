@@ -31,7 +31,8 @@ router = APIRouter(
 
 
 class Attachment(BaseModel):
-    id: Optional[mongo_object_id.MongoObjectId] = Field(alias="_id", default=None)
+    id: Optional[mongo_object_id.MongoObjectId] = Field(
+        alias="_id", default=None)
     device: str
     thing: mongo_object_id.MongoObjectId
     start: Optional[datetime] = Field(default=datetime.now())
@@ -93,9 +94,9 @@ async def attachment_query(
     request: Request,
     id: str | None = None,
     device: str | None = None,
-    thing: str | None = None,
+    object: str | None = None,
 ):
-    query = {"_id": id, "thing": thing, "device": device}
+    query = {"_id": id, "object": object, "device": device}
     filtered_query = {k: v for k, v in query.items() if v is not None}
     if (
         result := await request.app.state.attachments.find(filtered_query).to_list(1000)

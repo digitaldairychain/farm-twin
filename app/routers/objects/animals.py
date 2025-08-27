@@ -117,6 +117,8 @@ async def animal_query(
     createdEnd: datetime | None = None,
     modifiedStart: datetime | None = None,
     modifiedEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None,
 ):
     """
     Search for an animal given the provided criteria.
@@ -140,8 +142,10 @@ async def animal_query(
         "lactationStatus": lactationStatus,
         "parentage": {"$in": parentage},
         "healthStatus": healthStatus,
-        "created": dateBuild(createdStart, createdEnd),
-        "modified": dateBuild(modifiedStart, modifiedEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.modified": dateBuild(modifiedStart, modifiedEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.animals, query)
     return AnimalCollection(animals=result)

@@ -80,12 +80,16 @@ async def conformation_event_query(
     animal: str | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None
 ):
     """Search for a conformation event given the provided criteria."""
     query = {
         "_id": ft,
         "animal.id": animal,
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.conformation, query)
     return ConformationCollection(conformation=result)

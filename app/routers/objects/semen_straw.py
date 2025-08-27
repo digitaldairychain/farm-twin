@@ -101,6 +101,8 @@ async def semen_straw_query(
     createdEnd: datetime | None = None,
     modifiedStart: datetime | None = None,
     modifiedEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None,
 ):
     """Search for a semen straw given the provided criteria."""
     query = {
@@ -115,8 +117,10 @@ async def semen_straw_query(
         "isSexedSemen": isSexedSemen,
         "sexedGender": sexedGender,
         "sexedPercentage": sexedPercentage,
-        "modified": dateBuild(modifiedStart, modifiedEnd),
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.modified": dateBuild(modifiedStart, modifiedEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.semen_straw, query)
     return SemenStrawCollection(semen_straw=result)

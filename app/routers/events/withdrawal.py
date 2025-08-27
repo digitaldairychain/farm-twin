@@ -74,16 +74,21 @@ async def withdrawal_event_query(
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
     endDateTimeStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    endDateTimeEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+    endDateTimeEnd: Annotated[datetime, Query(
+        default_factory=datetime.now)] = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None
 ):
     """Search for a withdrawal event given the provided criteria."""
     query = {
         "_id": ft,
         "animal.id": animal,
         "endDateTime": dateBuild(endDateTimeStart, endDateTimeEnd),
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.withdrawal, query)
     return WithdrawalCollection(withdrawal=result)

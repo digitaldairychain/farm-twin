@@ -73,13 +73,16 @@ async def arrival_event_query(
     arrivalReason: icarEnums.icarArrivalReasonType | None = None,
     currentLactationParity: int | None = None,
     lastCalvingDateStart: datetime | None = None,
-    lastCalvingDateEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+    lastCalvingDateEnd: Annotated[datetime, Query(
+        default_factory=datetime.now)] = None,
     lastInseminationDateStart: datetime | None = None,
     lastInseminationDateEnd: datetime | None = None,
     lastDryingOffDateStart: datetime | None = None,
     lastDryingOffDateEnd: datetime | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None
 ):
     """Search for a arrival event given the provided criteria."""
     query = {
@@ -96,7 +99,9 @@ async def arrival_event_query(
         "animalState.lastDryingOffDate": dateBuild(
             lastDryingOffDateStart, lastDryingOffDateEnd
         ),
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.arrival, query)
     return ArrivalCollection(arrival=result)

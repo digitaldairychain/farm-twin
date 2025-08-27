@@ -75,13 +75,17 @@ async def repro_dnb_event_query(
     doNotBreed: bool | None = True,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None
 ):
     """Search for a repro DNB event given the provided criteria."""
     query = {
         "_id": ft,
         "animal.id": animal,
         "doNotBreed": doNotBreed,
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.repro_do_not_breed, query)
     return ReproDNBCollection(repro_do_not_breed=result)

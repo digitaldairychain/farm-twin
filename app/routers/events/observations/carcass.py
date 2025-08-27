@@ -75,6 +75,8 @@ async def carcass_event_query(
     carcassState: icarEnums.icarCarcassStateType | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None
 ):
     """Search for a carcass event given the provided criteria."""
     query = {
@@ -83,7 +85,9 @@ async def carcass_event_query(
         "side": side,
         "primal": primal,
         "carcassState": carcassState,
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.carcass, query)
     return CarcassCollection(carcass=result)

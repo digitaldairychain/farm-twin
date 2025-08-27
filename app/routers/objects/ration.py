@@ -91,6 +91,8 @@ async def ration_query(
     createdEnd: datetime | None = None,
     modifiedStart: datetime | None = None,
     modifiedEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None,
 ):
     """Search for a ration given the provided criteria."""
     query = {
@@ -98,8 +100,10 @@ async def ration_query(
         "id": id,
         "name": name,
         "active": active,
-        "modified": dateBuild(modifiedStart, modifiedEnd),
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.modified": dateBuild(modifiedStart, modifiedEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.ration, query)
     return RationCollection(ration=result)

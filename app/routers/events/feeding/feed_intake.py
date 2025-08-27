@@ -78,6 +78,8 @@ async def feed_intake_event_query(
     feedingStartingDateTimeEnd: datetime | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None
 ):
     """Search for a feed intake event given the provided criteria."""
     query = {
@@ -87,7 +89,9 @@ async def feed_intake_event_query(
         "feedingStartingDateTime": dateBuild(
             feedingStartingDateTimeStart, feedingStartingDateTimeEnd
         ),
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.feed_intake, query)
     return FeedIntakeCollection(feed_intake=result)

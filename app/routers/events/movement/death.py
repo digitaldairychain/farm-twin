@@ -77,6 +77,8 @@ async def death_event_query(
     deathMethod: icarEnums.icarDeathMethodType | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None
 ):
     """Search for a death event given the provided criteria."""
     query = {
@@ -88,7 +90,9 @@ async def death_event_query(
         "disposalOperator": disposalOperator,
         "disposalReference": disposalReference,
         "deathMethod": deathMethod,
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.death, query)
     return DeathCollection(death=result)

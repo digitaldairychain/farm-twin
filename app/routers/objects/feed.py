@@ -90,6 +90,8 @@ async def feed_query(
     createdEnd: datetime | None = None,
     modifiedStart: datetime | None = None,
     modifiedEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None,
 ):
     """Search for a feed given the provided criteria."""
     query = {
@@ -99,8 +101,10 @@ async def feed_query(
         "type.id": type,
         "name": name,
         "active": active,
-        "modified": dateBuild(modifiedStart, modifiedEnd),
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.modified": dateBuild(modifiedStart, modifiedEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.feed, query)
     return FeedCollection(feed=result)

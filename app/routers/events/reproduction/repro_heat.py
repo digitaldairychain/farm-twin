@@ -78,6 +78,8 @@ async def repro_heat_event_query(
     device: str | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None
 ):
     """Search for a repro heat event given the provided criteria."""
     query = {
@@ -88,7 +90,9 @@ async def repro_heat_event_query(
         "expirationDateTime": expirationDateTime,
         "deviceHeatProbability": deviceHeatProbability,
         "device.id": device,
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.repro_heat, query)
     return ReproHeatCollection(repro_heat=result)

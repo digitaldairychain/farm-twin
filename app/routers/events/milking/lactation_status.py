@@ -81,13 +81,17 @@ async def lactation_status_event_query(
     observedStatus: icarEnums.icarAnimalLactationStatusType | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
+    source: str | None = None,
+    sourceId: str | None = None
 ):
     """Search for a lactation status event given the provided criteria."""
     query = {
         "_id": ft,
         "animal.id": animal,
         "observedStatus": observedStatus,
-        "created": dateBuild(createdStart, createdEnd),
+        "meta.created": dateBuild(createdStart, createdEnd),
+        "meta.source": source,
+        "meta.sourceId": sourceId
     }
     result = await find_in_db(request.app.state.lactation_status, query)
     return LactationStatusCollection(lactation_status=result)
