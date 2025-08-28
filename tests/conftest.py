@@ -8,6 +8,8 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 
+TEST_SOURCE = "{ farm-twin } test"
+
 
 @pytest.fixture()
 def test_client():
@@ -16,15 +18,33 @@ def test_client():
 
 
 @pytest.fixture()
+def object_id():
+    """Generate a random uuid."""
+    return str(ObjectId())
+
+
+@pytest.fixture()
 def serial():
     """Generate a random serial number."""
     return str(randint(10000, 99999))
 
 
+def clear_test_data(test_client, path, key) -> None:
+    response = test_client.get(path + f"/?source={TEST_SOURCE}")
+    if response.status_code == 200:
+        for item in response.json()[key]:
+            _id = item["ft"]
+            test_client.delete(f"{path}/{_id}")
+        response = test_client.get(path + f"/?source={TEST_SOURCE}")
+        assert response.status_code == 404
+
+
 @pytest.fixture()
-def animal_payload():
+def setup_animal(test_client):
     """Generate an animal payload."""
-    return {
+    key = "animals"
+    path = "/objects/" + key
+    data = {
         "identifier": {"id": "UK230011200123", "scheme": "uk.gov"},
         "specie": "Cattle",
         "gender": "Female",
@@ -35,16 +55,18 @@ def animal_payload():
         "lactationStatus": "Fresh",
         "healthStatus": "Healthy",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
-        },
+        }
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def animal_payload_updated():
-    """Generate an animal payload."""
+def animal_data_updated():
+    """Generate an updated animal payload."""
     return {
         "identifier": {"id": "UK230011200124", "scheme": "uk.gov"},
         "specie": "Cattle",
@@ -55,7 +77,7 @@ def animal_payload_updated():
         "lactationStatus": "Fresh",
         "healthStatus": "InTreatment",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
@@ -63,9 +85,11 @@ def animal_payload_updated():
 
 
 @pytest.fixture()
-def device_payload(serial):
-    """Generate a device payload."""
-    return {
+def setup_device(test_client, serial):
+    """Generate an animal payload."""
+    key = "devices"
+    path = "/objects/" + key
+    data = {
         "id": "Sample",
         "serial": serial,
         "softwareVersion": "1.3",
@@ -74,15 +98,17 @@ def device_payload(serial):
         },
         "isActive": True,
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def device_payload_updated(serial):
+def device_data_updated(serial):
     """Generate an updated device payload."""
     return {
         "id": "Revised Sample",
@@ -95,7 +121,7 @@ def device_payload_updated(serial):
         },
         "isActive": False,
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
@@ -103,9 +129,11 @@ def device_payload_updated(serial):
 
 
 @pytest.fixture()
-def weight_payload():
+def setup_weight(test_client):
     """Generate a weight event payload."""
-    return {
+    key = "weight"
+    path = "/events/performance/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "weight": {
             "measurement": float(randint(453, 816)),
@@ -116,23 +144,27 @@ def weight_payload():
         "device": {"manufacturerName": "Acme Sensor Co."},
         "timeOffFeed": float(randint(1, 5)),
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def group_weight_payload(object_id):
+def setup_group_weight(test_client, object_id):
     """Generate a group weight event payload."""
-    return {
+    key = "group_weight"
+    path = "/events/performance/" + key
+    data = {
         "groupMethod": "EmbeddedAnimalSet",
         "embeddedAnimalSet": {
             "id": object_id,
             "member": [{"id": "UK230011200123", "scheme": "uk.gov"}],
             "meta": {
-                "source": "{ farm-twin } test",
+                "source": TEST_SOURCE,
                 "sourceId": str(uuid.uuid4()),
                 "modified": str(datetime.now()),
             },
@@ -150,17 +182,21 @@ def group_weight_payload(object_id):
         "device": {"manufacturerName": "Acme Sensor Co."},
         "timeOffFeed": float(randint(1, 5)),
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def feed_intake_payload():
+def setup_feed_intake(test_client):
     """Generate a feed intake event payload."""
-    return {
+    key = "feed_intake"
+    path = "/events/feeding/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "feedingStartingDateTime": datetime.now(timezone.utc).isoformat(),
         "feedVisitDuration": {"unitCode": "MIN", "value": 10},
@@ -168,164 +204,208 @@ def feed_intake_payload():
             {"feedId": {"id": "test", "scheme": "ft.org"}, "dryMatterPercentage": 10}
         ],
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def withdrawal_payload():
+def setup_withdrawal(test_client):
     """Generate a withdrawal payload."""
-    return {
+    key = "withdrawal"
+    path = "/events/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "endDateTime": datetime.now(timezone.utc).isoformat(),
         "productType": "Eggs",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def carcass_payload():
+def setup_carcass(test_client):
     """Generate a withdrawal payload."""
-    return {
+    key = "carcass"
+    path = "/events/observations/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "side": "Left",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def health_status_payload():
+def setup_health_status(test_client):
     """Generate a health status payload."""
-    return {
+    key = "health_status"
+    path = "/events/observations/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "observedStatus": "Healthy",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def lactation_status_payload():
+def setup_lactation_status(test_client):
     """Generate a lactation status payload."""
-    return {
+    key = "lactation_status"
+    path = "/events/milking/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "observedStatus": "Fresh",
         "eventDateTime": datetime.now(timezone.utc).isoformat(),
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def position_payload():
+def setup_position(test_client):
     """Generate a position payload."""
-    return {
+    key = "position"
+    path = "/events/observations/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "positionName": "Yard",
         "eventDateTime": datetime.now(timezone.utc).isoformat(),
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
-        },
+        }
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def repro_status_payload():
+def setup_repro_status(test_client):
     """Generate a repro status payload."""
-    return {
+    key = "repro_status"
+    path = "/events/reproduction/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "observedStatus": "Pregnant",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def repro_abortion_payload():
+def setup_repro_abortion(test_client):
     """Generate a repro abortion payload."""
-    return {
+    key = "repro_abortion"
+    path = "/events/reproduction/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def repro_do_not_breed_payload():
+def setup_repro_do_not_breed(test_client):
     """Generate a repro do not breed payload."""
-    return {
+    key = "repro_do_not_breed"
+    path = "/events/reproduction/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "doNotBreed": True,
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def repro_heat_payload():
+def setup_repro_heat(test_client):
     """Generate a repro heat payload."""
-    return {
+    key = "repro_heat"
+    path = "/events/reproduction/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "heatDetectionMethod": "Visual",
         "certainty": "Suspect",
         "commencementDateTime": str(datetime.now() - timedelta(days=1)),
         "expirationDateTime": str(datetime.now() + timedelta(days=1)),
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def repro_insemination_payload():
+def setup_repro_insemination(test_client):
     """Generate a repro insemination payload."""
-    return {
+    key = "repro_insemination"
+    path = "/events/reproduction/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "inseminationType": "NaturalService",
         "sireOfficialName": "Frankel",
         "eventDateTime": str(datetime.now()),
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def repro_mating_recommendation_payload():
+def setup_repro_mating_recommendation(test_client):
     """Generate a repro mating recommendation payload."""
-    return {
+    key = "repro_mating_recommendation"
+    path = "/events/reproduction/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "sireRecommendations": [
             {
@@ -335,82 +415,94 @@ def repro_mating_recommendation_payload():
             }
         ],
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def repro_parturition_payload():
+def setup_repro_parturition(test_client):
     """Generate a repro parturition payload."""
-    return {
+    key = "repro_parturition"
+    path = "/events/reproduction/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "isEmbryoImplant": True,
         "damParity": 3,
         "liveProgeny": 2,
         "calvingEase": "EasyAssisted",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def repro_pregnancy_check_payload():
+def setup_repro_pregnancy_check(test_client):
     """Generate a repro pregnancy check payload."""
-    return {
+    key = "repro_pregnancy_check"
+    path = "/events/reproduction/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "method": "Palpation",
         "result": "Pregnant",
         "foetalAge": 1,
         "foestusCount": 3,
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def attention_payload():
-    """Generate a repro status payload."""
-    return {
+def setup_attention(test_client):
+    """Generate an attention payload."""
+    key = "attention"
+    path = "/events/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "category": "Health",
         "causes": ["Activity", "LyingTooLong"],
         "priority": "Urgent",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def test_day_result_payload():
+def setup_test_day_result(test_client):
     """Generate a test day result event payload."""
-    return {
+    key = "test_day_result"
+    path = "/events/milking/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "milkWeight24Hours": {"unitCode": "KGM", "value": 20},
         "testDayCode": "Dry",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
-
-
-@pytest.fixture()
-def object_id():
-    """Generate a random uuid."""
-    return str(ObjectId())
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
@@ -423,7 +515,7 @@ def sensor_payload(object_id, serial):
 
 
 @pytest.fixture()
-def sensor_payload_updated(object_id, serial):
+def sensor_payload_updated(object_id, serial,):
     """Generate an updated sensor payload."""
     return {
         "device": object_id,
@@ -465,54 +557,68 @@ def machine_payload_updated():
 
 
 @pytest.fixture()
-def conformation_payload(object_id):
+def setup_conformation(test_client):
     """Generate a conformation payload."""
-    return {
+    key = "conformation"
+    path = "/events/performance/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "traitGroup": "Composite",
         "score": 47,
         "traitScored": "BodyLength",
         "method": "Automated",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def drying_off_payload(object_id):
+def setup_drying_off(test_client):
     """Generate a drying off payload."""
-    return {
+    key = "drying_off"
+    path = "/events/milking/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def milking_visit_payload(object_id):
+def setup_milking_visit(test_client):
     """Generate a milking visit payload."""
-    return {
+    key = "visit"
+    path = "/events/milking/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "milkingStartingDateTime": str(datetime.now()),
         "milkingMilkWeight": {"unitCode": "KGM", "value": 10},
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def arrival_payload(object_id):
+def setup_arrival(test_client):
     """Generate an arrival payload."""
-    return {
+    key = "arrival"
+    path = "/events/movement/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "arrivalReason": "ShowReturn",
         "animalState": {
@@ -520,70 +626,88 @@ def arrival_payload(object_id):
             "lastCalvingDate": str(datetime.now() - timedelta(days=1)),
         },
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def birth_payload(object_id):
+def setup_birth(object_id, test_client):
     """Generate a birth payload."""
-    return {
+    key = "birth"
+    path = "/events/movement/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "registrationReason": "Born",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def death_payload(object_id):
+def setup_death(test_client):
     """Generate a death payload."""
-    return {
+    key = "death"
+    path = "/events/movement/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "deathReason": "Age",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def departure_payload(object_id):
+def setup_departure(test_client):
     """Generate an departure payload."""
-    return {
+    key = "departure"
+    path = "/events/movement/" + key
+    data = {
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "departureReason": "Sale",
         "departureKind": "Sale",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def feed_payload(object_id):
+def setup_feed(object_id, test_client):
     """Generate an feed payload."""
-    return {
+    key = "feed"
+    path = "/objects/" + key
+    data = {
         "id": object_id,
         "category": "Roughage",
         "type": {"id": "FC0303", "scheme": "org.fao"},
         "active": True,
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
@@ -595,7 +719,7 @@ def feed_payload_updated(object_id):
         "name": "LactoMaxx",
         "active": False,
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
@@ -603,18 +727,22 @@ def feed_payload_updated(object_id):
 
 
 @pytest.fixture()
-def feed_storage_payload(object_id):
+def setup_feed_storage(object_id, test_client):
     """Generate an feed storage payload."""
-    return {
+    key = "feed_storage"
+    path = "/objects/" + key
+    data = {
         "id": object_id,
         "feedId": object_id,
         "name": "Feed Storage 9000",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
@@ -626,7 +754,7 @@ def feed_storage_payload_updated(object_id):
         "name": "Feed Storage 3000",
         "isActive": False,
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
@@ -634,17 +762,21 @@ def feed_storage_payload_updated(object_id):
 
 
 @pytest.fixture()
-def medicine_payload():
+def setup_medicine(test_client):
     """Generate an medicine storage payload."""
-    return {
+    key = "medicine"
+    path = "/objects/" + key
+    data = {
         "name": "Betamox LA Injection",
         "approved": "Approved",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
@@ -655,7 +787,7 @@ def medicine_payload_updated():
         "approved": "Approved",
         "registeredID": {"id": "6142-50B", "scheme": "uk.gov"},
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
@@ -663,17 +795,21 @@ def medicine_payload_updated():
 
 
 @pytest.fixture()
-def ration_payload(object_id):
+def setup_ration(object_id, test_client):
     """Generate an ration storage payload."""
-    return {
+    key = "ration"
+    path = "/objects/" + key
+    data = {
         "id": {"id": object_id, "scheme": "uk.gov"},
         "name": "Super Ration 1000",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
@@ -687,7 +823,7 @@ def ration_payload_updated(object_id):
         ],
         "active": False,
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
@@ -695,23 +831,27 @@ def ration_payload_updated(object_id):
 
 
 @pytest.fixture()
-def embryo_payload(object_id):
+def setup_embryo(object_id, test_client):
     """Generate an embryo payload."""
-    return {
+    key = "embryo"
+    path = "/objects/" + key
+    data = {
         "id": {"id": object_id, "scheme": "uk.gov"},
         "dateCollected": str(datetime.now()),
         "donorURI": object_id,
         "sireOfficialName": "Frankenstein",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def embryo_payload_updated(object_id):
+def embryo_data_updated(object_id):
     """Generate an embryo payload."""
     return {
         "id": {"id": object_id, "scheme": "uk.gov"},
@@ -721,7 +861,7 @@ def embryo_payload_updated(object_id):
             {"id": object_id, "scheme": "uk.gov"},
         ],
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
@@ -729,9 +869,11 @@ def embryo_payload_updated(object_id):
 
 
 @pytest.fixture()
-def semen_straw_payload(object_id):
+def setup_semen_straw(object_id, test_client):
     """Generate an semen straw payload."""
-    return {
+    key = "semen_straw"
+    path = "/objects/" + key
+    data = {
         "id": {"id": object_id, "scheme": "uk.gov"},
         "collectionCentre": "London, UK",
         "dateCollected": str(datetime.now()),
@@ -741,11 +883,13 @@ def semen_straw_payload(object_id):
         "sexedGender": "Male",
         "sexedPercentage": 95,
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
     }
+    yield path, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
@@ -760,7 +904,7 @@ def semen_straw_payload_updated(object_id):
         ],
         "preservationType": "Frozen",
         "meta": {
-            "source": "{ farm-twin } test",
+            "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
