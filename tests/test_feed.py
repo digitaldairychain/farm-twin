@@ -8,9 +8,7 @@ class TestFeed:
 
     def test_create_update_feed(self, test_client, setup_feed, feed_payload_updated):
         path, key, data = setup_feed
-        common.create_get_update(
-            test_client, path, data, feed_payload_updated, key
-        )
+        common.create_get_update(test_client, path, data, feed_payload_updated, key)
 
     def test_create_delete_feed(self, test_client, setup_feed):
         path, key, data = setup_feed
@@ -41,12 +39,10 @@ class TestFeed:
     def test_create_feed_incorrect_enum(self, test_client, setup_feed):
         path, key, data = setup_feed
         data["category"] = "BreakfastCereal"
-        common.create_get(test_client, path, data,
-                          key, expected_code=422)
+        common.create_get(test_client, path, data, key, expected_code=422)
 
     def test_update_feed_doesnt_exist(
         self, test_client, object_id, feed_payload_updated, setup_feed
     ):
         path, _, _ = setup_feed
-        common.update_doesnt_exist(
-            test_client, path, feed_payload_updated, object_id)
+        common.update_doesnt_exist(test_client, path, feed_payload_updated, object_id)

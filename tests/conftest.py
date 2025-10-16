@@ -58,7 +58,7 @@ def setup_animal(test_client):
             "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
-        }
+        },
     }
     yield path, key, data
     clear_test_data(test_client, path, key)
@@ -300,7 +300,7 @@ def setup_position(test_client):
             "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
-        }
+        },
     }
     yield path, key, data
     clear_test_data(test_client, path, key)
@@ -515,7 +515,10 @@ def sensor_payload(object_id, serial):
 
 
 @pytest.fixture()
-def sensor_payload_updated(object_id, serial,):
+def sensor_payload_updated(
+    object_id,
+    serial,
+):
     """Generate an updated sensor payload."""
     return {
         "device": object_id,

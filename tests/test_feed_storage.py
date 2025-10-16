@@ -18,7 +18,9 @@ class TestFeedStorage:
         path, key, data = setup_feed_storage
         common.create_delete(test_client, path, data, key)
 
-    def test_get_feed_storage_not_found(self, test_client, object_id, setup_feed_storage):
+    def test_get_feed_storage_not_found(
+        self, test_client, object_id, setup_feed_storage
+    ):
         path, _, _ = setup_feed_storage
         common.get_not_found(test_client, path, object_id)
 
@@ -45,4 +47,5 @@ class TestFeedStorage:
     ):
         path, _, _ = setup_feed_storage
         common.update_doesnt_exist(
-            test_client, path, feed_storage_payload_updated, object_id)
+            test_client, path, feed_storage_payload_updated, object_id
+        )

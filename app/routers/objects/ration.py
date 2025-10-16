@@ -8,13 +8,20 @@ and finding of rations.
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
-from ..ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                        find_in_db, update_one_in_db)
+from ..ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+    update_one_in_db,
+)
 from ..icar.icarResources import icarRationResource as Ration
+from ..users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/ration",
@@ -36,7 +43,13 @@ class RationCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_ration(request: Request, ration: Ration):
+async def create_ration(
+    request: Request,
+    ration: Ration,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_ration"])
+    ],
+):
     """
     Create a new ration.
 
@@ -46,7 +59,13 @@ async def create_ration(request: Request, ration: Ration):
 
 
 @router.delete("/{ft}", response_description="Delete a ration")
-async def remove_ration(request: Request, ft: mongo_object_id.MongoObjectId):
+async def remove_ration(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_ration"])
+    ],
+):
     """
     Delete a ration.
 
@@ -62,7 +81,12 @@ async def remove_ration(request: Request, ft: mongo_object_id.MongoObjectId):
     status_code=status.HTTP_202_ACCEPTED,
 )
 async def update_ration(
-    request: Request, ft: mongo_object_id.MongoObjectId, ration: Ration
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    ration: Ration,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_ration"])
+    ],
 ):
     """
     Update an existing ration if it exists.
@@ -83,6 +107,9 @@ async def update_ration(
 )
 async def ration_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_ration"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     id: str | None = None,
     name: str | None = None,
@@ -103,7 +130,7 @@ async def ration_query(
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.modified": dateBuild(modifiedStart, modifiedEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.ration, query)
     return RationCollection(ration=result)

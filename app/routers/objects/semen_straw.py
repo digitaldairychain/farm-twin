@@ -8,14 +8,21 @@ and finding of semen straws.
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
-from ..ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                        find_in_db, update_one_in_db)
+from ..ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+    update_one_in_db,
+)
 from ..icar import icarEnums
 from ..icar.icarResources import icarReproSemenStrawResource as SemenStraw
+from ..users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/semen_straw",
@@ -37,7 +44,13 @@ class SemenStrawCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_semen_straw(request: Request, semen_straw: SemenStraw):
+async def create_semen_straw(
+    request: Request,
+    semen_straw: SemenStraw,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_semen_straw"])
+    ],
+):
     """
     Create a new semen straw.
 
@@ -49,7 +62,13 @@ async def create_semen_straw(request: Request, semen_straw: SemenStraw):
 
 
 @router.delete("/{ft}", response_description="Delete an semen straw")
-async def remove_semen_straw(request: Request, ft: mongo_object_id.MongoObjectId):
+async def remove_semen_straw(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_semen_straw"])
+    ],
+):
     """
     Delete a semen straw.
 
@@ -65,7 +84,12 @@ async def remove_semen_straw(request: Request, ft: mongo_object_id.MongoObjectId
     status_code=status.HTTP_202_ACCEPTED,
 )
 async def update_semen_straw(
-    request: Request, ft: mongo_object_id.MongoObjectId, semen_straw: SemenStraw
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    semen_straw: SemenStraw,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_semen_straw"])
+    ],
 ):
     """
     Update an existing semen straw if it exists.
@@ -86,6 +110,9 @@ async def update_semen_straw(
 )
 async def semen_straw_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_semen_straw"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     id: str | None = None,
     batch: str | None = None,
@@ -120,7 +147,7 @@ async def semen_straw_query(
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.modified": dateBuild(modifiedStart, modifiedEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.semen_straw, query)
     return SemenStrawCollection(semen_straw=result)

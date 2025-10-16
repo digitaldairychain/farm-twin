@@ -11,15 +11,15 @@ https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarTestDayResultEventResour
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
-from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                         find_in_db)
+from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
 from ...icar import icarEnums
-from ...icar.icarResources import \
-    icarTestDayResultEventResource as TestDayResult
+from ...icar.icarResources import icarTestDayResultEventResource as TestDayResult
+from ...users import User, get_current_active_user
 
 ERROR_MSG_OBJECT = "Test Day Result"
 
@@ -42,7 +42,11 @@ class TestDayResultCollection(BaseModel):
     response_model_by_alias=False,
 )
 async def create_test_day_result_event(
-    request: Request, test_day_result: TestDayResult
+    request: Request,
+    test_day_result: TestDayResult,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_milking"])
+    ],
 ):
     """
     Create a new test day result event.
@@ -56,7 +60,11 @@ async def create_test_day_result_event(
 
 @router.delete("/{ft}", response_description="Delete a test day result event")
 async def remove_test_day_result_event(
-    request: Request, ft: mongo_object_id.MongoObjectId
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_milking"])
+    ],
 ):
     """
     Delete a test day result event.
@@ -76,13 +84,16 @@ async def remove_test_day_result_event(
 )
 async def test_day_result_event_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_milking"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
     testDayCode: icarEnums.icarTestDayCodeType | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
     source: str | None = None,
-    sourceId: str | None = None
+    sourceId: str | None = None,
 ):
     """Search for a test day result event given the provided criteria."""
     query = {
@@ -91,7 +102,7 @@ async def test_day_result_event_query(
         "testDayCode": testDayCode,
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.test_day_result, query)
     return TestDayResultCollection(test_day_result=result)

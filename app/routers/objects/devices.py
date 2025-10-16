@@ -17,14 +17,21 @@ https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarDeviceResource.json
 from datetime import datetime
 from typing import Annotated, List
 
-from fastapi import APIRouter, Query, Request, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
-from ..ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                        find_in_db, update_one_in_db)
+from ..ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+    update_one_in_db,
+)
 from ..icar import icarTypes
 from ..icar.icarResources import icarDeviceResource as Device
+from ..users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/devices",
@@ -46,7 +53,13 @@ class DeviceCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_device(request: Request, device: Device):
+async def create_device(
+    request: Request,
+    device: Device,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_devices"])
+    ],
+):
     """
     Create a new device if it does not already exist.
 
@@ -62,7 +75,12 @@ async def create_device(request: Request, device: Device):
     status_code=status.HTTP_202_ACCEPTED,
 )
 async def update_device(
-    request: Request, ft: mongo_object_id.MongoObjectId, device: Device
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    device: Device,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_devices"])
+    ],
 ):
     """
     Update an existing device if it exists.
@@ -76,7 +94,13 @@ async def update_device(
 
 
 @router.delete("/{ft}", response_description="Delete a device")
-async def remove_device(request: Request, ft: mongo_object_id.MongoObjectId):
+async def remove_device(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_devices"])
+    ],
+):
     """
     Delete a device.
 
@@ -93,6 +117,9 @@ async def remove_device(request: Request, ft: mongo_object_id.MongoObjectId):
 )
 async def device_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_devices"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     id: str | None = None,
     serial: str | None = None,
@@ -127,7 +154,7 @@ async def device_query(
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.modified": dateBuild(modifiedStart, modifiedEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.devices, query)
     return DeviceCollection(devices=result)

@@ -14,14 +14,13 @@ and finding of those machines.
 from datetime import datetime
 from typing import List, Optional
 
-from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Query, Request, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ..ftCommon import (FTModel, add_one_to_db, dateBuild, delete_one_from_db,
-                        find_in_db)
+from ..ftCommon import FTModel, add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ..users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/machines",
@@ -71,7 +70,13 @@ class MachineCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_machine(request: Request, machine: Machine):
+async def create_machine(
+    request: Request,
+    machine: Machine,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_machine"])
+    ],
+):
     """
     Create a new machine.
 
@@ -81,7 +86,13 @@ async def create_machine(request: Request, machine: Machine):
 
 
 @router.delete("/{ft}", response_description="Delete a machine")
-async def remove_machine(request: Request, ft: mongo_object_id.MongoObjectId):
+async def remove_machine(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_machine"])
+    ],
+):
     """
     Delete an machine.
 
@@ -97,7 +108,12 @@ async def remove_machine(request: Request, ft: mongo_object_id.MongoObjectId):
     status_code=status.HTTP_202_ACCEPTED,
 )
 async def update_machine(
-    request: Request, ft: mongo_object_id.MongoObjectId, machine: Machine
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    machine: Machine,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_machine"])
+    ],
 ):
     """
     Update an existing machine if it exists.
@@ -130,6 +146,9 @@ async def update_machine(
 )
 async def machine_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_machine"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     manufacturer: str | None = None,
     model: str | None = None,
@@ -140,7 +159,7 @@ async def machine_query(
     modifiedStart: datetime | None = None,
     modifiedEnd: datetime | None = None,
     source: str | None = None,
-    sourceId: str | None = None
+    sourceId: str | None = None,
 ):
     """
     Search for a machine given the provided criteria.
@@ -161,7 +180,7 @@ async def machine_query(
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.modified": dateBuild(modifiedStart, modifiedEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.machines, query)
     return MachineCollection(machines=result)

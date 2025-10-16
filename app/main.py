@@ -7,23 +7,37 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from app import __version__
 
-from .routers import attachments
+from .routers import attachments, users
 from .routers.events import attention, withdrawal
 from .routers.events.feeding import feed_intake
-from .routers.events.milking import (drying_off, lactation_status,
-                                     test_day_result, visit)
+from .routers.events.milking import drying_off, lactation_status, test_day_result, visit
 from .routers.events.movement import arrival, birth, death, departure
 from .routers.events.observations import carcass, health_status, position
 from .routers.events.performance import conformation, group_weight, weight
-from .routers.events.reproduction import (repro_abortion, repro_do_not_breed,
-                                          repro_heat, repro_insemination,
-                                          repro_mating_recommendation,
-                                          repro_parturition,
-                                          repro_pregnancy_check, repro_status)
+from .routers.events.reproduction import (
+    repro_abortion,
+    repro_do_not_breed,
+    repro_heat,
+    repro_insemination,
+    repro_mating_recommendation,
+    repro_parturition,
+    repro_pregnancy_check,
+    repro_status,
+)
 from .routers.measurements import samples, sensors
-from .routers.objects import (animals, devices, embryo, feed, feed_storage,
-                              machines, medicine, points, polygons, ration,
-                              semen_straw)
+from .routers.objects import (
+    animals,
+    devices,
+    embryo,
+    feed,
+    feed_storage,
+    machines,
+    medicine,
+    points,
+    polygons,
+    ration,
+    semen_straw,
+)
 
 load_dotenv()
 DB_USER = os.getenv("MONGO_INITDB_ROOT_USERNAME")
@@ -31,6 +45,8 @@ DB_PASS = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
 DB_URL = f"mongodb://{DB_USER}:{DB_PASS}@localhost"
 
 app = FastAPI(title="{ farm-twin }", version=__version__)
+
+app.include_router(users.router)
 
 app.include_router(sensors.router, prefix="/measurements")
 app.include_router(samples.router, prefix="/measurements")
@@ -87,6 +103,8 @@ async def open_db() -> AsyncIOMotorClient:
     app.state.mongodb = AsyncIOMotorClient(DB_URL)
 
     _ft = app.state.mongodb["farm-twin"]
+
+    app.state.users = _ft["users"]
 
     app.state.sensors = _ft["measurements"]["sensors"]
     app.state.samples = _ft["measurements"]["samples"]
@@ -146,6 +164,7 @@ async def create_indexes():
     app.state.devices.create_index(["serial", "manufacturer"], unique=True)
     app.state.points.create_index({"point": "2dsphere"}, unique=True)
     app.state.polygons.create_index(["polygon"], unique=True)
+    app.state.users.create_index(["username"], unique=True)
     app.state.sensors.create_index(["device", "serial", "measurement"], unique=True)
     _attachment_index = ["device", "thing", "start"]
     app.state.attachments.create_index(_attachment_index, unique=True)

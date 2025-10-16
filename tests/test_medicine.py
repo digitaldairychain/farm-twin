@@ -10,9 +10,7 @@ class TestMedicine:
         self, test_client, setup_medicine, medicine_payload_updated
     ):
         path, key, data = setup_medicine
-        common.create_get_update(
-            test_client, path, data, medicine_payload_updated, key
-        )
+        common.create_get_update(test_client, path, data, medicine_payload_updated, key)
 
     def test_create_delete_medicine(self, test_client, setup_medicine):
         path, key, data = setup_medicine
@@ -28,7 +26,6 @@ class TestMedicine:
     def test_create_update_medicine_wrong_payload(
         self, test_client, setup_medicine, medicine_payload_updated
     ):
-
         path, key, data = setup_medicine
         medicine_payload_updated["name"] = True
         common.create_get_update(
@@ -45,4 +42,5 @@ class TestMedicine:
     ):
         path, _, _ = setup_medicine
         common.update_doesnt_exist(
-            test_client, path, medicine_payload_updated, object_id)
+            test_client, path, medicine_payload_updated, object_id
+        )

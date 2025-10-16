@@ -10,9 +10,7 @@ class TestRation:
         self, test_client, setup_ration, ration_payload_updated
     ):
         path, key, data = setup_ration
-        common.create_get_update(
-            test_client, path, data, ration_payload_updated, key
-        )
+        common.create_get_update(test_client, path, data, ration_payload_updated, key)
 
     def test_create_delete_ration(self, test_client, setup_ration):
         path, key, data = setup_ration
@@ -44,5 +42,4 @@ class TestRation:
         self, test_client, object_id, setup_ration, ration_payload_updated
     ):
         path, _, _ = setup_ration
-        common.update_doesnt_exist(
-            test_client, path, ration_payload_updated, object_id)
+        common.update_doesnt_exist(test_client, path, ration_payload_updated, object_id)

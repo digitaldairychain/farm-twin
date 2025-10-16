@@ -11,14 +11,16 @@ https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarReproMatingRecommendatio
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
-from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                         find_in_db)
-from ...icar.icarResources import \
-    icarReproMatingRecommendationResource as ReproMatingRecommendation
+from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ...icar.icarResources import (
+    icarReproMatingRecommendationResource as ReproMatingRecommendation,
+)
+from ...users import User, get_current_active_user
 
 ERROR_MSG_OBJECT = "Repro Mating Recommendation"
 
@@ -41,7 +43,11 @@ class ReproMatingRecommendationCollection(BaseModel):
     response_model_by_alias=False,
 )
 async def create_repro_mating_recommendation_event(
-    request: Request, repro_mating_recommendation: ReproMatingRecommendation
+    request: Request,
+    repro_mating_recommendation: ReproMatingRecommendation,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_reproduction"])
+    ],
 ):
     """
     Create a new repro mating recommendation event.
@@ -57,7 +63,11 @@ async def create_repro_mating_recommendation_event(
 
 @router.delete("/{ft}", response_description="Delete event")
 async def remove_repro_mating_recommendation_event(
-    request: Request, ft: mongo_object_id.MongoObjectId
+    request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_reproduction"])
+    ],
+    ft: mongo_object_id.MongoObjectId,
 ):
     """
     Delete a repro mating recommendation event.
@@ -77,12 +87,15 @@ async def remove_repro_mating_recommendation_event(
 )
 async def repro_mating_recommendation_event_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_reproduction"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
     source: str | None = None,
-    sourceId: str | None = None
+    sourceId: str | None = None,
 ):
     """Search for a repro mating recommendation event given the provided criteria."""
     query = {
@@ -90,7 +103,7 @@ async def repro_mating_recommendation_event_query(
         "animal.id": animal,
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.repro_mating_recommendation, query)
     return ReproMatingRecommendationCollection(repro_mating_recommendation=result)

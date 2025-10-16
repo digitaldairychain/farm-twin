@@ -14,13 +14,14 @@ and finding of those points.
 import uuid
 from typing import List, Optional
 
-from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Request, Response, status
+from fastapi import APIRouter, HTTPException, Query, Request, Response, Security, status
 from geojson_pydantic import FeatureCollection, Point
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
 from ..ftCommon import add_one_to_db, delete_one_from_db
+from ..users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/points",
@@ -53,7 +54,13 @@ class Point(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_point(request: Request, point: Point):
+async def create_point(
+    request: Request,
+    point: Point,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_points"])
+    ],
+):
     """
     Create a new point.
 
@@ -63,7 +70,13 @@ async def create_point(request: Request, point: Point):
 
 
 @router.delete("/{id}", response_description="Delete a point")
-async def remove_point(request: Request, ft: mongo_object_id.MongoObjectId):
+async def remove_point(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_points"])
+    ],
+):
     """
     Delete a point.
 
@@ -81,6 +94,9 @@ async def remove_point(request: Request, ft: mongo_object_id.MongoObjectId):
 async def point_query(
     request: Request,
     response: Response,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_points"])
+    ],
     id: str | None = None,
     lat: float | None = None,
     long: float | None = None,
@@ -96,7 +112,7 @@ async def point_query(
     """
     query = {}
     if id:
-        query["_id"] = ObjectId(id)
+        query["_id"] = mongo_object_id.MongoObjectId(id)
     if tag:
         query["tags"] = {"$in": [tag]}
     if lat is not None and long is not None:

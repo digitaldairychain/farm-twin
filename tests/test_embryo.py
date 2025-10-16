@@ -10,13 +10,9 @@ class TestEmbryo:
         path, key, data = setup_embryo
         common.create_get(test_client, path, data, key)
 
-    def test_create_update_embryo(
-        self, test_client, setup_embryo, embryo_data_updated
-    ):
+    def test_create_update_embryo(self, test_client, setup_embryo, embryo_data_updated):
         path, key, data = setup_embryo
-        common.create_get_update(
-            test_client, path, data, embryo_data_updated, key
-        )
+        common.create_get_update(test_client, path, data, embryo_data_updated, key)
 
     def test_create_delete_embryo(self, test_client, setup_embryo):
         path, key, data = setup_embryo
@@ -47,5 +43,4 @@ class TestEmbryo:
         self, test_client, object_id, setup_embryo, embryo_data_updated
     ):
         path, _, _ = setup_embryo
-        common.update_doesnt_exist(
-            test_client, path, embryo_data_updated, object_id)
+        common.update_doesnt_exist(test_client, path, embryo_data_updated, object_id)

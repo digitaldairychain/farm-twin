@@ -8,13 +8,20 @@ and finding of embryos.
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
-from ..ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                        find_in_db, update_one_in_db)
+from ..ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+    update_one_in_db,
+)
 from ..icar.icarResources import icarReproEmbryoResource as Embryo
+from ..users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/embryo",
@@ -36,7 +43,13 @@ class EmbryoCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_embryo(request: Request, embryo: Embryo):
+async def create_embryo(
+    request: Request,
+    embryo: Embryo,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_embryo"])
+    ],
+):
     """
     Create a new embryo.
 
@@ -46,7 +59,13 @@ async def create_embryo(request: Request, embryo: Embryo):
 
 
 @router.delete("/{ft}", response_description="Delete an embryo")
-async def remove_embryo(request: Request, ft: mongo_object_id.MongoObjectId):
+async def remove_embryo(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_embryo"])
+    ],
+):
     """
     Delete a embryo.
 
@@ -62,7 +81,12 @@ async def remove_embryo(request: Request, ft: mongo_object_id.MongoObjectId):
     status_code=status.HTTP_202_ACCEPTED,
 )
 async def update_embryo(
-    request: Request, ft: mongo_object_id.MongoObjectId, embryo: Embryo
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    embryo: Embryo,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_embryo"])
+    ],
 ):
     """
     Update an existing embryo if it exists.
@@ -83,6 +107,9 @@ async def update_embryo(
 )
 async def embryo_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_embryo"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     id: str | None = None,
     name: str | None = None,
@@ -111,7 +138,7 @@ async def embryo_query(
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.modified": dateBuild(modifiedStart, modifiedEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.embryo, query)
     return EmbryoCollection(embryo=result)

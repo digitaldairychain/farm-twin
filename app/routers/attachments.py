@@ -17,11 +17,12 @@ and finding of those attachments.
 from datetime import datetime
 from typing import List, Optional
 
-import pymongo
-from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Request, Response, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
+
+from .users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/attachments",
@@ -31,8 +32,7 @@ router = APIRouter(
 
 
 class Attachment(BaseModel):
-    id: Optional[mongo_object_id.MongoObjectId] = Field(
-        alias="_id", default=None)
+    id: Optional[mongo_object_id.MongoObjectId] = Field(alias="_id", default=None)
     device: str
     thing: mongo_object_id.MongoObjectId
     start: Optional[datetime] = Field(default=datetime.now())
@@ -50,7 +50,13 @@ class AttachmentCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_attachment(request: Request, attachment: Attachment):
+async def create_attachment(
+    request: Request,
+    attachment: Attachment,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_attachments"])
+    ],
+):
     try:
         new_attachment = await request.app.state.attachments.insert_one(
             attachment.model_dump(by_alias=True, exclude=["id"])
@@ -73,7 +79,13 @@ async def create_attachment(request: Request, attachment: Attachment):
 
 
 @router.delete("/{id}", response_description="Delete an attachment")
-async def remove_attachment(request: Request, id: str):
+async def remove_attachment(
+    request: Request,
+    id: str,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_attachments"])
+    ],
+):
     delete_result = await request.app.state.attachments.delete_one(
         {"_id": ObjectId(id)}
     )
@@ -92,6 +104,9 @@ async def remove_attachment(request: Request, id: str):
 )
 async def attachment_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_attachments"])
+    ],
     id: str | None = None,
     device: str | None = None,
     object: str | None = None,
