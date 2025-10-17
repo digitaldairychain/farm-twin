@@ -131,7 +131,10 @@ def get_password_hash(password):
 
 async def get_user(db, username: str):
     user = await db.find_one({"username": username})
-    return UserInDB(**user)
+    if user is not None:
+        return UserInDB(**user)
+    else:
+        raise HTTPException(status_code=404, detail="User not found")
 
 
 async def authenticate_user(db, username: str, password: str):
@@ -199,7 +202,12 @@ async def get_current_active_user(
     return current_user
 
 
-@router.post("/register", response_description="Register user", response_model=User)
+@router.post(
+    "/user",
+    response_description="Register user",
+    response_model=User,
+    status_code=status.HTTP_201_CREATED
+)
 async def register_user(request: Request, new_user: NewUser):
     db = request.app.state.users
     user = UserInDB(
@@ -215,7 +223,7 @@ async def register_user(request: Request, new_user: NewUser):
 
 
 @router.patch(
-    "/update",
+    "/user",
     response_description="Update your own user information",
     response_model=User,
 )
@@ -238,7 +246,7 @@ async def update_user_information(
 
 
 @router.delete(
-    "/remove", response_description="Delete your own user account", response_model=User
+    "/user", response_description="Delete your own user account", response_model=User
 )
 async def delete_user(
     request: Request,
@@ -250,7 +258,7 @@ async def delete_user(
 
 
 @router.get(
-    "/me",
+    "/user",
     response_description="Retrieve your own user information",
     response_model=User,
 )
@@ -268,7 +276,8 @@ async def login_for_access_token(
         request.app.state.users, form_data.username, form_data.password
     )
     if not user:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise HTTPException(
+            status_code=400, detail="Incorrect username or password")
 
     masked_scopes = mask_scopes(user.permitted_scopes, form_data.scopes)
     if len(masked_scopes) > 0:

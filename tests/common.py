@@ -1,6 +1,13 @@
 from dateutil.parser import parse
 
 
+def get_access_token_header(fetch_token):
+    response = fetch_token
+    access_token = response.json()["access_token"]
+    header = {'Authorization': 'Bearer ' + access_token}
+    return header
+
+
 def is_date(string, fuzzy=False):
     """
     Return whether the string can be interpreted as a date.

@@ -1,14 +1,22 @@
 import uuid
+import os
 from datetime import datetime, timedelta, timezone
 from random import randint
+from dotenv import load_dotenv
 
 import pytest
 from bson.objectid import ObjectId
 from fastapi.testclient import TestClient
+from pymongo import MongoClient
 
 from app.main import app
 
 TEST_SOURCE = "{ farm-twin } test"
+
+load_dotenv()
+DB_USER = os.getenv("MONGO_INITDB_ROOT_USERNAME")
+DB_PASS = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
+DB_URL = f"mongodb://{DB_USER}:{DB_PASS}@localhost"
 
 
 @pytest.fixture()
@@ -27,6 +35,46 @@ def object_id():
 def serial():
     """Generate a random serial number."""
     return str(randint(10000, 99999))
+
+
+@pytest.fixture
+def setup_registration(setup_user):
+    registration = {
+        "email": "test@test.com",
+        "full_name": "Test User",
+    }
+    yield registration | setup_user
+
+
+@pytest.fixture
+def setup_user():
+    """Generate a user payload."""
+    user = {
+        "username": "test_user",
+        "password": "H:=MF70v<tm9"
+    }
+    yield user
+
+
+@pytest.fixture()
+def fetch_token(test_client, setup_user):
+    user = setup_user
+    user["scope"] = "user"
+    user["grant_type"] = "password"
+    response = test_client.post('/users/token', data=user)
+    yield response
+
+
+@pytest.fixture()
+def enable_user_in_db():
+    client = MongoClient(DB_URL)
+    users = client["farm-twin"]["users"]
+    query_filter = {'username': 'test_user'}
+    update_operation = {'$set':
+                        {'disabled': False}
+                        }
+    _ = users.update_one(query_filter, update_operation)
+    client.close()
 
 
 def clear_test_data(test_client, path, key) -> None:
