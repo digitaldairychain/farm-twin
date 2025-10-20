@@ -19,7 +19,14 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ..ftCommon import FTModel, add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ..ftCommon import (
+    FTModel,
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+    update_one_in_db,
+)
 from ..users import User, get_current_active_user
 
 router = APIRouter(
@@ -74,7 +81,7 @@ async def create_machine(
     request: Request,
     machine: Machine,
     current_user: Annotated[
-        User, Security(get_current_active_user, scopes=["write_machine"])
+        User, Security(get_current_active_user, scopes=["write_machines"])
     ],
 ):
     """
@@ -90,7 +97,7 @@ async def remove_machine(
     request: Request,
     ft: mongo_object_id.MongoObjectId,
     current_user: Annotated[
-        User, Security(get_current_active_user, scopes=["write_machine"])
+        User, Security(get_current_active_user, scopes=["write_machines"])
     ],
 ):
     """
@@ -112,7 +119,7 @@ async def update_machine(
     ft: mongo_object_id.MongoObjectId,
     machine: Machine,
     current_user: Annotated[
-        User, Security(get_current_active_user, scopes=["write_machine"])
+        User, Security(get_current_active_user, scopes=["write_machines"])
     ],
 ):
     """
@@ -121,20 +128,8 @@ async def update_machine(
     :param ft: UUID of the machine to update
     :param machine: Machine to update with
     """
-    await request.app.state.machines.update_one(
-        {"_id": ObjectId(ft)},
-        {"$set": machine.model_dump(by_alias=True, exclude=["ft", "created"])},
-        upsert=False,
-    )
-
-    if (
-        updated_machine := await request.app.state.machines.find_one(
-            {"_id": ObjectId(ft)}
-        )
-    ) is not None:
-        return updated_machine
-    raise HTTPException(
-        status_code=404, detail=f"Machine {ft} not successfully updated"
+    return await update_one_in_db(
+        machine, request.app.state.machines, ft, ERROR_MSG_OBJECT
     )
 
 
@@ -147,7 +142,7 @@ async def update_machine(
 async def machine_query(
     request: Request,
     current_user: Annotated[
-        User, Security(get_current_active_user, scopes=["read_machine"])
+        User, Security(get_current_active_user, scopes=["read_machines"])
     ],
     ft: mongo_object_id.MongoObjectId | None = None,
     manufacturer: str | None = None,

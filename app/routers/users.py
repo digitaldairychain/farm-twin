@@ -46,6 +46,7 @@ class UserInDB(User):
     hashed_password: str
     permitted_scopes: list[str] = Field(default=["user"])
     disabled: bool | None = None
+    admin: bool | None = None
 
 
 class UpdatedUser(User):
@@ -56,62 +57,62 @@ class NewUser(User):
     password: str
 
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="users/token",
-    scopes={
-        "user": "Read and write user information.",
-        "read_animals": "Read information about an animal object.",
-        "write_animals": "Write information about an animal object.",
-        "read_devices": "Read information about a device object.",
-        "write_devices": "Write information about a device object.",
-        "read_embryo": "Read information about an embryo object.",
-        "write_embryo": "Write information about an embryo object.",
-        "read_feed_storage": "Read information about a feed storage object.",
-        "write_feed_storage": "Write information about a feed storage object.",
-        "read_feed": "Read information about a feed object.",
-        "write_feed": "Write information about a feed object.",
-        "read_machines": "Read information about a machine object.",
-        "write_machines": "Write information about a machine object.",
-        "read_medicine": "Read information about a medicine object.",
-        "write_medicine": "Write information about a medicine object.",
-        "read_points": "Read information about a points object.",
-        "write_points": "Write information about a points object.",
-        "read_polygons": "Read information about a polygons object.",
-        "write_polygons": "Write information about a polygons object.",
-        "read_ration": "Read information about a ration object.",
-        "write_ration": "Write information about a ration object.",
-        "read_semen_straw": "Read information about a semen straw object.",
-        "write_semen_straw": "Write information about a semen straw object.",
-        "read_samples": "Read information about a samples object.",
-        "write_samples": "Write information about a samples object.",
-        "read_sensors": "Read information about a sensors object.",
-        "write_sensors": "Write information about a sensors object.",
-        "read_attachments": "Read information about an attachments object.",
-        "write_attachments": "Write information about an attachments object.",
-        "read_feeding": "Read information about a feeding event.",
-        "write_feeding": "Write information about a feeding event.",
-        "read_group": "Read information about a group event.",
-        "write_group": "Write information about a group event.",
-        "read_health": "Read information about a health event.",
-        "write_health": "Write information about a health event.",
-        "read_milking": "Read information about a milking event.",
-        "write_milking": "Write information about a milking event.",
-        "read_movement": "Read information about a movement event.",
-        "write_movement": "Write information about a movement event.",
-        "read_observations": "Read information about an observations event.",
-        "write_observations": "Write information about an observations event.",
-        "read_performance": "Read information about a performance event.",
-        "write_performance": "Write information about a performance event.",
-        "read_reproduction": "Read information about a reproduction event.",
-        "write_reproduction": "Write information about a reproduction event.",
-        "read_attention": "Read information about an attention event.",
-        "write_attention": "Write information about an attention event.",
-        "read_withdrawal": "Read information about a withdrawal event.",
-        "write_withdrawal": "Write information about a withdrawal event.",
-        "read_measurements": "Read information about sensor objects and sample events.",
-        "write_measurements": "Write information about sensor objects and sample events.",
-    },
-)
+SCOPES = {
+    "user": "Read and write user information.",
+    "admin": "Administrator access.",
+    "read_animals": "Read information about an animal object.",
+    "write_animals": "Write information about an animal object.",
+    "read_devices": "Read information about a device object.",
+    "write_devices": "Write information about a device object.",
+    "read_embryo": "Read information about an embryo object.",
+    "write_embryo": "Write information about an embryo object.",
+    "read_feed_storage": "Read information about a feed storage object.",
+    "write_feed_storage": "Write information about a feed storage object.",
+    "read_feed": "Read information about a feed object.",
+    "write_feed": "Write information about a feed object.",
+    "read_machines": "Read information about a machine object.",
+    "write_machines": "Write information about a machine object.",
+    "read_medicine": "Read information about a medicine object.",
+    "write_medicine": "Write information about a medicine object.",
+    "read_points": "Read information about a points object.",
+    "write_points": "Write information about a points object.",
+    "read_polygons": "Read information about a polygons object.",
+    "write_polygons": "Write information about a polygons object.",
+    "read_ration": "Read information about a ration object.",
+    "write_ration": "Write information about a ration object.",
+    "read_semen_straw": "Read information about a semen straw object.",
+    "write_semen_straw": "Write information about a semen straw object.",
+    "read_samples": "Read information about a samples object.",
+    "write_samples": "Write information about a samples object.",
+    "read_sensors": "Read information about a sensors object.",
+    "write_sensors": "Write information about a sensors object.",
+    "read_attachments": "Read information about an attachments object.",
+    "write_attachments": "Write information about an attachments object.",
+    "read_feeding": "Read information about a feeding event.",
+    "write_feeding": "Write information about a feeding event.",
+    "read_group": "Read information about a group event.",
+    "write_group": "Write information about a group event.",
+    "read_health": "Read information about a health event.",
+    "write_health": "Write information about a health event.",
+    "read_milking": "Read information about a milking event.",
+    "write_milking": "Write information about a milking event.",
+    "read_movement": "Read information about a movement event.",
+    "write_movement": "Write information about a movement event.",
+    "read_observations": "Read information about an observations event.",
+    "write_observations": "Write information about an observations event.",
+    "read_performance": "Read information about a performance event.",
+    "write_performance": "Write information about a performance event.",
+    "read_reproduction": "Read information about a reproduction event.",
+    "write_reproduction": "Write information about a reproduction event.",
+    "read_attention": "Read information about an attention event.",
+    "write_attention": "Write information about an attention event.",
+    "read_withdrawal": "Read information about a withdrawal event.",
+    "write_withdrawal": "Write information about a withdrawal event.",
+    "read_measurements": "Read information about sensor objects and sample events.",
+    "write_measurements": "Write information about sensor objects and sample events.",
+}
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token", scopes=SCOPES)
 
 password_hash = PasswordHash.recommended()
 
@@ -206,7 +207,7 @@ async def get_current_active_user(
     "/user",
     response_description="Register user",
     response_model=User,
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
 )
 async def register_user(request: Request, new_user: NewUser):
     db = request.app.state.users
@@ -276,10 +277,9 @@ async def login_for_access_token(
         request.app.state.users, form_data.username, form_data.password
     )
     if not user:
-        raise HTTPException(
-            status_code=400, detail="Incorrect username or password")
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
 
-    masked_scopes = mask_scopes(user.permitted_scopes, form_data.scopes)
+    masked_scopes = mask_scopes(user.admin, user.permitted_scopes, form_data.scopes)
     if len(masked_scopes) > 0:
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
@@ -291,11 +291,14 @@ async def login_for_access_token(
         raise HTTPException(status_code=400, detail="No valid scopes found")
 
 
-def mask_scopes(permitted, requested):
-    scopes = []
-    for scope in requested:
-        if (
-            scope in permitted
-        ):  # Returns a list of requested AND allowed scopes, ignoring others
-            scopes.append(scope)
-    return scopes
+def mask_scopes(admin, permitted, requested):
+    if admin and "admin" in requested:
+        return list(SCOPES.keys())
+    else:
+        scopes = []
+        for scope in requested:
+            if (
+                scope in permitted
+            ):  # Returns a list of requested AND allowed scopes, ignoring others
+                scopes.append(scope)
+        return scopes
