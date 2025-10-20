@@ -56,7 +56,7 @@ class Sensor(FTModel):
     )
     measurement: str = Field(
         json_schema_extra={
-            "description": "Description or type of measurement",
+            "description": "Description or type of measurements",
             "example": "Soil Temperature",
         }
     )
@@ -77,7 +77,7 @@ async def create_sensor(
     request: Request,
     sensor: Sensor,
     current_user: Annotated[
-        User, Security(get_current_active_user, scopes=["write_measurement"])
+        User, Security(get_current_active_user, scopes=["write_measurements"])
     ],
 ):
     """
