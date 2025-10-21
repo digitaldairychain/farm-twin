@@ -16,7 +16,14 @@ and finding of those points.
 import uuid
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Request, Response, Security, status
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    Request,
+    Response,
+    Security,
+    status
+)
 from geojson_pydantic import FeatureCollection, MultiPolygon
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
@@ -70,7 +77,11 @@ async def create_polygon(
 
     :param polygon: Polygon to be added
     """
-    return await add_one_to_db(polygon, request.app.state.polygons, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        polygon,
+        request.app.state.polygons,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{id}", response_description="Delete a polygon")
@@ -86,7 +97,11 @@ async def remove_polygon(
 
     :param id: UUID of the polygon to delete
     """
-    return await delete_one_from_db(request.app.state.polygons, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.polygons,
+        ft,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.get(

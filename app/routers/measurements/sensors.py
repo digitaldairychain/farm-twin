@@ -16,7 +16,7 @@ and finding of those sensors.
 from datetime import datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, Query, Request, Security, status
+from fastapi import APIRouter, Request, Security, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated

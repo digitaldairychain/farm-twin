@@ -14,7 +14,14 @@ and finding of those points.
 import uuid
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Request, Response, Security, status
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    Request,
+    Response,
+    Security,
+    status
+)
 from geojson_pydantic import FeatureCollection, Point
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
@@ -42,7 +49,8 @@ class Point(BaseModel):
         },
     )
     point: Point = Field(
-        json_schema_extra={"description": "GeoJSON Point, a fixed point on earth"}
+        json_schema_extra={
+            "description": "GeoJSON Point, a fixed point on earth"}
     )
     tags: Optional[List[str]] = Field(default=[])
 
@@ -66,7 +74,11 @@ async def create_point(
 
     :param point: Point to be added
     """
-    return await add_one_to_db(point, request.app.state.points, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        point,
+        request.app.state.points,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{id}", response_description="Delete a point")
@@ -82,7 +94,11 @@ async def remove_point(
 
     :param id: UUID of the point to delete
     """
-    return await delete_one_from_db(request.app.state.points, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.points,
+        ft,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.get(
@@ -116,7 +132,8 @@ async def point_query(
     if tag:
         query["tags"] = {"$in": [tag]}
     if lat is not None and long is not None:
-        query["point"] = {"bbox": None, "type": "Point", "coordinates": [lat, long]}
+        query["point"] = {"bbox": None,
+                          "type": "Point", "coordinates": [lat, long]}
     if tag:
         query["tags"] = {"$in": [tag]}
     result = await request.app.state.points.find(query).to_list(1000)

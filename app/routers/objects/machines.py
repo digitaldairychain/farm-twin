@@ -60,7 +60,7 @@ class Machine(FTModel):
     registration: Optional[str] = Field(
         default=None,
         json_schema_extra={
-            "description": "Assigned vehicle registration number, if applicable",
+            "description": "Assigned vehicle registration number",
             "example": "BD51 SMR",
         },
     )

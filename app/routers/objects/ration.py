@@ -8,7 +8,7 @@ and finding of rations.
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Query, Request, Security, status
+from fastapi import APIRouter, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
@@ -55,7 +55,11 @@ async def create_ration(
 
     :param ration: Ration to be added
     """
-    return await add_one_to_db(ration, request.app.state.ration, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        ration,
+        request.app.state.ration,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete a ration")
@@ -71,7 +75,11 @@ async def remove_ration(
 
     :param ft: UUID of the ration to delete
     """
-    return await delete_one_from_db(request.app.state.ration, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.ration,
+        ft,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.patch(

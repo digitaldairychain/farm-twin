@@ -15,8 +15,6 @@ from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from pydantic import BaseModel, Field, ValidationError
 
-from .ftCommon import add_one_to_db
-
 router = APIRouter(
     tags=["users"],
     prefix="/users",
@@ -108,8 +106,8 @@ SCOPES = {
     "write_attention": "Write information about an attention event.",
     "read_withdrawal": "Read information about a withdrawal event.",
     "write_withdrawal": "Write information about a withdrawal event.",
-    "read_measurements": "Read information about sensor objects and sample events.",
-    "write_measurements": "Write information about sensor objects and sample events.",
+    "read_measurements": "Read info. about sensor objects and sample events.",
+    "write_measurements": "Write info. about sensor objects and sample events.",
 }
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token", scopes=SCOPES)
@@ -292,11 +290,9 @@ async def login_for_access_token(
         request.app.state.users, form_data.username, form_data.password
     )
     if not user:
-        raise HTTPException(
-            status_code=400, detail="Incorrect username or password")
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
 
-    masked_scopes = mask_scopes(
-        user.admin, user.permitted_scopes, form_data.scopes)
+    masked_scopes = mask_scopes(user.admin, user.permitted_scopes, form_data.scopes)
     if len(masked_scopes) > 0:
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
@@ -324,8 +320,6 @@ def mask_scopes(admin, permitted, requested):
     else:
         scopes = []
         for scope in requested:
-            if (
-                scope in permitted
-            ):
+            if scope in permitted:
                 scopes.append(scope)
         return scopes

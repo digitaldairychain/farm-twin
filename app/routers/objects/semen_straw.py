@@ -8,7 +8,7 @@ and finding of semen straws.
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Query, Request, Security, status
+from fastapi import APIRouter, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
@@ -74,7 +74,11 @@ async def remove_semen_straw(
 
     :param ft: UUID of the semen straw to delete
     """
-    return await delete_one_from_db(request.app.state.semen_straw, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.semen_straw,
+        ft,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.patch(

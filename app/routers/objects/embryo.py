@@ -8,7 +8,7 @@ and finding of embryos.
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Query, Request, Security, status
+from fastapi import APIRouter, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
@@ -55,7 +55,11 @@ async def create_embryo(
 
     :param embryo: Embryo to be added
     """
-    return await add_one_to_db(embryo, request.app.state.embryo, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        embryo,
+        request.app.state.embryo,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete an embryo")
@@ -71,7 +75,11 @@ async def remove_embryo(
 
     :param ft: UUID of the embryo to delete
     """
-    return await delete_one_from_db(request.app.state.embryo, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.embryo,
+        ft,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.patch(
