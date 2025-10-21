@@ -3,7 +3,7 @@ import os
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import AsyncMongoClient
 
 from app import __version__
 
@@ -92,15 +92,16 @@ app.include_router(repro_abortion.router, prefix="/events/reproduction")
 app.include_router(repro_do_not_breed.router, prefix="/events/reproduction")
 app.include_router(repro_heat.router, prefix="/events/reproduction")
 app.include_router(repro_insemination.router, prefix="/events/reproduction")
-app.include_router(repro_mating_recommendation.router, prefix="/events/reproduction")
+app.include_router(repro_mating_recommendation.router,
+                   prefix="/events/reproduction")
 app.include_router(repro_parturition.router, prefix="/events/reproduction")
 app.include_router(repro_pregnancy_check.router, prefix="/events/reproduction")
 
 app.include_router(attachments.router)
 
 
-async def open_db() -> AsyncIOMotorClient:
-    app.state.mongodb = AsyncIOMotorClient(DB_URL)
+async def open_db() -> AsyncMongoClient:
+    app.state.mongodb = AsyncMongoClient(DB_URL)
 
     _ft = app.state.mongodb["farm-twin"]
 
@@ -161,19 +162,21 @@ async def open_db() -> AsyncIOMotorClient:
 
 
 async def create_indexes():
-    app.state.devices.create_index(["serial", "manufacturer"], unique=True)
-    app.state.points.create_index({"point": "2dsphere"}, unique=True)
-    app.state.polygons.create_index(["polygon"], unique=True)
-    app.state.users.create_index(["username"], unique=True)
-    app.state.sensors.create_index(["device", "serial", "measurement"], unique=True)
+    await app.state.devices.create_index(["serial", "manufacturer"],
+                                         unique=True)
+    await app.state.points.create_index({"point": "2dsphere"}, unique=True)
+    await app.state.polygons.create_index(["polygon"], unique=True)
+    await app.state.users.create_index(["username"], unique=True)
+    await app.state.sensors.create_index(
+        ["device", "serial", "measurement"], unique=True)
     _attachment_index = ["device", "thing", "start"]
-    app.state.attachments.create_index(_attachment_index, unique=True)
+    await app.state.attachments.create_index(_attachment_index, unique=True)
     _sample_index = ["device", "sensor", "timestamp", "predicted"]
-    app.state.samples.create_index(_sample_index, unique=True)
+    await app.state.samples.create_index(_sample_index, unique=True)
 
 
 async def close_db():
-    app.state.mongodb.close()
+    await app.state.mongodb.close()
 
 
 app.add_event_handler("startup", open_db)
