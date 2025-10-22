@@ -37,6 +37,7 @@ from .routers.objects import (
     polygons,
     ration,
     semen_straw,
+    location
 )
 
 load_dotenv()
@@ -62,6 +63,7 @@ app.include_router(ration.router, prefix="/objects")
 app.include_router(embryo.router, prefix="/objects")
 app.include_router(semen_straw.router, prefix="/objects")
 app.include_router(devices.router, prefix="/objects")
+app.include_router(location.router, prefix="/objects")
 
 app.include_router(feed_intake.router, prefix="/events/feeding")
 
@@ -121,6 +123,7 @@ async def open_db() -> AsyncMongoClient:
     app.state.embryo = _ft["objects"]["embryo"]
     app.state.semen_straw = _ft["objects"]["semen_straw"]
     app.state.devices = _ft["objects"]["devices"]
+    app.state.location = _ft["objects"]["location"]
 
     app.state.attention = _ft["events"]["attention"]
     app.state.withdrawal = _ft["events"]["withdrawal"]

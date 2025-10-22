@@ -16,7 +16,8 @@ from app.main import app
 TEST_SOURCE = "{ farm-twin } test"
 
 TEST_USER_USERNAME = "test_user"
-TEST_USER_PASSWORD = "".join(random.choices(string.ascii_letters + string.digits, k=20))
+TEST_USER_PASSWORD = "".join(random.choices(
+    string.ascii_letters + string.digits, k=20))
 
 load_dotenv()
 DB_USER = os.getenv("MONGO_INITDB_ROOT_USERNAME")
@@ -153,6 +154,40 @@ def animal_data_updated():
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
         },
+    }
+
+
+@pytest.fixture()
+def setup_location(test_client, fetch_token_admin):
+    """Generate a location payload."""
+    key = "location"
+    path = "/objects/" + key
+    data = {
+        "identifier": {"id": "UK54321", "scheme": "uk.gov"},
+        "name": "Nowhere Farm",
+        "meta": {
+            "source": TEST_SOURCE,
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now()),
+        }
+    }
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
+    clear_test_data(test_client, path, key)
+
+
+@pytest.fixture()
+def location_data_updated():
+    """Generate an updated location payload."""
+    return {
+        "identifier": {"id": "UK54321", "scheme": "uk.gov"},
+        "name": "Somewhere Farm",
+        "timeZoneId": "Europe/Paris",
+        "meta": {
+            "source": TEST_SOURCE,
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now()),
+        }
     }
 
 
@@ -614,6 +649,8 @@ def setup_sensor(test_client, object_id, fetch_token_admin):
 def sensor_payload_updated(
     object_id,
     serial,
+
+
 ):
     """Generate an updated sensor payload."""
     return {
