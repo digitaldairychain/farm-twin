@@ -49,7 +49,7 @@ This software is licensed under the [GNU Affero General Public License v3](https
 
 ## Contact ##
 
-For any questions or queries, please contact [Matt Broadbent](https://pure.sruc.ac.uk/en/persons/matt-broadbent) in the first instance.
+For any general contacts or press information, please email us: [contact@farm-twin.org](mailto:contact@farm-twin.org)
 
 ## Development Roadmap ## 
 
