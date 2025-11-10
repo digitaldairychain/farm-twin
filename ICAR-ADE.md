@@ -13,7 +13,7 @@ Following that, we outline any changes that have been made to the specification 
 - [x] icarDeviceResource
 - [x] icarFeedResource
 - [x] icarFeedStorageResource
-- [ ] icarLocationResource
+- [x] icarLocationResource
 - [x] icarMedicineResource
 - [x] icarRationResource
 - [x] icarReproEmbryoResource
