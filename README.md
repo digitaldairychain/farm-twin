@@ -49,7 +49,7 @@ This software is licensed under the [GNU Affero General Public License v3](https
 
 ## Contact ##
 
-For any general contacts or press information, please email us: [contact@farm-twin.org](mailto:contact@farm-twin.org)
+For any general, press and media enquiries, please email us: [contact@farm-twin.org](mailto:contact@farm-twin.org)
 
 ## Development Roadmap ## 
 
