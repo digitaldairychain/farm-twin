@@ -1,6 +1,99 @@
 # CHANGELOG
 
 
+## v0.2.0 (2025-11-11)
+
+### Bug Fixes
+
+- Updated packages
+  ([`39c4131`](https://github.com/digitaldairychain/farm-twin/commit/39c413197d83cb0f87f4501359577ed496022e46))
+
+### Chores
+
+- Create dependabot.yml
+  ([`7ec56f2`](https://github.com/digitaldairychain/farm-twin/commit/7ec56f2d45a9130e730616d244735be9fbabbe02))
+
+- Create python-app.yml
+  ([`59c6cb2`](https://github.com/digitaldairychain/farm-twin/commit/59c6cb2a9578624db32518f1d7012a0898e4bd0a))
+
+- Linting
+  ([`facdc63`](https://github.com/digitaldairychain/farm-twin/commit/facdc638d311f5f05077fcd870691c6cbd70270c))
+
+- Reinstated accidental deletion of pyproject.toml
+  ([`ce88b98`](https://github.com/digitaldairychain/farm-twin/commit/ce88b98fb71094c541330585dba6cd508462277f))
+
+- Typo in authentication scope
+  ([`2fc5c5b`](https://github.com/digitaldairychain/farm-twin/commit/2fc5c5b1be29ac0722de485039a2d3c0e1777046))
+
+- Update issue templates
+  ([`c919538`](https://github.com/digitaldairychain/farm-twin/commit/c919538cbe34a95ce33aafd67b1fa72dc0f9f30f))
+
+- **deps**: Bump click-option-group from 0.5.6 to 0.5.9
+  ([`272491e`](https://github.com/digitaldairychain/farm-twin/commit/272491e976e5452c8f6ef7484ad4ed018798c895))
+
+- **deps**: Bump geojson-pydantic from 1.2.0 to 2.1.0
+  ([`321b82d`](https://github.com/digitaldairychain/farm-twin/commit/321b82d6263fd13f0444c39dfd015669a7fa5586))
+
+- **deps**: Bump packaging from 24.2 to 25.0
+  ([`200dbca`](https://github.com/digitaldairychain/farm-twin/commit/200dbcaad2b57f88e00388ffb043c7e57442e330))
+
+- **deps**: Bump python-dotenv from 1.0.1 to 1.2.1
+  ([`807a50f`](https://github.com/digitaldairychain/farm-twin/commit/807a50ffc333609e3efb21d1f3b26bd3bd9776a5))
+
+- **deps**: Bump python-gitlab from 4.13.0 to 7.0.0
+  ([`bb999fb`](https://github.com/digitaldairychain/farm-twin/commit/bb999fb43bfd7c9f5c18a19cb38048eae824a2d8))
+
+- **deps**: Updating libraries to address Dependabot alerts
+  ([`9372de6`](https://github.com/digitaldairychain/farm-twin/commit/9372de63c2f617ef3142a4c717679a1867e71621))
+
+### Documentation
+
+- Added logo
+  ([`556c2e5`](https://github.com/digitaldairychain/farm-twin/commit/556c2e50722e2f615739e744d7dd06e04c6c13ce))
+
+- Create CODE_OF_CONDUCT.md
+  ([`50cc427`](https://github.com/digitaldairychain/farm-twin/commit/50cc4279b1f5cc17e9f2462d1956a8a8647f694f))
+
+- Create LICENSE
+  ([`2e6357c`](https://github.com/digitaldairychain/farm-twin/commit/2e6357c2f1d22a4ea02f9f322bb60e6d34a00f33))
+
+- Create SECURITY.md
+  ([`ca06a93`](https://github.com/digitaldairychain/farm-twin/commit/ca06a939c32f082ec6d23246b645f05db8b8dd46))
+
+- Documented user.py
+  ([`7542e26`](https://github.com/digitaldairychain/farm-twin/commit/7542e26fdbcb0617716e2d176de0095af6816b15))
+
+- Update README.md
+  ([`beebc0a`](https://github.com/digitaldairychain/farm-twin/commit/beebc0ab5fab6559fb3a9c4f0fc17bf8a901b469))
+
+- Update README.md
+  ([`a2a64ff`](https://github.com/digitaldairychain/farm-twin/commit/a2a64ffc898daee0875154870edd84107723fa89))
+
+- Updated TODO
+  ([`977cd73`](https://github.com/digitaldairychain/farm-twin/commit/977cd73e9eb6271c9bfc962b4d6d5f7353503b6c))
+
+### Features
+
+- Implemented location resource
+  ([`d4b0845`](https://github.com/digitaldairychain/farm-twin/commit/d4b0845f19d31c94ff173b54db29ff8ad17026f3))
+
+- Initial OAuth2 implementation
+  ([`cc004e3`](https://github.com/digitaldairychain/farm-twin/commit/cc004e30273319e389f72460cbef2127d7491fa8))
+
+### Refactoring
+
+- Migrate to AsyncMongoClient away from deprecated AsyncIOMotorClient
+  ([`4c329e5`](https://github.com/digitaldairychain/farm-twin/commit/4c329e568b63a1156243b0e5e51047fcd4e87c60))
+
+### Testing
+
+- Initial tests for auth endpoints
+  ([`0bbefa2`](https://github.com/digitaldairychain/farm-twin/commit/0bbefa234a870b4dc44524bebc445da266fd54da))
+
+- Refactored API tests to use authentication
+  ([`9783b89`](https://github.com/digitaldairychain/farm-twin/commit/9783b89e57e1757ddf986a8f25d5df45549ade00))
+
+
 ## v0.1.1 (2025-11-11)
 
 ### Chores

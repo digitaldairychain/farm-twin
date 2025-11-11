@@ -1,6 +1,6 @@
 [project]
 name = "farm-twin"
-version = "0.1.1"
+version = "0.2.0"
 description = "{ farm-twin } is a Digital Twin designed to provide a functional digital replica of an operational agricultural farm."
 
 [tool.semantic_release]
