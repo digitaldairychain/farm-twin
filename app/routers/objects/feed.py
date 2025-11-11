@@ -8,7 +8,7 @@ and finding of feeds.
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter,  Request, Security, status
+from fastapi import APIRouter, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
@@ -72,11 +72,7 @@ async def remove_feed(
 
     :param ft: UUID of the feed to delete
     """
-    return await delete_one_from_db(
-        request.app.state.feed,
-        ft,
-        ERROR_MSG_OBJECT
-    )
+    return await delete_one_from_db(request.app.state.feed, ft, ERROR_MSG_OBJECT)
 
 
 @router.patch(
@@ -99,12 +95,7 @@ async def update_feed(
     :param ft: UUID of the feed to update
     :param feed: Feed to update with
     """
-    return await update_one_in_db(
-        feed,
-        request.app.state.feed,
-        ft,
-        ERROR_MSG_OBJECT
-    )
+    return await update_one_in_db(feed, request.app.state.feed, ft, ERROR_MSG_OBJECT)
 
 
 @router.get(

@@ -72,11 +72,7 @@ async def remove_location(
 
     :param ft: UUID of the location to delete
     """
-    return await delete_one_from_db(
-        request.app.state.location,
-        ft,
-        ERROR_MSG_OBJECT
-    )
+    return await delete_one_from_db(request.app.state.location, ft, ERROR_MSG_OBJECT)
 
 
 @router.patch(
@@ -100,10 +96,7 @@ async def update_location(
     :param location: Location to update with
     """
     return await update_one_in_db(
-        location,
-        request.app.state.location,
-        ft,
-        ERROR_MSG_OBJECT
+        location, request.app.state.location, ft, ERROR_MSG_OBJECT
     )
 
 
@@ -120,8 +113,7 @@ async def location_query(
     ],
     ft: mongo_object_id.MongoObjectId | None = None,
     identifier: icarTypes.icarAnimalIdentifierType | None = None,
-    alternativeIdentifiers: Annotated[list[str] | None, Query()] = [
-    ],
+    alternativeIdentifiers: Annotated[list[str] | None, Query()] = [],
     name: str | None = None,
     timeZoneId: str | None = None,
     createdStart: datetime | None = None,

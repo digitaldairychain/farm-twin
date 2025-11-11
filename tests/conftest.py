@@ -16,8 +16,7 @@ from app.main import app
 TEST_SOURCE = "{ farm-twin } test"
 
 TEST_USER_USERNAME = "test_user"
-TEST_USER_PASSWORD = "".join(random.choices(
-    string.ascii_letters + string.digits, k=20))
+TEST_USER_PASSWORD = "".join(random.choices(string.ascii_letters + string.digits, k=20))
 
 load_dotenv()
 DB_USER = os.getenv("MONGO_INITDB_ROOT_USERNAME")
@@ -169,7 +168,7 @@ def setup_location(test_client, fetch_token_admin):
             "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
-        }
+        },
     }
     header, _, _ = fetch_token_admin
     yield path, header, key, data
@@ -187,7 +186,7 @@ def location_data_updated():
             "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
-        }
+        },
     }
 
 
@@ -649,8 +648,6 @@ def setup_sensor(test_client, object_id, fetch_token_admin):
 def sensor_payload_updated(
     object_id,
     serial,
-
-
 ):
     """Generate an updated sensor payload."""
     return {

@@ -74,11 +74,7 @@ async def remove_semen_straw(
 
     :param ft: UUID of the semen straw to delete
     """
-    return await delete_one_from_db(
-        request.app.state.semen_straw,
-        ft,
-        ERROR_MSG_OBJECT
-    )
+    return await delete_one_from_db(request.app.state.semen_straw, ft, ERROR_MSG_OBJECT)
 
 
 @router.patch(

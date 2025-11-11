@@ -292,11 +292,9 @@ async def login_for_access_token(
         request.app.state.users, form_data.username, form_data.password
     )
     if not user:
-        raise HTTPException(
-            status_code=400, detail="Incorrect username or password")
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
 
-    masked_scopes = mask_scopes(
-        user.admin, user.permitted_scopes, form_data.scopes)
+    masked_scopes = mask_scopes(user.admin, user.permitted_scopes, form_data.scopes)
     if len(masked_scopes) > 0:
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(

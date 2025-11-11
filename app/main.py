@@ -31,13 +31,13 @@ from .routers.objects import (
     embryo,
     feed,
     feed_storage,
+    location,
     machines,
     medicine,
     points,
     polygons,
     ration,
     semen_straw,
-    location
 )
 
 load_dotenv()
@@ -94,8 +94,7 @@ app.include_router(repro_abortion.router, prefix="/events/reproduction")
 app.include_router(repro_do_not_breed.router, prefix="/events/reproduction")
 app.include_router(repro_heat.router, prefix="/events/reproduction")
 app.include_router(repro_insemination.router, prefix="/events/reproduction")
-app.include_router(repro_mating_recommendation.router,
-                   prefix="/events/reproduction")
+app.include_router(repro_mating_recommendation.router, prefix="/events/reproduction")
 app.include_router(repro_parturition.router, prefix="/events/reproduction")
 app.include_router(repro_pregnancy_check.router, prefix="/events/reproduction")
 
@@ -165,13 +164,13 @@ async def open_db() -> AsyncMongoClient:
 
 
 async def create_indexes():
-    await app.state.devices.create_index(["serial", "manufacturer"],
-                                         unique=True)
+    await app.state.devices.create_index(["serial", "manufacturer"], unique=True)
     await app.state.points.create_index({"point": "2dsphere"}, unique=True)
     await app.state.polygons.create_index(["polygon"], unique=True)
     await app.state.users.create_index(["username"], unique=True)
     await app.state.sensors.create_index(
-        ["device", "serial", "measurement"], unique=True)
+        ["device", "serial", "measurement"], unique=True
+    )
     _attachment_index = ["device", "thing", "start"]
     await app.state.attachments.create_index(_attachment_index, unique=True)
     _sample_index = ["device", "sensor", "timestamp", "predicted"]

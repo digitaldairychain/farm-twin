@@ -6,7 +6,9 @@ class TestLocation:
         path, header, key, data = setup_location
         common.create_get(test_client, path, header, data, key)
 
-    def test_create_update_location(self, test_client, setup_location, location_data_updated):
+    def test_create_update_location(
+        self, test_client, setup_location, location_data_updated
+    ):
         path, header, key, data = setup_location
         common.create_get_update(
             test_client, path, header, data, location_data_updated, key
