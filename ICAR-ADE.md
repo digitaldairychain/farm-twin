@@ -13,7 +13,7 @@ Following that, we outline any changes that have been made to the specification 
 - [x] icarDeviceResource
 - [x] icarFeedResource
 - [x] icarFeedStorageResource
-- [ ] icarLocationResource
+- [x] icarLocationResource
 - [x] icarMedicineResource
 - [x] icarRationResource
 - [x] icarReproEmbryoResource
@@ -61,9 +61,9 @@ Following that, we outline any changes that have been made to the specification 
 
 ## { farm-twin } changes to the ADE ###
 
-- As per the working group [discussion](https://github.com/adewg/ICAR/discussions/485), { farm-twin } has made the 'meta' field required, and the 'source', 'sourceId' and 'modified' fields within that also required.
+- As per the working group [discussion](https://github.com/adewg/ICAR/discussions/485), { farm-twin } has made the 'meta' field required, and the 'source', 'sourceId' and 'modified' fields within that, also required.
 - icarInventoryTransactionType -> BaseModel to avoid circular import
-- icarDateTimeType -> PastDatetime
+- icarDateTimeType -> PastDatetime (with some exceptions, where FutureDate is instead used)
 - icarDateType -> PastDatetime (bson does not support date objects)
 - icarReproHeatEventResource expirationDate -> FutureDatetime
 - icarRationIdType -> inherits from icarIdentifierType

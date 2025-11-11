@@ -1,14 +1,28 @@
+import os
+import random
+import string
 import uuid
 from datetime import datetime, timedelta, timezone
 from random import randint
 
 import pytest
 from bson.objectid import ObjectId
+from dotenv import load_dotenv
 from fastapi.testclient import TestClient
+from pymongo import MongoClient
 
 from app.main import app
 
 TEST_SOURCE = "{ farm-twin } test"
+
+TEST_USER_USERNAME = "test_user"
+TEST_USER_PASSWORD = "".join(random.choices(
+    string.ascii_letters + string.digits, k=20))
+
+load_dotenv()
+DB_USER = os.getenv("MONGO_INITDB_ROOT_USERNAME")
+DB_PASS = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
+DB_URL = f"mongodb://{DB_USER}:{DB_PASS}@localhost"
 
 
 @pytest.fixture()
@@ -29,6 +43,64 @@ def serial():
     return str(randint(10000, 99999))
 
 
+@pytest.fixture
+def setup_registration(setup_user):
+    registration = {
+        "email": "test@test.com",
+        "full_name": "Test User",
+    }
+    yield registration | setup_user
+
+
+@pytest.fixture
+def setup_user():
+    """Generate a user payload."""
+    user = {"username": TEST_USER_USERNAME, "password": TEST_USER_PASSWORD}
+    yield user
+
+
+@pytest.fixture()
+def fetch_token_user(test_client, setup_user):
+    user = setup_user
+    user["scope"] = "user"
+    yield fetch_header_token(test_client, user)
+
+
+@pytest.fixture()
+def fetch_token_admin(test_client, setup_user):
+    user = setup_user
+    user["scope"] = "admin"
+    yield fetch_header_token(test_client, user)
+
+
+def fetch_header_token(test_client, user):
+    user["grant_type"] = "password"
+    response = test_client.post("/users/token", data=user)
+    access_token = response.json()["access_token"]
+    header = {"Authorization": "Bearer " + access_token}
+    return header, response.json(), response.status_code
+
+
+@pytest.fixture()
+def enable_user_in_db(setup_user):
+    client = MongoClient(DB_URL)
+    users = client["farm-twin"]["users"]
+    query_filter = {"username": TEST_USER_USERNAME}
+    update_operation = {"$set": {"disabled": False}}
+    _ = users.update_one(query_filter, update_operation)
+    client.close()
+
+
+@pytest.fixture()
+def set_admin_in_db(setup_user):
+    client = MongoClient(DB_URL)
+    users = client["farm-twin"]["users"]
+    query_filter = {"username": TEST_USER_USERNAME}
+    update_operation = {"$set": {"permitted_scopes": ["admin"], "admin": True}}
+    _ = users.update_one(query_filter, update_operation)
+    client.close()
+
+
 def clear_test_data(test_client, path, key) -> None:
     response = test_client.get(path + f"/?source={TEST_SOURCE}")
     if response.status_code == 200:
@@ -40,7 +112,7 @@ def clear_test_data(test_client, path, key) -> None:
 
 
 @pytest.fixture()
-def setup_animal(test_client):
+def setup_animal(test_client, fetch_token_admin):
     """Generate an animal payload."""
     key = "animals"
     path = "/objects/" + key
@@ -58,9 +130,10 @@ def setup_animal(test_client):
             "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
-        }
+        },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
@@ -85,7 +158,41 @@ def animal_data_updated():
 
 
 @pytest.fixture()
-def setup_device(test_client, serial):
+def setup_location(test_client, fetch_token_admin):
+    """Generate a location payload."""
+    key = "location"
+    path = "/objects/" + key
+    data = {
+        "identifier": {"id": "UK54321", "scheme": "uk.gov"},
+        "name": "Nowhere Farm",
+        "meta": {
+            "source": TEST_SOURCE,
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now()),
+        }
+    }
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
+    clear_test_data(test_client, path, key)
+
+
+@pytest.fixture()
+def location_data_updated():
+    """Generate an updated location payload."""
+    return {
+        "identifier": {"id": "UK54321", "scheme": "uk.gov"},
+        "name": "Somewhere Farm",
+        "timeZoneId": "Europe/Paris",
+        "meta": {
+            "source": TEST_SOURCE,
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now()),
+        }
+    }
+
+
+@pytest.fixture()
+def setup_device(test_client, serial, fetch_token_admin):
     """Generate an animal payload."""
     key = "devices"
     path = "/objects/" + key
@@ -103,7 +210,8 @@ def setup_device(test_client, serial):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
@@ -129,7 +237,7 @@ def device_data_updated(serial):
 
 
 @pytest.fixture()
-def setup_weight(test_client):
+def setup_weight(test_client, fetch_token_admin):
     """Generate a weight event payload."""
     key = "weight"
     path = "/events/performance/" + key
@@ -149,12 +257,13 @@ def setup_weight(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_group_weight(test_client, object_id):
+def setup_group_weight(test_client, object_id, fetch_token_admin):
     """Generate a group weight event payload."""
     key = "group_weight"
     path = "/events/performance/" + key
@@ -187,12 +296,13 @@ def setup_group_weight(test_client, object_id):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_feed_intake(test_client):
+def setup_feed_intake(test_client, fetch_token_admin):
     """Generate a feed intake event payload."""
     key = "feed_intake"
     path = "/events/feeding/" + key
@@ -209,12 +319,13 @@ def setup_feed_intake(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_withdrawal(test_client):
+def setup_withdrawal(test_client, fetch_token_admin):
     """Generate a withdrawal payload."""
     key = "withdrawal"
     path = "/events/" + key
@@ -228,12 +339,13 @@ def setup_withdrawal(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_carcass(test_client):
+def setup_carcass(test_client, fetch_token_admin):
     """Generate a withdrawal payload."""
     key = "carcass"
     path = "/events/observations/" + key
@@ -246,12 +358,13 @@ def setup_carcass(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_health_status(test_client):
+def setup_health_status(test_client, fetch_token_admin):
     """Generate a health status payload."""
     key = "health_status"
     path = "/events/observations/" + key
@@ -264,12 +377,13 @@ def setup_health_status(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_lactation_status(test_client):
+def setup_lactation_status(test_client, fetch_token_admin):
     """Generate a lactation status payload."""
     key = "lactation_status"
     path = "/events/milking/" + key
@@ -283,12 +397,13 @@ def setup_lactation_status(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_position(test_client):
+def setup_position(test_client, fetch_token_admin):
     """Generate a position payload."""
     key = "position"
     path = "/events/observations/" + key
@@ -300,14 +415,15 @@ def setup_position(test_client):
             "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
             "modified": str(datetime.now()),
-        }
+        },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_repro_status(test_client):
+def setup_repro_status(test_client, fetch_token_admin):
     """Generate a repro status payload."""
     key = "repro_status"
     path = "/events/reproduction/" + key
@@ -320,12 +436,13 @@ def setup_repro_status(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_repro_abortion(test_client):
+def setup_repro_abortion(test_client, fetch_token_admin):
     """Generate a repro abortion payload."""
     key = "repro_abortion"
     path = "/events/reproduction/" + key
@@ -337,12 +454,13 @@ def setup_repro_abortion(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_repro_do_not_breed(test_client):
+def setup_repro_do_not_breed(test_client, fetch_token_admin):
     """Generate a repro do not breed payload."""
     key = "repro_do_not_breed"
     path = "/events/reproduction/" + key
@@ -355,12 +473,13 @@ def setup_repro_do_not_breed(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_repro_heat(test_client):
+def setup_repro_heat(test_client, fetch_token_admin):
     """Generate a repro heat payload."""
     key = "repro_heat"
     path = "/events/reproduction/" + key
@@ -376,12 +495,13 @@ def setup_repro_heat(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_repro_insemination(test_client):
+def setup_repro_insemination(test_client, fetch_token_admin):
     """Generate a repro insemination payload."""
     key = "repro_insemination"
     path = "/events/reproduction/" + key
@@ -396,12 +516,13 @@ def setup_repro_insemination(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_repro_mating_recommendation(test_client):
+def setup_repro_mating_recommendation(test_client, fetch_token_admin):
     """Generate a repro mating recommendation payload."""
     key = "repro_mating_recommendation"
     path = "/events/reproduction/" + key
@@ -420,12 +541,13 @@ def setup_repro_mating_recommendation(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_repro_parturition(test_client):
+def setup_repro_parturition(test_client, fetch_token_admin):
     """Generate a repro parturition payload."""
     key = "repro_parturition"
     path = "/events/reproduction/" + key
@@ -441,12 +563,13 @@ def setup_repro_parturition(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_repro_pregnancy_check(test_client):
+def setup_repro_pregnancy_check(test_client, fetch_token_admin):
     """Generate a repro pregnancy check payload."""
     key = "repro_pregnancy_check"
     path = "/events/reproduction/" + key
@@ -462,12 +585,13 @@ def setup_repro_pregnancy_check(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_attention(test_client):
+def setup_attention(test_client, fetch_token_admin):
     """Generate an attention payload."""
     key = "attention"
     path = "/events/" + key
@@ -482,12 +606,13 @@ def setup_attention(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_test_day_result(test_client):
+def setup_test_day_result(test_client, fetch_token_admin):
     """Generate a test day result event payload."""
     key = "test_day_result"
     path = "/events/milking/" + key
@@ -501,21 +626,32 @@ def setup_test_day_result(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def sensor_payload(object_id, serial):
+def setup_sensor(test_client, object_id, fetch_token_admin):
     """Generate a sensor payload."""
-    return {
+    key = "sensors"
+    path = "/measurements/" + key
+    data = {
         "device": object_id,
         "measurement": "Air Temperature",
     }
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def sensor_payload_updated(object_id, serial,):
+def sensor_payload_updated(
+    object_id,
+    serial,
+
+
+):
     """Generate an updated sensor payload."""
     return {
         "device": object_id,
@@ -525,25 +661,35 @@ def sensor_payload_updated(object_id, serial,):
 
 
 @pytest.fixture()
-def sample_payload(object_id):
+def setup_sample(test_client, object_id, fetch_token_admin):
     """Generate a sample payload."""
-    return {
+    key = "samples"
+    path = "/measurements/" + key
+    data = {
         "sensor": object_id,
         "timestamp": str(datetime.now()),
         "value": float(randint(10000, 99999)),
         "predicted": False,
     }
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def machine_payload():
-    """Generate a machine payload."""
-    return {
+def setup_machine(test_client, fetch_token_admin):
+    """Generate a conformation payload."""
+    key = "machines"
+    path = "/objects/" + key
+    data = {
         "manufacturer": "Acme Machine Co.",
         "model": "Machine 3000",
         "type": ["Vehicle", "Off-Road", "Utility"],
         "registration": "BD51 SMR",
     }
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
+    clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
@@ -557,7 +703,7 @@ def machine_payload_updated():
 
 
 @pytest.fixture()
-def setup_conformation(test_client):
+def setup_conformation(test_client, fetch_token_admin):
     """Generate a conformation payload."""
     key = "conformation"
     path = "/events/performance/" + key
@@ -573,12 +719,13 @@ def setup_conformation(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_drying_off(test_client):
+def setup_drying_off(test_client, fetch_token_admin):
     """Generate a drying off payload."""
     key = "drying_off"
     path = "/events/milking/" + key
@@ -590,12 +737,13 @@ def setup_drying_off(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_milking_visit(test_client):
+def setup_milking_visit(test_client, fetch_token_admin):
     """Generate a milking visit payload."""
     key = "visit"
     path = "/events/milking/" + key
@@ -609,12 +757,13 @@ def setup_milking_visit(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_arrival(test_client):
+def setup_arrival(test_client, fetch_token_admin):
     """Generate an arrival payload."""
     key = "arrival"
     path = "/events/movement/" + key
@@ -631,12 +780,13 @@ def setup_arrival(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_birth(object_id, test_client):
+def setup_birth(object_id, test_client, fetch_token_admin):
     """Generate a birth payload."""
     key = "birth"
     path = "/events/movement/" + key
@@ -649,12 +799,13 @@ def setup_birth(object_id, test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_death(test_client):
+def setup_death(test_client, fetch_token_admin):
     """Generate a death payload."""
     key = "death"
     path = "/events/movement/" + key
@@ -667,12 +818,13 @@ def setup_death(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_departure(test_client):
+def setup_departure(test_client, fetch_token_admin):
     """Generate an departure payload."""
     key = "departure"
     path = "/events/movement/" + key
@@ -686,12 +838,13 @@ def setup_departure(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
-def setup_feed(object_id, test_client):
+def setup_feed(object_id, test_client, fetch_token_admin):
     """Generate an feed payload."""
     key = "feed"
     path = "/objects/" + key
@@ -706,7 +859,8 @@ def setup_feed(object_id, test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
@@ -727,7 +881,7 @@ def feed_payload_updated(object_id):
 
 
 @pytest.fixture()
-def setup_feed_storage(object_id, test_client):
+def setup_feed_storage(object_id, test_client, fetch_token_admin):
     """Generate an feed storage payload."""
     key = "feed_storage"
     path = "/objects/" + key
@@ -741,7 +895,8 @@ def setup_feed_storage(object_id, test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
@@ -762,7 +917,7 @@ def feed_storage_payload_updated(object_id):
 
 
 @pytest.fixture()
-def setup_medicine(test_client):
+def setup_medicine(test_client, fetch_token_admin):
     """Generate an medicine storage payload."""
     key = "medicine"
     path = "/objects/" + key
@@ -775,7 +930,8 @@ def setup_medicine(test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
@@ -795,7 +951,7 @@ def medicine_payload_updated():
 
 
 @pytest.fixture()
-def setup_ration(object_id, test_client):
+def setup_ration(object_id, test_client, fetch_token_admin):
     """Generate an ration storage payload."""
     key = "ration"
     path = "/objects/" + key
@@ -808,7 +964,8 @@ def setup_ration(object_id, test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
@@ -831,7 +988,7 @@ def ration_payload_updated(object_id):
 
 
 @pytest.fixture()
-def setup_embryo(object_id, test_client):
+def setup_embryo(object_id, test_client, fetch_token_admin):
     """Generate an embryo payload."""
     key = "embryo"
     path = "/objects/" + key
@@ -846,7 +1003,8 @@ def setup_embryo(object_id, test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 
@@ -869,7 +1027,7 @@ def embryo_data_updated(object_id):
 
 
 @pytest.fixture()
-def setup_semen_straw(object_id, test_client):
+def setup_semen_straw(object_id, test_client, fetch_token_admin):
     """Generate an semen straw payload."""
     key = "semen_straw"
     path = "/objects/" + key
@@ -888,7 +1046,8 @@ def setup_semen_straw(object_id, test_client):
             "modified": str(datetime.now()),
         },
     }
-    yield path, key, data
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
     clear_test_data(test_client, path, key)
 
 

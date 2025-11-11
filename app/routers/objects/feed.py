@@ -8,14 +8,21 @@ and finding of feeds.
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter,  Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
-from ..ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                        find_in_db, update_one_in_db)
+from ..ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+    update_one_in_db,
+)
 from ..icar import icarEnums
 from ..icar.icarResources import icarFeedResource as Feed
+from ..users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/feed",
@@ -37,7 +44,13 @@ class FeedCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_feed(request: Request, feed: Feed):
+async def create_feed(
+    request: Request,
+    feed: Feed,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_feed"])
+    ],
+):
     """
     Create a new feed.
 
@@ -47,13 +60,23 @@ async def create_feed(request: Request, feed: Feed):
 
 
 @router.delete("/{ft}", response_description="Delete a feed")
-async def remove_feed(request: Request, ft: mongo_object_id.MongoObjectId):
+async def remove_feed(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_feed"])
+    ],
+):
     """
     Delete a feed.
 
     :param ft: UUID of the feed to delete
     """
-    return await delete_one_from_db(request.app.state.feed, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.feed,
+        ft,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.patch(
@@ -62,14 +85,26 @@ async def remove_feed(request: Request, ft: mongo_object_id.MongoObjectId):
     response_model=Feed,
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def update_feed(request: Request, ft: mongo_object_id.MongoObjectId, feed: Feed):
+async def update_feed(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    feed: Feed,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_feed"])
+    ],
+):
     """
     Update an existing feed if it exists.
 
     :param ft: UUID of the feed to update
     :param feed: Feed to update with
     """
-    return await update_one_in_db(feed, request.app.state.feed, ft, ERROR_MSG_OBJECT)
+    return await update_one_in_db(
+        feed,
+        request.app.state.feed,
+        ft,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.get(
@@ -80,6 +115,9 @@ async def update_feed(request: Request, ft: mongo_object_id.MongoObjectId, feed:
 )
 async def feed_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_feed"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     id: str | None = None,
     category: icarEnums.icarFeedCategoryType | None = None,
@@ -104,7 +142,7 @@ async def feed_query(
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.modified": dateBuild(modifiedStart, modifiedEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.feed, query)
     return FeedCollection(feed=result)

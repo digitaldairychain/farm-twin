@@ -11,15 +11,17 @@ https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarLactationStatusObservedE
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
-from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                         find_in_db)
+from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
 from ...icar import icarEnums
-from ...icar.icarResources import \
-    icarLactationStatusObservedEventResource as LactationStatus
+from ...icar.icarResources import (
+    icarLactationStatusObservedEventResource as LactationStatus,
+)
+from ...users import User, get_current_active_user
 
 ERROR_MSG_OBJECT = "Lactation Status"
 
@@ -42,7 +44,11 @@ class LactationStatusCollection(BaseModel):
     response_model_by_alias=False,
 )
 async def create_lactation_status_event(
-    request: Request, lactation_status: LactationStatus
+    request: Request,
+    lactation_status: LactationStatus,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_milking"])
+    ],
 ):
     """
     Create a new lactation status event.
@@ -56,7 +62,11 @@ async def create_lactation_status_event(
 
 @router.delete("/{ft}", response_description="Delete event")
 async def remove_lactation_status_event(
-    request: Request, ft: mongo_object_id.MongoObjectId
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_milking"])
+    ],
 ):
     """
     Delete a lactation_status event.
@@ -76,13 +86,16 @@ async def remove_lactation_status_event(
 )
 async def lactation_status_event_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_milking"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
     observedStatus: icarEnums.icarAnimalLactationStatusType | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
     source: str | None = None,
-    sourceId: str | None = None
+    sourceId: str | None = None,
 ):
     """Search for a lactation status event given the provided criteria."""
     query = {
@@ -91,7 +104,7 @@ async def lactation_status_event_query(
         "observedStatus": observedStatus,
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.lactation_status, query)
     return LactationStatusCollection(lactation_status=result)

@@ -17,15 +17,21 @@ https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarAnimalCoreResource.json
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Query, Request, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ..ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                        find_in_db, update_one_in_db)
+from ..ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+    update_one_in_db,
+)
 from ..icar import icarEnums, icarTypes
 from ..icar.icarResources import icarAnimalCoreResource as Animal
+from ..users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/animals",
@@ -47,7 +53,13 @@ class AnimalCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_animal(request: Request, animal: Animal):
+async def create_animal(
+    request: Request,
+    animal: Animal,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_animals"])
+    ],
+):
     """
     Create a new animal.
 
@@ -57,7 +69,13 @@ async def create_animal(request: Request, animal: Animal):
 
 
 @router.delete("/{ft}", response_description="Delete an animal")
-async def remove_animal(request: Request, ft: mongo_object_id.MongoObjectId):
+async def remove_animal(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_animals"])
+    ],
+):
     """
     Delete an animal.
 
@@ -73,7 +91,12 @@ async def remove_animal(request: Request, ft: mongo_object_id.MongoObjectId):
     status_code=status.HTTP_202_ACCEPTED,
 )
 async def update_animal(
-    request: Request, ft: mongo_object_id.MongoObjectId, animal: Animal
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    animal: Animal,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_animals"])
+    ],
 ):
     """
     Update an existing animal if it exists.
@@ -94,6 +117,9 @@ async def update_animal(
 )
 async def animal_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_animals"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     identifier: icarTypes.icarAnimalIdentifierType | None = None,
     alternativeIdentifiers: Annotated[list[str] | None, Query()] = [],

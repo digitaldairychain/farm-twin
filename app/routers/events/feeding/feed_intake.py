@@ -14,13 +14,14 @@ https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarFeedIntakeEventResource.
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
-from ...ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                         find_in_db)
+from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
 from ...icar.icarResources import icarFeedIntakeEventResource as FeedIntake
+from ...users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/feed_intake",
@@ -42,7 +43,13 @@ class FeedIntakeCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_feed_intake_event(request: Request, feed_intake: FeedIntake):
+async def create_feed_intake_event(
+    request: Request,
+    feed_intake: FeedIntake,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_feeding"])
+    ],
+):
     """
     Create a new feed intake event.
 
@@ -54,7 +61,13 @@ async def create_feed_intake_event(request: Request, feed_intake: FeedIntake):
 
 
 @router.delete("/{ft}", response_description="Delete a feed intake event")
-async def remove_feed_intake_event(request: Request, ft: mongo_object_id.MongoObjectId):
+async def remove_feed_intake_event(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_feeding"])
+    ],
+):
     """
     Delete a feed intake event.
 
@@ -71,6 +84,9 @@ async def remove_feed_intake_event(request: Request, ft: mongo_object_id.MongoOb
 )
 async def feed_intake_event_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_feeding"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
     device: str | None = None,
@@ -79,7 +95,7 @@ async def feed_intake_event_query(
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
     source: str | None = None,
-    sourceId: str | None = None
+    sourceId: str | None = None,
 ):
     """Search for a feed intake event given the provided criteria."""
     query = {
@@ -91,7 +107,7 @@ async def feed_intake_event_query(
         ),
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.feed_intake, query)
     return FeedIntakeCollection(feed_intake=result)

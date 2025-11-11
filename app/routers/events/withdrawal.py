@@ -14,13 +14,14 @@ https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarWithdrawalEventResource.
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Query, Request, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
 from ..ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
 from ..icar.icarResources import icarWithdrawalEventResource as Withdrawal
+from ..users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/withdrawal",
@@ -42,7 +43,13 @@ class WithdrawalCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_withdrawal_event(request: Request, withdrawal: Withdrawal):
+async def create_withdrawal_event(
+    request: Request,
+    withdrawal: Withdrawal,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_withdrawal"])
+    ],
+):
     """
     Create a new withdrawal event.
 
@@ -54,7 +61,13 @@ async def create_withdrawal_event(request: Request, withdrawal: Withdrawal):
 
 
 @router.delete("/{ft}", response_description="Delete a withdrawal event")
-async def remove_withdrawal_event(request: Request, ft: mongo_object_id.MongoObjectId):
+async def remove_withdrawal_event(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_withdrawal"])
+    ],
+):
     """
     Delete a withdrawal event.
 
@@ -71,15 +84,17 @@ async def remove_withdrawal_event(request: Request, ft: mongo_object_id.MongoObj
 )
 async def withdrawal_event_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_withdrawal"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
     endDateTimeStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    endDateTimeEnd: Annotated[datetime, Query(
-        default_factory=datetime.now)] = None,
+    endDateTimeEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
     source: str | None = None,
-    sourceId: str | None = None
+    sourceId: str | None = None,
 ):
     """Search for a withdrawal event given the provided criteria."""
     query = {
@@ -88,7 +103,7 @@ async def withdrawal_event_query(
         "endDateTime": dateBuild(endDateTimeStart, endDateTimeEnd),
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.withdrawal, query)
     return WithdrawalCollection(withdrawal=result)
