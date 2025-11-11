@@ -18,7 +18,7 @@ and finding of those samples.
 from datetime import datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, Query, Request, Security, status
+from fastapi import APIRouter, Request, Security, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
@@ -45,8 +45,7 @@ class Sample(FTModel):
     timestamp: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
-            "description": "Time when sample recorded. Current time inserted"
-            + " if empty",
+            "description": "Time when sample recorded. Current time inserted if empty",
             "example": str(datetime.now()),
         },
     )

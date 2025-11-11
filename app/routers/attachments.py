@@ -17,12 +17,12 @@ and finding of those attachments.
 from datetime import datetime
 from typing import List, Optional
 
-import pymongo
 from fastapi import APIRouter, Request, Security, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
+from .ftCommon import add_one_to_db, delete_one_from_db, find_in_db
 from .users import User, get_current_active_user
 
 router = APIRouter(
@@ -31,10 +31,12 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+ERROR_MSG_OBJECT = "Attachment"
+
 
 class Attachment(BaseModel):
     id: Optional[mongo_object_id.MongoObjectId] = Field(alias="_id", default=None)
-    device: str
+    device: mongo_object_id.MongoObjectId
     thing: mongo_object_id.MongoObjectId
     start: Optional[datetime] = Field(default=datetime.now())
     end: Optional[datetime] = Field(default=None)
@@ -58,43 +60,20 @@ async def create_attachment(
         User, Security(get_current_active_user, scopes=["write_attachments"])
     ],
 ):
-    try:
-        new_attachment = await request.app.state.attachments.insert_one(
-            attachment.model_dump(by_alias=True, exclude=["id"])
-        )
-    except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Attachment {attachment.coordinate}" + " already exists",
-        )
-    if (
-        created_attachment := await request.app.state.attachments.find_one(
-            {"_id": new_attachment.inserted_id}
-        )
-    ) is not None:
-        return created_attachment
-    raise HTTPException(
-        status_code=404,
-        detail="Attachment " + f"{attachment._id} not successfully added",
+    return await add_one_to_db(
+        attachment, request.app.state.attachments, ERROR_MSG_OBJECT
     )
 
 
 @router.delete("/{id}", response_description="Delete an attachment")
 async def remove_attachment(
     request: Request,
-    id: str,
+    ft: mongo_object_id.MongoObjectId,
     current_user: Annotated[
         User, Security(get_current_active_user, scopes=["write_attachments"])
     ],
 ):
-    delete_result = await request.app.state.attachments.delete_one(
-        {"_id": ObjectId(id)}
-    )
-
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-    raise HTTPException(status_code=404, detail=f"Attachment {id} not found")
+    return await delete_one_from_db(request.app.state.attachments, ft, ERROR_MSG_OBJECT)
 
 
 @router.get(
@@ -108,14 +87,14 @@ async def attachment_query(
     current_user: Annotated[
         User, Security(get_current_active_user, scopes=["read_attachments"])
     ],
-    id: str | None = None,
-    device: str | None = None,
-    object: str | None = None,
+    ft: mongo_object_id.MongoObjectId | None = None,
+    device: mongo_object_id.MongoObjectId | None = None,
+    thing: mongo_object_id.MongoObjectId | None = None,
 ):
-    query = {"_id": id, "object": object, "device": device}
-    filtered_query = {k: v for k, v in query.items() if v is not None}
-    if (
-        result := await request.app.state.attachments.find(filtered_query).to_list(1000)
-    ) is not None:
-        return AttachmentCollection(attachments=result)
-    raise HTTPException(status_code=404, detail="No match found")
+    query = {
+        "_id": ft,
+        "device": device,
+        "thing": thing,
+    }
+    result = await find_in_db(request.app.state.attachments, query)
+    return AttachmentCollection(attachments=result)

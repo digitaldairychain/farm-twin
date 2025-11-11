@@ -14,7 +14,7 @@ https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarWeightEventResource.json
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Query, Request, Security, status
+from fastapi import APIRouter, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
