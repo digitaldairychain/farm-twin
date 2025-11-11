@@ -1,6 +1,10 @@
-# { farm-twin } #
+<div align="center" >
+  <img src="ft_logo.png" alt="{ farm-twin } Logo" width="300">
+  <p>{ farm-twin } is a Digital Twin designed to provide a functional digital replica of an operational agricultural farm.</p>
+</div>
 
-{ farm-twin } is a Digital Twin designed to provide a functional digital replica of an operational agricultural farm.
+
+
 
 ## Installation and Dependencies ##
 
