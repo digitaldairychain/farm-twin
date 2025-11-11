@@ -11,7 +11,6 @@ from fastapi.security import (
     OAuth2PasswordRequestForm,
     SecurityScopes,
 )
-from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from pydantic import BaseModel, Field, ValidationError
 
@@ -189,7 +188,7 @@ async def get_current_user(
         scope: str = payload.get("scope", "")
         token_scopes = scope.split(" ")
         token_data = TokenData(scopes=token_scopes, username=username)
-    except (InvalidTokenError, ValidationError):
+    except (jwt.exceptions.InvalidTokenError, ValidationError):
         raise credentials_exception
     user = await get_user(request.app.state.users, username=token_data.username)
     if user is None:
@@ -292,9 +291,11 @@ async def login_for_access_token(
         request.app.state.users, form_data.username, form_data.password
     )
     if not user:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise HTTPException(
+            status_code=400, detail="Incorrect username or password")
 
-    masked_scopes = mask_scopes(user.admin, user.permitted_scopes, form_data.scopes)
+    masked_scopes = mask_scopes(
+        user.admin, user.permitted_scopes, form_data.scopes)
     if len(masked_scopes) > 0:
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
