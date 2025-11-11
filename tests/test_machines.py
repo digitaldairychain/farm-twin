@@ -18,7 +18,9 @@ class TestMachines:
         path, header, key, data = setup_machine
         common.create_delete(test_client, path, header, data, key)
 
-    def test_get_machine_not_found(self, test_client, object_id, setup_machine):
+    def test_get_machine_not_found(
+        self, test_client, object_id, setup_machine
+    ):
         path, header, _, _ = setup_machine
         common.get_not_found(test_client, path, header, object_id)
 

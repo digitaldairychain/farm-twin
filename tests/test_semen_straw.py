@@ -18,7 +18,9 @@ class TestSemenStraw:
         path, header, key, data = setup_semen_straw
         common.create_delete(test_client, path, header, data, key)
 
-    def test_get_semen_straw_not_found(self, test_client, object_id, setup_semen_straw):
+    def test_get_semen_straw_not_found(
+        self, test_client, object_id, setup_semen_straw
+    ):
         path, header, _, _ = setup_semen_straw
         common.get_not_found(test_client, path, header, object_id)
 
@@ -40,13 +42,21 @@ class TestSemenStraw:
             expected_code=422,
         )
 
-    def test_create_semen_straw_incorrect_enum(self, test_client, setup_semen_straw):
+    def test_create_semen_straw_incorrect_enum(
+        self, test_client, setup_semen_straw
+    ):
         path, header, key, data = setup_semen_straw
         data["preservationType"] = "Pickling"
-        common.create_get(test_client, path, header, data, key, expected_code=422)
+        common.create_get(
+            test_client, path, header, data, key, expected_code=422
+        )
 
     def test_update_semen_straw_doesnt_exist(
-        self, test_client, object_id, semen_straw_payload_updated, setup_semen_straw
+        self,
+        test_client,
+        object_id,
+        semen_straw_payload_updated,
+        setup_semen_straw,
     ):
         path, header, _, _ = setup_semen_straw
         common.update_doesnt_exist(

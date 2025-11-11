@@ -23,7 +23,13 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ..ftCommon import FTModel, add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ..ftCommon import (
+    FTModel,
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+)
 from ..users import User, get_current_active_user
 
 router = APIRouter(
@@ -45,7 +51,8 @@ class Sample(FTModel):
     timestamp: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
-            "description": "Time when sample recorded. Current time inserted if empty",
+            "description": "Time when sample recorded. Current time inserted"
+            " if empty",
             "example": str(datetime.now()),
         },
     )
@@ -90,7 +97,9 @@ async def create_sample(
 
     :param sample: Sample to be added
     """
-    return await add_one_to_db(sample, request.app.state.samples, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        sample, request.app.state.samples, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete a sample")
@@ -106,7 +115,9 @@ async def remove_samples(
 
     :param ft: ObjectID of the sample to delete
     """
-    return await delete_one_from_db(request.app.state.samples, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.samples, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(

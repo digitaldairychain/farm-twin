@@ -89,7 +89,9 @@ async def create_machine(
 
     :param machine: Machine to be added
     """
-    return await add_one_to_db(machine, request.app.state.machines, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        machine, request.app.state.machines, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete a machine")
@@ -105,7 +107,9 @@ async def remove_machine(
 
     :param ft: UUID of the machine to delete
     """
-    return await delete_one_from_db(request.app.state.machines, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.machines, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.patch(

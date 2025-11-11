@@ -6,7 +6,9 @@ ROOT = "events"
 class TestEvents:
     class TestFeeding:
         class TestFeedIntake:
-            def test_create_feed_intake_event(self, test_client, setup_feed_intake):
+            def test_create_feed_intake_event(
+                self, test_client, setup_feed_intake
+            ):
                 path, header, key, data = setup_feed_intake
                 common.create_get(test_client, path, header, data, key)
 
@@ -33,7 +35,9 @@ class TestEvents:
             path, header, key, data = setup_withdrawal
             common.create_get(test_client, path, header, data, key)
 
-        def test_create_delete_withdrawal_event(self, test_client, setup_withdrawal):
+        def test_create_delete_withdrawal_event(
+            self, test_client, setup_withdrawal
+        ):
             path, header, key, data = setup_withdrawal
             common.create_delete(test_client, path, header, data, key)
 
@@ -43,7 +47,9 @@ class TestEvents:
             path, header, _, _ = setup_withdrawal
             common.get_not_found(test_client, path, header, object_id)
 
-        def test_create_withdrawal_wrong_payload(self, test_client, setup_withdrawal):
+        def test_create_withdrawal_wrong_payload(
+            self, test_client, setup_withdrawal
+        ):
             path, header, _, _ = setup_withdrawal
             common.create_wrong_payload(test_client, path, header)
 
@@ -53,7 +59,9 @@ class TestEvents:
                 path, header, key, data = setup_arrival
                 common.create_get(test_client, path, header, data, key)
 
-            def test_create_delete_arrival_event(self, test_client, setup_arrival):
+            def test_create_delete_arrival_event(
+                self, test_client, setup_arrival
+            ):
                 path, header, key, data = setup_arrival
                 common.create_delete(test_client, path, header, data, key)
 
@@ -63,7 +71,9 @@ class TestEvents:
                 path, header, _, _ = setup_arrival
                 common.get_not_found(test_client, path, header, object_id)
 
-            def test_create_arrival_wrong_payload(self, test_client, setup_arrival):
+            def test_create_arrival_wrong_payload(
+                self, test_client, setup_arrival
+            ):
                 path, header, _, _ = setup_arrival
                 common.create_wrong_payload(test_client, path, header)
 
@@ -82,7 +92,9 @@ class TestEvents:
                 path, header, _, _ = setup_birth
                 common.get_not_found(test_client, path, header, object_id)
 
-            def test_create_birth_wrong_payload(self, test_client, setup_birth):
+            def test_create_birth_wrong_payload(
+                self, test_client, setup_birth
+            ):
                 path, header, _, _ = setup_birth
                 common.create_wrong_payload(test_client, path, header)
 
@@ -101,16 +113,22 @@ class TestEvents:
                 path, header, _, _ = setup_death
                 common.get_not_found(test_client, path, header, object_id)
 
-            def test_create_death_wrong_payload(self, test_client, setup_death):
+            def test_create_death_wrong_payload(
+                self, test_client, setup_death
+            ):
                 path, header, _, _ = setup_death
                 common.create_wrong_payload(test_client, path, header)
 
         class TestDeparture:
-            def test_create_departure_event(self, test_client, setup_departure):
+            def test_create_departure_event(
+                self, test_client, setup_departure
+            ):
                 path, header, key, data = setup_departure
                 common.create_get(test_client, path, header, data, key)
 
-            def test_create_delete_departure_event(self, test_client, setup_departure):
+            def test_create_delete_departure_event(
+                self, test_client, setup_departure
+            ):
                 path, header, key, data = setup_departure
                 common.create_delete(test_client, path, header, data, key)
 
@@ -120,7 +138,9 @@ class TestEvents:
                 path, header, _, _ = setup_departure
                 common.get_not_found(test_client, path, header, object_id)
 
-            def test_create_departure_wrong_payload(self, test_client, setup_departure):
+            def test_create_departure_wrong_payload(
+                self, test_client, setup_departure
+            ):
                 path, header, _, _ = setup_departure
                 common.create_wrong_payload(test_client, path, header)
 
@@ -176,7 +196,9 @@ class TestEvents:
                 common.create_wrong_payload(test_client, path, header)
 
         class TestDryingOff:
-            def test_create_drying_off_event(self, test_client, setup_drying_off):
+            def test_create_drying_off_event(
+                self, test_client, setup_drying_off
+            ):
                 path, header, key, data = setup_drying_off
                 common.create_get(test_client, path, header, data, key)
 
@@ -199,7 +221,9 @@ class TestEvents:
                 common.create_wrong_payload(test_client, path, header)
 
         class TestMilkingVisit:
-            def test_create_milking_visit_event(self, test_client, setup_milking_visit):
+            def test_create_milking_visit_event(
+                self, test_client, setup_milking_visit
+            ):
                 path, header, key, data = setup_milking_visit
                 common.create_get(test_client, path, header, data, key)
 
@@ -227,7 +251,9 @@ class TestEvents:
                 path, header, key, data = setup_carcass
                 common.create_get(test_client, path, header, data, key)
 
-            def test_create_delete_carcass_event(self, test_client, setup_carcass):
+            def test_create_delete_carcass_event(
+                self, test_client, setup_carcass
+            ):
                 path, header, key, data = setup_carcass
                 common.create_delete(test_client, path, header, data, key)
 
@@ -237,12 +263,16 @@ class TestEvents:
                 path, header, _, _ = setup_carcass
                 common.get_not_found(test_client, path, header, object_id)
 
-            def test_create_carcass_wrong_payload(self, test_client, setup_carcass):
+            def test_create_carcass_wrong_payload(
+                self, test_client, setup_carcass
+            ):
                 path, header, _, _ = setup_carcass
                 common.create_wrong_payload(test_client, path, header)
 
         class TestHealthStatus:
-            def test_create_health_status_event(self, test_client, setup_health_status):
+            def test_create_health_status_event(
+                self, test_client, setup_health_status
+            ):
                 path, header, key, data = setup_health_status
                 common.create_get(test_client, path, header, data, key)
 
@@ -269,7 +299,9 @@ class TestEvents:
                 path, header, key, data = setup_position
                 common.create_get(test_client, path, header, data, key)
 
-            def test_create_delete_position_event(self, test_client, setup_position):
+            def test_create_delete_position_event(
+                self, test_client, setup_position
+            ):
                 path, header, key, data = setup_position
                 common.create_delete(test_client, path, header, data, key)
 
@@ -279,13 +311,17 @@ class TestEvents:
                 path, header, _, _ = setup_position
                 common.get_not_found(test_client, path, header, object_id)
 
-            def test_create_position_wrong_payload(self, test_client, setup_position):
+            def test_create_position_wrong_payload(
+                self, test_client, setup_position
+            ):
                 path, header, _, _ = setup_position
                 common.create_wrong_payload(test_client, path, header)
 
     class TestReproduction:
         class TestReproStatus:
-            def test_create_repro_status_event(self, test_client, setup_repro_status):
+            def test_create_repro_status_event(
+                self, test_client, setup_repro_status
+            ):
                 path, header, key, data = setup_repro_status
                 common.create_get(test_client, path, header, data, key)
 
@@ -358,7 +394,9 @@ class TestEvents:
                 common.create_wrong_payload(test_client, path, header)
 
         class TestReproHeat:
-            def test_create_repro_heat_event(self, test_client, setup_repro_heat):
+            def test_create_repro_heat_event(
+                self, test_client, setup_repro_heat
+            ):
                 path, header, key, data = setup_repro_heat
                 common.create_get(test_client, path, header, data, key)
 
@@ -460,7 +498,9 @@ class TestEvents:
             path, header, key, data = setup_attention
             common.create_get(test_client, path, header, data, key)
 
-        def test_create_delete_attention_event(self, test_client, setup_attention):
+        def test_create_delete_attention_event(
+            self, test_client, setup_attention
+        ):
             path, header, key, data = setup_attention
             common.create_delete(test_client, path, header, data, key)
 
@@ -470,13 +510,17 @@ class TestEvents:
             path, header, _, _ = setup_attention
             common.get_not_found(test_client, path, header, object_id)
 
-        def test_create_attention_wrong_payload(self, test_client, setup_attention):
+        def test_create_attention_wrong_payload(
+            self, test_client, setup_attention
+        ):
             path, header, _, _ = setup_attention
             common.create_wrong_payload(test_client, path, header)
 
     class TestPerformance:
         class TestConformation:
-            def test_create_conformation_event(self, test_client, setup_conformation):
+            def test_create_conformation_event(
+                self, test_client, setup_conformation
+            ):
                 path, header, key, data = setup_conformation
                 common.create_get(test_client, path, header, data, key)
 
@@ -503,7 +547,9 @@ class TestEvents:
                 path, header, key, data = setup_weight
                 common.create_get(test_client, path, header, data, key)
 
-            def test_create_delete_weight_event(self, test_client, setup_weight):
+            def test_create_delete_weight_event(
+                self, test_client, setup_weight
+            ):
                 path, header, key, data = setup_weight
                 common.create_delete(test_client, path, header, data, key)
 
@@ -513,12 +559,16 @@ class TestEvents:
                 path, header, _, _ = setup_weight
                 common.get_not_found(test_client, path, header, object_id)
 
-            def test_create_weight_event_wrong_payload(self, test_client, setup_weight):
+            def test_create_weight_event_wrong_payload(
+                self, test_client, setup_weight
+            ):
                 path, header, _, _ = setup_weight
                 common.create_wrong_payload(test_client, path, header)
 
         class TestGroupWeight:
-            def test_create_group_weight_event(self, test_client, setup_group_weight):
+            def test_create_group_weight_event(
+                self, test_client, setup_group_weight
+            ):
                 path, header, key, data = setup_group_weight
                 common.create_get(test_client, path, header, data, key)
 

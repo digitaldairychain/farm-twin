@@ -73,7 +73,9 @@ async def remove_withdrawal_event(
 
     :param ft: ObjectID of the withdrawal event to delete
     """
-    return await delete_one_from_db(request.app.state.withdrawal, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.withdrawal, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(
@@ -90,7 +92,9 @@ async def withdrawal_event_query(
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
     endDateTimeStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    endDateTimeEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+    endDateTimeEnd: Annotated[
+        datetime, Query(default_factory=datetime.now)
+    ] = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
     source: str | None = None,

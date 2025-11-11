@@ -44,7 +44,9 @@ class TestSensors:
     def test_create_sensor_incorrect_enum(self, test_client, setup_sensor):
         path, header, key, data = setup_sensor
         data["category"] = "BreakfastCereal"
-        common.create_get(test_client, path, header, data, key, expected_code=422)
+        common.create_get(
+            test_client, path, header, data, key, expected_code=422
+        )
 
     def test_update_sensor_doesnt_exist(
         self, test_client, object_id, sensor_payload_updated, setup_sensor

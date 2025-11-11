@@ -16,7 +16,12 @@ from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ...ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+)
 from ...icar.icarResources import (
     icarReproMatingRecommendationResource as ReproMatingRecommendation,
 )
@@ -97,7 +102,8 @@ async def repro_mating_recommendation_event_query(
     source: str | None = None,
     sourceId: str | None = None,
 ):
-    """Search for a repro mating recommendation event given the provided criteria."""
+    """Search for a repro mating recommendation event given the provided
+      criteria."""
     query = {
         "_id": ft,
         "animal.id": animal,
@@ -105,5 +111,9 @@ async def repro_mating_recommendation_event_query(
         "meta.source": source,
         "meta.sourceId": sourceId,
     }
-    result = await find_in_db(request.app.state.repro_mating_recommendation, query)
-    return ReproMatingRecommendationCollection(repro_mating_recommendation=result)
+    result = await find_in_db(
+        request.app.state.repro_mating_recommendation, query
+    )
+    return ReproMatingRecommendationCollection(
+        repro_mating_recommendation=result
+    )

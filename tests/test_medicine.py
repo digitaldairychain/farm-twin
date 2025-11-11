@@ -18,7 +18,9 @@ class TestMedicine:
         path, header, key, data = setup_medicine
         common.create_delete(test_client, path, header, data, key)
 
-    def test_get_medicine_not_found(self, test_client, object_id, setup_medicine):
+    def test_get_medicine_not_found(
+        self, test_client, object_id, setup_medicine
+    ):
         path, header, _, _ = setup_medicine
         common.get_not_found(test_client, path, header, object_id)
 

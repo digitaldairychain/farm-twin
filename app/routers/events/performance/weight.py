@@ -19,7 +19,12 @@ from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ...ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+)
 from ...icar.icarResources import icarWeightEventResource as Weight
 from ...users import User, get_current_active_user
 
@@ -58,7 +63,9 @@ async def create_weight_event(
 
     :param weight: Weight to be added
     """
-    return await add_one_to_db(weight, request.app.state.weight, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        weight, request.app.state.weight, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete a weight event")
@@ -74,7 +81,9 @@ async def remove_weight_event(
 
     :param ft: ObjectID of the weight event to delete
     """
-    return await delete_one_from_db(request.app.state.weight, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.weight, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(

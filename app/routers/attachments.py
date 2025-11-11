@@ -35,7 +35,9 @@ ERROR_MSG_OBJECT = "Attachment"
 
 
 class Attachment(BaseModel):
-    id: Optional[mongo_object_id.MongoObjectId] = Field(alias="_id", default=None)
+    id: Optional[mongo_object_id.MongoObjectId] = Field(
+        alias="_id", default=None
+    )
     device: mongo_object_id.MongoObjectId
     thing: mongo_object_id.MongoObjectId
     start: Optional[datetime] = Field(default=datetime.now())
@@ -73,7 +75,9 @@ async def remove_attachment(
         User, Security(get_current_active_user, scopes=["write_attachments"])
     ],
 ):
-    return await delete_one_from_db(request.app.state.attachments, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.attachments, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(

@@ -136,7 +136,9 @@ class uncefactDoseUnitsType(str, Enum):
 
 
 class icarMilkSamplingSchemeType(str, Enum):
-    _proportionalSizeSamplingOfAllMilkings = ("ProportionalSizeSamplingOfAllMilkings",)
+    _proportionalSizeSamplingOfAllMilkings = (
+        "ProportionalSizeSamplingOfAllMilkings",
+    )
     _constantSizeSamplingOfAllMilkings = ("ConstantSizeSamplingOfAllMilkings",)
     _alternateSampling = ("AlternateSampling",)
     _correctedSampling = ("CorrectedSampling",)

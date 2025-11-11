@@ -64,7 +64,9 @@ async def create_device(
 
     :param device: Device to be added
     """
-    return await add_one_to_db(device, request.app.state.devices, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        device, request.app.state.devices, ERROR_MSG_OBJECT
+    )
 
 
 @router.patch(
@@ -105,7 +107,9 @@ async def remove_device(
 
     :param ft: ObjectID of the device to delete
     """
-    return await delete_one_from_db(request.app.state.devices, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.devices, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(

@@ -10,7 +10,9 @@ class TestEmbryo:
         path, header, key, data = setup_embryo
         common.create_get(test_client, path, header, data, key)
 
-    def test_create_update_embryo(self, test_client, setup_embryo, embryo_data_updated):
+    def test_create_update_embryo(
+        self, test_client, setup_embryo, embryo_data_updated
+    ):
         path, header, key, data = setup_embryo
         common.create_get_update(
             test_client, path, header, data, embryo_data_updated, key

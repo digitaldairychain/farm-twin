@@ -16,7 +16,12 @@ from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ...ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+)
 from ...icar import icarEnums
 from ...icar.icarResources import icarMovementArrivalEventResource as Arrival
 from ...users import User, get_current_active_user
@@ -53,7 +58,9 @@ async def create_arrival_event(
 
     :param arrival: Arrival to be added
     """
-    return await add_one_to_db(arrival, request.app.state.arrival, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        arrival, request.app.state.arrival, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete event")
@@ -69,7 +76,9 @@ async def remove_arrival_event(
 
     :param ft: ObjectID of the arrival event to delete
     """
-    return await delete_one_from_db(request.app.state.arrival, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.arrival, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(
@@ -88,7 +97,9 @@ async def arrival_event_query(
     arrivalReason: icarEnums.icarArrivalReasonType | None = None,
     currentLactationParity: int | None = None,
     lastCalvingDateStart: datetime | None = None,
-    lastCalvingDateEnd: Annotated[datetime, Query(default_factory=datetime.now)] = None,
+    lastCalvingDateEnd: Annotated[
+        datetime, Query(default_factory=datetime.now)
+    ] = None,
     lastInseminationDateStart: datetime | None = None,
     lastInseminationDateEnd: datetime | None = None,
     lastDryingOffDateStart: datetime | None = None,

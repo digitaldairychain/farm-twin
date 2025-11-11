@@ -5,7 +5,14 @@ from typing import Annotated
 import jwt
 import pymongo
 from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, HTTPException, Request, Security, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+    Security,
+    status,
+)
 from fastapi.security import (
     OAuth2PasswordBearer,
     OAuth2PasswordRequestForm,
@@ -107,8 +114,8 @@ SCOPES = {
     "write_attention": "Write information about an attention event.",
     "read_withdrawal": "Read information about a withdrawal event.",
     "write_withdrawal": "Write information about a withdrawal event.",
-    "read_measurements": "Read info. about sensor objects and sample events.",
-    "write_measurements": "Write info. about sensor objects and sample events.",
+    "read_measurements": "Read info about sensor objects and sample events.",
+    "write_measurements": "Write info about sensor objects and sample events.",
 }
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token", scopes=SCOPES)
@@ -190,7 +197,9 @@ async def get_current_user(
         token_data = TokenData(scopes=token_scopes, username=username)
     except (jwt.exceptions.InvalidTokenError, ValidationError):
         raise credentials_exception
-    user = await get_user(request.app.state.users, username=token_data.username)
+    user = await get_user(
+        request.app.state.users, username=token_data.username
+    )
     if user is None:
         raise credentials_exception
     for scope in security_scopes.scopes:
@@ -241,7 +250,9 @@ async def register_user(request: Request, new_user: NewUser):
 async def update_user_information(
     request: Request,
     updated_user: UpdatedUser,
-    current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])],
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["user"])
+    ],
 ):
     """Update your own user information."""
     db = request.app.state.users
@@ -258,11 +269,15 @@ async def update_user_information(
 
 
 @router.delete(
-    "/user", response_description="Delete your own user account", response_model=User
+    "/user",
+    response_description="Delete your own user account",
+    response_model=User,
 )
 async def delete_user(
     request: Request,
-    current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])],
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["user"])
+    ],
 ):
     """Delete the current user."""
     db = request.app.state.users
@@ -276,7 +291,9 @@ async def delete_user(
     response_model=User,
 )
 async def get_user_details(
-    current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])],
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["user"])
+    ],
 ):
     """Get your current user information."""
     return current_user
@@ -284,7 +301,8 @@ async def get_user_details(
 
 @router.post("/token", response_description="Retrieve JWT token")
 async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()], request: Request
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    request: Request,
 ) -> Token:
     """Get a JWT Token with the requested scopes (if allowed)."""
     user = await authenticate_user(
@@ -292,10 +310,12 @@ async def login_for_access_token(
     )
     if not user:
         raise HTTPException(
-            status_code=400, detail="Incorrect username or password")
+            status_code=400, detail="Incorrect username or password"
+        )
 
     masked_scopes = mask_scopes(
-        user.admin, user.permitted_scopes, form_data.scopes)
+        user.admin, user.permitted_scopes, form_data.scopes
+    )
     if len(masked_scopes) > 0:
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(

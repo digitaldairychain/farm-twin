@@ -16,8 +16,15 @@ from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
-from ...icar.icarResources import icarPositionObservationEventResource as Position
+from ...ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+)
+from ...icar.icarResources import (
+    icarPositionObservationEventResource as Position,
+)
 from ...users import User, get_current_active_user
 
 ERROR_MSG_OBJECT = "Position"
@@ -52,7 +59,9 @@ async def create_position_event(
 
     :param position: Position to be added
     """
-    return await add_one_to_db(position, request.app.state.position, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        position, request.app.state.position, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete event")
@@ -68,7 +77,9 @@ async def remove_position_event(
 
     :param ft: ObjectID of the position event to delete
     """
-    return await delete_one_from_db(request.app.state.position, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.position, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(

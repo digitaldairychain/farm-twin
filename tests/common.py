@@ -49,7 +49,9 @@ def create_get(test_client, path, header, payload, key, expected_code=201):
     response_json = response.json()
     assert response.status_code == expected_code
     if response.status_code == 201:
-        response = test_client.get(path + f"/?ft={response_json['ft']}", headers=header)
+        response = test_client.get(
+            path + f"/?ft={response_json['ft']}", headers=header
+        )
         assert response.status_code == 200
         assert len(response.json()[key]) == 1
         response_json = response.json()[key][0]
@@ -105,7 +107,9 @@ def create_wrong_payload(test_client, path, header):
 
 def update_doesnt_exist(test_client, path, header, payload, object_id):
     """PATCH an object that doesn't exist."""
-    response = test_client.patch(path + f"/{object_id}", headers=header, json=payload)
+    response = test_client.patch(
+        path + f"/{object_id}", headers=header, json=payload
+    )
     assert response.status_code == 404
 
 

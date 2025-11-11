@@ -16,7 +16,12 @@ from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ...ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+)
 from ...icar.icarResources import (
     icarReproInseminationEventResource as ReproInsemination,
 )
@@ -55,7 +60,9 @@ async def create_repro_insemination_event(
     :param repro_insemination: Repro Insemination to be added
     """
     return await add_one_to_db(
-        repro_insemination, request.app.state.repro_insemination, ERROR_MSG_OBJECT
+        repro_insemination,
+        request.app.state.repro_insemination,
+        ERROR_MSG_OBJECT,
     )
 
 

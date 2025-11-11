@@ -6,7 +6,9 @@ class TestAnimals:
         path, header, key, data = setup_animal
         common.create_get(test_client, path, header, data, key)
 
-    def test_create_update_animal(self, test_client, setup_animal, animal_data_updated):
+    def test_create_update_animal(
+        self, test_client, setup_animal, animal_data_updated
+    ):
         path, header, key, data = setup_animal
         common.create_get_update(
             test_client, path, header, data, animal_data_updated, key
@@ -42,7 +44,9 @@ class TestAnimals:
     def test_create_animal_incorrect_enum(self, test_client, setup_animal):
         path, header, key, data = setup_animal
         data["productionPurpose"] = "Astronaut"
-        common.create_get(test_client, path, header, data, key, expected_code=422)
+        common.create_get(
+            test_client, path, header, data, key, expected_code=422
+        )
 
     def test_update_animal_doesnt_exist(
         self, test_client, object_id, setup_animal, animal_data_updated

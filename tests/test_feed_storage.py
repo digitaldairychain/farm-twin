@@ -24,7 +24,9 @@ class TestFeedStorage:
         path, header, _, _ = setup_feed_storage
         common.get_not_found(test_client, path, header, object_id)
 
-    def test_create_feed_storage_wrong_payload(self, test_client, setup_feed_storage):
+    def test_create_feed_storage_wrong_payload(
+        self, test_client, setup_feed_storage
+    ):
         path, header, _, _ = setup_feed_storage
         common.create_wrong_payload(test_client, path, header)
 
@@ -44,7 +46,11 @@ class TestFeedStorage:
         )
 
     def test_update_feed_storage_doesnt_exist(
-        self, test_client, object_id, feed_storage_payload_updated, setup_feed_storage
+        self,
+        test_client,
+        object_id,
+        feed_storage_payload_updated,
+        setup_feed_storage,
     ):
         path, header, _, _ = setup_feed_storage
         common.update_doesnt_exist(

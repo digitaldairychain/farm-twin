@@ -10,7 +10,9 @@ class TestDevices:
         path, header, key, data = setup_device
         common.create_get(test_client, path, header, data, key)
 
-    def test_create_update_device(self, test_client, setup_device, device_data_updated):
+    def test_create_update_device(
+        self, test_client, setup_device, device_data_updated
+    ):
         path, header, key, data = setup_device
         common.create_get_update(
             test_client, path, header, data, device_data_updated, key
@@ -46,7 +48,9 @@ class TestDevices:
     def test_create_device_incorrect_enum(self, test_client, setup_device):
         path, header, key, data = setup_device
         data["supportedMessages"] = "TCP/IP"
-        common.create_get(test_client, path, header, data, key, expected_code=422)
+        common.create_get(
+            test_client, path, header, data, key, expected_code=422
+        )
 
     def test_update_device_doesnt_exist(
         self, test_client, object_id, device_data_updated, setup_device

@@ -85,7 +85,9 @@ async def create_sensor(
 
     :param sensor: Sensor to be added.
     """
-    return await add_one_to_db(sensor, request.app.state.sensors, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        sensor, request.app.state.sensors, ERROR_MSG_OBJECT
+    )
 
 
 @router.patch(
@@ -126,7 +128,9 @@ async def remove_sensor(
 
     :param ft: ObjectID of the sensor to delete
     """
-    return await delete_one_from_db(request.app.state.sensors, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.sensors, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(

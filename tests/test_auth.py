@@ -39,7 +39,11 @@ class TestAuth:
 
     @pytest.mark.order(4)
     def test_get_user(
-        self, setup_registration, fetch_token_user, enable_user_in_db, test_client
+        self,
+        setup_registration,
+        fetch_token_user,
+        enable_user_in_db,
+        test_client,
     ):
         enable_user_in_db
         header, _, _ = fetch_token_user
@@ -51,7 +55,9 @@ class TestAuth:
         assert response_json == user
 
     @pytest.mark.order(5)
-    def test_outside_scope(self, fetch_token_user, test_client, set_admin_in_db):
+    def test_outside_scope(
+        self, fetch_token_user, test_client, set_admin_in_db
+    ):
         header, _, _ = fetch_token_user
         response = test_client.get("objects/animals", headers=header)
         assert response.status_code == 401

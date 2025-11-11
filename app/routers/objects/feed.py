@@ -72,7 +72,9 @@ async def remove_feed(
 
     :param ft: UUID of the feed to delete
     """
-    return await delete_one_from_db(request.app.state.feed, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.feed, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.patch(
@@ -95,7 +97,9 @@ async def update_feed(
     :param ft: UUID of the feed to update
     :param feed: Feed to update with
     """
-    return await update_one_in_db(feed, request.app.state.feed, ft, ERROR_MSG_OBJECT)
+    return await update_one_in_db(
+        feed, request.app.state.feed, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(

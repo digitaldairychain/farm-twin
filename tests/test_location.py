@@ -18,7 +18,9 @@ class TestLocation:
         path, header, key, data = setup_location
         common.create_delete(test_client, path, header, data, key)
 
-    def test_get_location_not_found(self, test_client, setup_location, object_id):
+    def test_get_location_not_found(
+        self, test_client, setup_location, object_id
+    ):
         path, header, _, _ = setup_location
         common.get_not_found(test_client, path, header, object_id)
 

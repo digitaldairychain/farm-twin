@@ -56,7 +56,9 @@ async def create_location(
 
     :param location: Location to be added
     """
-    return await add_one_to_db(location, request.app.state.location, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        location, request.app.state.location, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete a location")
@@ -72,7 +74,9 @@ async def remove_location(
 
     :param ft: UUID of the location to delete
     """
-    return await delete_one_from_db(request.app.state.location, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.location, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.patch(

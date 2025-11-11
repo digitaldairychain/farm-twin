@@ -65,7 +65,9 @@ async def create_animal(
 
     :param animal: Animal to be added
     """
-    return await add_one_to_db(animal, request.app.state.animals, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        animal, request.app.state.animals, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete an animal")
@@ -81,7 +83,9 @@ async def remove_animal(
 
     :param id: UUID of the animal to delete
     """
-    return await delete_one_from_db(request.app.state.animals, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.animals, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.patch(
@@ -135,7 +139,8 @@ async def animal_query(
     officialName: str | None = None,
     productionPurpose: icarEnums.icarProductionPurposeType | None = None,
     status: icarEnums.icarAnimalStatusType | None = None,
-    reproductionStatus: icarEnums.icarAnimalReproductionStatusType | None = None,
+    reproductionStatus: icarEnums.icarAnimalReproductionStatusType
+    | None = None,
     lactationStatus: icarEnums.icarAnimalLactationStatusType | None = None,
     parentage: Annotated[list[str] | None, Query()] = [],
     healthStatus: icarEnums.icarAnimalHealthStatusType | None = None,

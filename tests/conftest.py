@@ -16,7 +16,9 @@ from app.main import app
 TEST_SOURCE = "{ farm-twin } test"
 
 TEST_USER_USERNAME = "test_user"
-TEST_USER_PASSWORD = "".join(random.choices(string.ascii_letters + string.digits, k=20))
+TEST_USER_PASSWORD = "".join(
+    random.choices(string.ascii_letters + string.digits, k=20)
+)
 
 load_dotenv()
 DB_USER = os.getenv("MONGO_INITDB_ROOT_USERNAME")
@@ -310,7 +312,10 @@ def setup_feed_intake(test_client, fetch_token_admin):
         "feedingStartingDateTime": datetime.now(timezone.utc).isoformat(),
         "feedVisitDuration": {"unitCode": "MIN", "value": 10},
         "consumedFeed": [
-            {"feedId": {"id": "test", "scheme": "ft.org"}, "dryMatterPercentage": 10}
+            {
+                "feedId": {"id": "test", "scheme": "ft.org"},
+                "dryMatterPercentage": 10,
+            }
         ],
         "meta": {
             "source": TEST_SOURCE,
@@ -530,7 +535,9 @@ def setup_repro_mating_recommendation(test_client, fetch_token_admin):
         "sireRecommendations": [
             {
                 "recommendationType": "SireRecommended",
-                "sireIdentifiers": [{"id": "UK23001120014", "scheme": "uk.gov"}],
+                "sireIdentifiers": [
+                    {"id": "UK23001120014", "scheme": "uk.gov"}
+                ],
                 "sireOfficialName": "Camelot",
             }
         ],
@@ -973,7 +980,10 @@ def ration_payload_updated(object_id):
         "id": {"id": object_id, "scheme": "uk.gov"},
         "name": "Super Ration 1000",
         "feeds": [
-            {"feedId": {"id": object_id, "scheme": "uk.gov"}, "percentage": 10.0}
+            {
+                "feedId": {"id": object_id, "scheme": "uk.gov"},
+                "percentage": 10.0,
+            }
         ],
         "active": False,
         "meta": {

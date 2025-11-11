@@ -55,7 +55,9 @@ async def create_medicine(
 
     :param medicine: Medicine to be added
     """
-    return await add_one_to_db(medicine, request.app.state.medicine, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        medicine, request.app.state.medicine, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete a medicine")
@@ -71,7 +73,9 @@ async def remove_medicine(
 
     :param ft: UUID of the medicine to delete
     """
-    return await delete_one_from_db(request.app.state.medicine, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.medicine, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.patch(

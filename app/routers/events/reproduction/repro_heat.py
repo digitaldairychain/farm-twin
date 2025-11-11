@@ -16,7 +16,12 @@ from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ...ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+)
 from ...icar import icarEnums
 from ...icar.icarResources import icarReproHeatEventResource as ReproHeat
 from ...users import User, get_current_active_user
@@ -71,7 +76,9 @@ async def remove_repro_heat_event(
 
     :param ft: ObjectID of the repro heat event to delete
     """
-    return await delete_one_from_db(request.app.state.repro_heat, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.repro_heat, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(
@@ -87,7 +94,8 @@ async def repro_heat_event_query(
     ],
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
-    heatDetectionMethod: icarEnums.icarReproHeatDetectionMethodType | None = None,
+    heatDetectionMethod: icarEnums.icarReproHeatDetectionMethodType
+    | None = None,
     commencementDateTime: datetime | None = None,
     expirationDateTime: datetime | None = None,
     deviceHeatProbability: int | None = None,

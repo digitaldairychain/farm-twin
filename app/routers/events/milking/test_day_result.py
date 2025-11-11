@@ -1,5 +1,6 @@
 """
-Collects API calls related to an animal being dried off at the end of a lactation.
+Collects API calls related to an animal being dried off at the end of a
+ lactation.
 
 This collection of endpoints allows for the addition, deletion
 and finding of those events.
@@ -16,9 +17,16 @@ from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ...ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+)
 from ...icar import icarEnums
-from ...icar.icarResources import icarTestDayResultEventResource as TestDayResult
+from ...icar.icarResources import (
+    icarTestDayResultEventResource as TestDayResult,
+)
 from ...users import User, get_current_active_user
 
 ERROR_MSG_OBJECT = "Test Day Result"

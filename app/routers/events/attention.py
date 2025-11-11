@@ -56,7 +56,9 @@ async def create_attention_event(
 
     :param attention: Attention to be added
     """
-    return await add_one_to_db(attention, request.app.state.attention, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        attention, request.app.state.attention, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete a attention event")
@@ -72,7 +74,9 @@ async def remove_attention_event(
 
     :param ft: ObjectID of the attention event to delete
     """
-    return await delete_one_from_db(request.app.state.attention, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.attention, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(
@@ -105,7 +109,9 @@ async def attention_event_query(
     query = {
         "_id": ft,
         "animal.id": animal,
-        "alertEndDateTime": dateBuild(alertEndDateTimeStart, alertEndDateTimeEnd),
+        "alertEndDateTime": dateBuild(
+            alertEndDateTimeStart, alertEndDateTimeEnd
+        ),
         "category": category,
         "causes": {"$in": cause},
         "priority": priority,

@@ -16,9 +16,16 @@ from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ...ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+)
 from ...icar import icarEnums
-from ...icar.icarResources import icarCarcassObservationsEventResource as Carcass
+from ...icar.icarResources import (
+    icarCarcassObservationsEventResource as Carcass,
+)
 from ...users import User, get_current_active_user
 
 ERROR_MSG_OBJECT = "Carcass"
@@ -53,7 +60,9 @@ async def create_carcass_event(
 
     :param carcass: Carcass to be added
     """
-    return await add_one_to_db(carcass, request.app.state.carcass, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        carcass, request.app.state.carcass, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete event")
@@ -69,7 +78,9 @@ async def remove_carcass_event(
 
     :param ft: ObjectID of the carcass event to delete
     """
-    return await delete_one_from_db(request.app.state.carcass, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.carcass, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(

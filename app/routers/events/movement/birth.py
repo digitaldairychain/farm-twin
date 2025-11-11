@@ -16,7 +16,12 @@ from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
 
-from ...ftCommon import add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ...ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+)
 from ...icar import icarEnums
 from ...icar.icarResources import icarMovementBirthEventResource as Birth
 from ...users import User, get_current_active_user
@@ -53,7 +58,9 @@ async def create_birth_event(
 
     :param birth: Birth to be added
     """
-    return await add_one_to_db(birth, request.app.state.birth, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        birth, request.app.state.birth, ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{ft}", response_description="Delete event")
@@ -69,7 +76,9 @@ async def remove_birth_event(
 
     :param ft: ObjectID of the birth event to delete
     """
-    return await delete_one_from_db(request.app.state.birth, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.birth, ft, ERROR_MSG_OBJECT
+    )
 
 
 @router.get(

@@ -10,7 +10,12 @@ from app import __version__
 from .routers import attachments, users
 from .routers.events import attention, withdrawal
 from .routers.events.feeding import feed_intake
-from .routers.events.milking import drying_off, lactation_status, test_day_result, visit
+from .routers.events.milking import (
+    drying_off,
+    lactation_status,
+    test_day_result,
+    visit,
+)
 from .routers.events.movement import arrival, birth, death, departure
 from .routers.events.observations import carcass, health_status, position
 from .routers.events.performance import conformation, group_weight, weight
@@ -94,7 +99,9 @@ app.include_router(repro_abortion.router, prefix="/events/reproduction")
 app.include_router(repro_do_not_breed.router, prefix="/events/reproduction")
 app.include_router(repro_heat.router, prefix="/events/reproduction")
 app.include_router(repro_insemination.router, prefix="/events/reproduction")
-app.include_router(repro_mating_recommendation.router, prefix="/events/reproduction")
+app.include_router(
+    repro_mating_recommendation.router, prefix="/events/reproduction"
+)
 app.include_router(repro_parturition.router, prefix="/events/reproduction")
 app.include_router(repro_pregnancy_check.router, prefix="/events/reproduction")
 
@@ -149,13 +156,19 @@ async def open_db() -> AsyncMongoClient:
 
     app.state.repro_status = _ft["events"]["reproduction"]["repro_status"]
     app.state.repro_abortion = _ft["events"]["reproduction"]["repro_abortion"]
-    app.state.repro_do_not_breed = _ft["events"]["reproduction"]["repro_do_not_breed"]
+    app.state.repro_do_not_breed = _ft["events"]["reproduction"][
+        "repro_do_not_breed"
+    ]
     app.state.repro_heat = _ft["events"]["reproduction"]["repro_heat"]
-    app.state.repro_insemination = _ft["events"]["reproduction"]["repro_insemination"]
+    app.state.repro_insemination = _ft["events"]["reproduction"][
+        "repro_insemination"
+    ]
     app.state.repro_mating_recommendation = _ft["events"]["reproduction"][
         "repro_mating_recommendation"
     ]
-    app.state.repro_parturition = _ft["events"]["reproduction"]["repro_parturition"]
+    app.state.repro_parturition = _ft["events"]["reproduction"][
+        "repro_parturition"
+    ]
     app.state.repro_pregnancy_check = _ft["events"]["reproduction"][
         "repro_pregnancy_check"
     ]
@@ -164,7 +177,9 @@ async def open_db() -> AsyncMongoClient:
 
 
 async def create_indexes():
-    await app.state.devices.create_index(["serial", "manufacturer"], unique=True)
+    await app.state.devices.create_index(
+        ["serial", "manufacturer"], unique=True
+    )
     await app.state.points.create_index({"point": "2dsphere"}, unique=True)
     await app.state.polygons.create_index(["polygon"], unique=True)
     await app.state.users.create_index(["username"], unique=True)
