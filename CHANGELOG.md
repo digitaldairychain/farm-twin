@@ -1,6 +1,26 @@
 # CHANGELOG
 
 
+## v0.1.1 (2025-11-11)
+
+### Chores
+
+- **deps**: Bump jinja2 from 3.1.5 to 3.1.6
+  ([`46e3cd8`](https://github.com/digitaldairychain/farm-twin/commit/46e3cd88126f484308ee112aaaa356bfcd6eb641))
+
+- **deps**: Bump requests from 2.32.3 to 2.32.4
+  ([`deb3ccb`](https://github.com/digitaldairychain/farm-twin/commit/deb3ccb0c6f587d619b0d6b8d3a6fa6e8430fdc7))
+
+- **deps**: Bump starlette from 0.41.3 to 0.49.1
+  ([`d066b72`](https://github.com/digitaldairychain/farm-twin/commit/d066b72e925cf5b6d4f931cac5e2609f7d8c39d4))
+
+- **deps**: Bump urllib3 from 2.3.0 to 2.5.0
+  ([`e75745d`](https://github.com/digitaldairychain/farm-twin/commit/e75745dbb691db314cf8a1515319004ea6a58da3))
+
+- **deps**: Updating libraries
+  ([`d63bb0f`](https://github.com/digitaldairychain/farm-twin/commit/d63bb0f20ced454c62dc6749c56727fb793130ff))
+
+
 ## v0.1.0 (2025-08-28)
 
 ### Bug Fixes
