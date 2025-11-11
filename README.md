@@ -1,6 +1,10 @@
-# { farm-twin } #
+<div align="center" >
+  <img src="ft_logo.png" alt="{ farm-twin } Logo" width="300">
+  <p>{ farm-twin } is a Digital Twin designed to provide a functional digital replica of an operational agricultural farm.</p>
+</div>
 
-{ farm-twin } is a Digital Twin designed to provide a functional digital replica of an operational agricultural farm.
+
+
 
 ## Installation and Dependencies ##
 
@@ -49,7 +53,7 @@ This software is licensed under the [GNU Affero General Public License v3](https
 
 ## Contact ##
 
-For any questions or queries, please contact [Matt Broadbent](https://pure.sruc.ac.uk/en/persons/matt-broadbent) in the first instance.
+For any general, press and media enquiries, please email us: [contact@farm-twin.org](mailto:contact@farm-twin.org)
 
 ## Development Roadmap ## 
 

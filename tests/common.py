@@ -40,16 +40,16 @@ def check_object_similarity(payload, response):
                 raise e
 
 
-def create_get(test_client, path, payload, key, expected_code=201):
+def create_get(test_client, path, header, payload, key, expected_code=201):
     """
     POST an object with a given payload and the GET the contents to check
     if it exists.
     """
-    response = test_client.post(path, json=payload)
+    response = test_client.post(path, headers=header, json=payload)
     response_json = response.json()
     assert response.status_code == expected_code
     if response.status_code == 201:
-        response = test_client.get(path + f"/?ft={response_json['ft']}")
+        response = test_client.get(path + f"/?ft={response_json['ft']}", headers=header)
         assert response.status_code == 200
         assert len(response.json()[key]) == 1
         response_json = response.json()[key][0]
@@ -58,16 +58,17 @@ def create_get(test_client, path, payload, key, expected_code=201):
 
 
 def create_get_update(
-    test_client, path, payload, payload_updated, key, expected_code=202
+    test_client, path, header, payload, payload_updated, key, expected_code=202
 ):
     """
     POST an object with a given payload, PATCH it with an updated payload,
     then GET the contents to check if it exists.
     """
-    response_json = create_get(test_client, path, payload, key)
+    response_json = create_get(test_client, path, header, payload, key)
     _id = response_json["ft"]
     response = test_client.patch(
         path + f"/{_id}",
+        headers=header,
         json=payload_updated,
     )
     response_json = response.json()
@@ -77,48 +78,48 @@ def create_get_update(
     return response_json
 
 
-def create_delete(test_client, path, payload, key):
+def create_delete(test_client, path, header, payload, key):
     """
     POST an object with a given payload, DELETE an object with a given payload
     and then GET the contents to check if it exists (it shouldn't).
     """
-    response_json = create_get(test_client, path, payload, key)
+    response_json = create_get(test_client, path, header, payload, key)
     _id = response_json["ft"]
-    response = test_client.delete(path + f"/{_id}")
+    response = test_client.delete(path + f"/{_id}", headers=header)
     assert response.status_code == 204
-    response = test_client.get(path + f"/?ft={_id}")
+    response = test_client.get(path + f"/?ft={_id}", headers=header)
     assert response.status_code == 404
 
 
-def get_not_found(test_client, path, object_id):
+def get_not_found(test_client, path, header, object_id):
     """GET a random object that shouldn't exist."""
-    response = test_client.get(path + f"/?ft={object_id}")
+    response = test_client.get(path + f"/?ft={object_id}", headers=header)
     assert response.status_code == 404
 
 
-def create_wrong_payload(test_client, path):
+def create_wrong_payload(test_client, path, header):
     """POST with an invalid payload"""
-    response = test_client.post(path, json={})
+    response = test_client.post(path, headers=header, json={})
     assert response.status_code == 422
 
 
-def update_doesnt_exist(test_client, path, payload, object_id):
+def update_doesnt_exist(test_client, path, header, payload, object_id):
     """PATCH an object that doesn't exist."""
-    response = test_client.patch(path + f"/{object_id}", json=payload)
+    response = test_client.patch(path + f"/{object_id}", headers=header, json=payload)
     assert response.status_code == 404
 
 
-def create_duplicate(test_client, path, payload, key):
+def create_duplicate(test_client, path, header, payload, key):
     """POST the same object twice - the second time should produce an error."""
-    create_get(test_client, path, payload, key)
-    create_get(test_client, path, payload, key, expected_code=404)
+    create_get(test_client, path, header, payload, key)
+    create_get(test_client, path, header, payload, key, expected_code=404)
 
 
-def test_endpoint(tc, path, payload, key, oid, update):
+def test_endpoint(tc, path, header, payload, key, oid, update):
     if update:
         pass
     else:
-        create_get(tc, path, payload, key)
-        create_delete(tc, path, payload, key)
-        get_not_found(tc, path, oid)
-        create_wrong_payload(tc, path)
+        create_get(tc, path, header, payload, key)
+        create_delete(tc, path, header, payload, key)
+        get_not_found(tc, path, header, oid)
+        create_wrong_payload(tc, path, header)

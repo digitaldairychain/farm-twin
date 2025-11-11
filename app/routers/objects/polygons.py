@@ -16,13 +16,21 @@ and finding of those points.
 import uuid
 from typing import List, Optional
 
-from bson.objectid import ObjectId
-from fastapi import APIRouter, HTTPException, Request, Response, status
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    Request,
+    Response,
+    Security,
+    status
+)
 from geojson_pydantic import FeatureCollection, MultiPolygon
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
 from ..ftCommon import add_one_to_db, delete_one_from_db
+from ..users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/polygons",
@@ -57,23 +65,43 @@ class Polygon(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_polygon(request: Request, polygon: Polygon):
+async def create_polygon(
+    request: Request,
+    polygon: Polygon,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_polygons"])
+    ],
+):
     """
     Create a new polygon.
 
     :param polygon: Polygon to be added
     """
-    return await add_one_to_db(polygon, request.app.state.polygons, ERROR_MSG_OBJECT)
+    return await add_one_to_db(
+        polygon,
+        request.app.state.polygons,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.delete("/{id}", response_description="Delete a polygon")
-async def remove_polygon(request: Request, ft: mongo_object_id.MongoObjectId):
+async def remove_polygon(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_polygons"])
+    ],
+):
     """
     Delete a polygon.
 
     :param id: UUID of the polygon to delete
     """
-    return await delete_one_from_db(request.app.state.polygons, ft, ERROR_MSG_OBJECT)
+    return await delete_one_from_db(
+        request.app.state.polygons,
+        ft,
+        ERROR_MSG_OBJECT
+    )
 
 
 @router.get(
@@ -83,7 +111,13 @@ async def remove_polygon(request: Request, ft: mongo_object_id.MongoObjectId):
     response_model_by_alias=False,
 )
 async def polygon_query(
-    request: Request, response: Response, id: str | None = None, tag: str | None = None
+    request: Request,
+    response: Response,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_polygons"])
+    ],
+    id: str | None = None,
+    tag: str | None = None,
 ):
     """
     Search for a polygon given the provided criteria.
@@ -93,7 +127,7 @@ async def polygon_query(
     """
     query = {}
     if id:
-        query["_id"] = ObjectId(id)
+        query["_id"] = mongo_object_id.MongoObjectId(id)
     if tag:
         query["tags"] = {"$in": [tag]}
     result = await request.app.state.polygons.find(query).to_list(1000)

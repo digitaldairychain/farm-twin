@@ -8,13 +8,20 @@ and finding of feed storages.
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Request, Security, status
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
-from ..ftCommon import (add_one_to_db, dateBuild, delete_one_from_db,
-                        find_in_db, update_one_in_db)
+from ..ftCommon import (
+    add_one_to_db,
+    dateBuild,
+    delete_one_from_db,
+    find_in_db,
+    update_one_in_db,
+)
 from ..icar.icarResources import icarFeedStorageResource as FeedStorage
+from ..users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/feed_storage",
@@ -36,7 +43,13 @@ class FeedStorageCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_feed_storage(request: Request, feed_storage: FeedStorage):
+async def create_feed_storage(
+    request: Request,
+    feed_storage: FeedStorage,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_feed_storage"])
+    ],
+):
     """
     Create a new feed storage.
 
@@ -48,7 +61,13 @@ async def create_feed_storage(request: Request, feed_storage: FeedStorage):
 
 
 @router.delete("/{ft}", response_description="Delete a feed storage")
-async def remove_feed_storage(request: Request, ft: mongo_object_id.MongoObjectId):
+async def remove_feed_storage(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_feed_storage"])
+    ],
+):
     """
     Delete a feed storage.
 
@@ -66,7 +85,12 @@ async def remove_feed_storage(request: Request, ft: mongo_object_id.MongoObjectI
     status_code=status.HTTP_202_ACCEPTED,
 )
 async def update_feed_storage(
-    request: Request, ft: mongo_object_id.MongoObjectId, feed_storage: FeedStorage
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    feed_storage: FeedStorage,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_feed_storage"])
+    ],
 ):
     """
     Update an existing feed_storage if it exists.
@@ -87,6 +111,9 @@ async def update_feed_storage(
 )
 async def feed_storage_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_feed_storage"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     id: str | None = None,
     serial: str | None = None,
@@ -117,7 +144,7 @@ async def feed_storage_query(
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.modified": dateBuild(modifiedStart, modifiedEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.feed_storage, query)
     return FeedStorageCollection(feed_storage=result)

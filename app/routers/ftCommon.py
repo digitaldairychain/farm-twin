@@ -55,8 +55,6 @@ async def add_one_to_db(model, db, error_msg_object: str):
 
 async def delete_one_from_db(db, ft: mongo_object_id, error_msg_object: str):
     delete_result = await db.delete_one({"_id": ft})
-    print(ft)
-    print(delete_result.deleted_count)
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 

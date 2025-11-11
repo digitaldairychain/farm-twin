@@ -18,13 +18,13 @@ and finding of those samples.
 from datetime import datetime
 from typing import List, Optional
 
-from bson.objectid import ObjectId
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Query, Request, Security, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
+from typing_extensions import Annotated
 
-from ..ftCommon import (FTModel, add_one_to_db, dateBuild, delete_one_from_db,
-                        find_in_db)
+from ..ftCommon import FTModel, add_one_to_db, dateBuild, delete_one_from_db, find_in_db
+from ..users import User, get_current_active_user
 
 router = APIRouter(
     prefix="/samples",
@@ -39,7 +39,7 @@ class Sample(FTModel):
     sensor: mongo_object_id.MongoObjectId = Field(
         json_schema_extra={
             "description": "ObjectID of sensor",
-            "example": str(ObjectId()),
+            "example": str(mongo_object_id.MongoObjectId()),
         }
     )
     timestamp: Optional[datetime] = Field(
@@ -76,7 +76,13 @@ class SampleCollection(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_sample(request: Request, sample: Sample):
+async def create_sample(
+    request: Request,
+    sample: Sample,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_measurements"])
+    ],
+):
     """
     Create a new sample if it does not already exist.
 
@@ -88,8 +94,14 @@ async def create_sample(request: Request, sample: Sample):
     return await add_one_to_db(sample, request.app.state.samples, ERROR_MSG_OBJECT)
 
 
-@router.delete("/{ft}", response_description="Delete a samples")
-async def remove_samples(request: Request, ft: mongo_object_id.MongoObjectId):
+@router.delete("/{ft}", response_description="Delete a sample")
+async def remove_samples(
+    request: Request,
+    ft: mongo_object_id.MongoObjectId,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["write_measurements"])
+    ],
+):
     """
     Delete a sample.
 
@@ -106,6 +118,9 @@ async def remove_samples(request: Request, ft: mongo_object_id.MongoObjectId):
 )
 async def sample_query(
     request: Request,
+    current_user: Annotated[
+        User, Security(get_current_active_user, scopes=["read_measurements"])
+    ],
     ft: mongo_object_id.MongoObjectId | None = None,
     sensor: mongo_object_id.MongoObjectId | None = None,
     timestampStart: datetime | None = None,
@@ -124,7 +139,7 @@ async def sample_query(
         "timestamp": dateBuild(timestampStart, timestampEnd),
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.source": source,
-        "meta.sourceId": sourceId
+        "meta.sourceId": sourceId,
     }
     result = await find_in_db(request.app.state.samples, query)
     return SampleCollection(samples=result)
