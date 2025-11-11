@@ -83,7 +83,16 @@ def fetch_header_token(test_client, user):
 
 
 @pytest.fixture()
-def enable_user_in_db(setup_user):
+def clear_user_in_db():
+    client = MongoClient(DB_URL)
+    users = client["farm-twin"]["users"]
+    delete_operation = {"username": TEST_USER_USERNAME}
+    _ = users.delete_one(delete_operation)
+    client.close()
+
+
+@pytest.fixture()
+def enable_user_in_db():
     client = MongoClient(DB_URL)
     users = client["farm-twin"]["users"]
     query_filter = {"username": TEST_USER_USERNAME}
@@ -93,7 +102,7 @@ def enable_user_in_db(setup_user):
 
 
 @pytest.fixture()
-def set_admin_in_db(setup_user):
+def set_admin_in_db():
     client = MongoClient(DB_URL)
     users = client["farm-twin"]["users"]
     query_filter = {"username": TEST_USER_USERNAME}
