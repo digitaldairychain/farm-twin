@@ -103,7 +103,7 @@ async def repro_mating_recommendation_event_query(
     sourceId: str | None = None,
 ):
     """Search for a repro mating recommendation event given the provided
-      criteria."""
+    criteria."""
     query = {
         "_id": ft,
         "animal.id": animal,
