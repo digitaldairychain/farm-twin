@@ -10,8 +10,8 @@ An on-farm example is an outdoor weather station.
 This collection of endpoints allows for the addition, update, deletion
 and finding of those devices.
 
-Compliant with v1.4.1 ICAR Animal Data Exchange standards:
-https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarDeviceResource.json
+Compliant with v1.5.0 ICAR Animal Data Exchange standards:
+https://github.com/adewg/ICAR/blob/v1.5.0/resources/icarDeviceResource.json
 """
 
 from datetime import datetime

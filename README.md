@@ -23,7 +23,7 @@ This uses a set of default credentials in `deploy/.env`. Do not use this in prod
 
 ### ICAR ADE ###
 
-{ farm-twin } aligns with v1.4.1 of the [ICAR Animal Data Exchange Standard](https://github.com/adewg/ICAR/blob/v1.4.1). Please note that at this stage, this is not a full or feature complete implementation. Please see [ICAR-ADE.md](ICAR-ADE.md) for current status.
+{ farm-twin } aligns with v1.5.0 of the [ICAR Animal Data Exchange Standard](https://github.com/adewg/ICAR/blob/v1.5.0). Please note that at this stage, this is not a full or feature complete implementation. Please see [ICAR-ADE.md](ICAR-ADE.md) for current status.
 
 ## Testing ## 
 

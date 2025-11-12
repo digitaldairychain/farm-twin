@@ -4,8 +4,8 @@ Collects API calls related to animal repro DNB events.
 This collection of endpoints allows for the addition, deletion
 and finding of those events.
 
-Compliant with v1.4.1 ICAR Animal Data Exchange standards:
-https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarReproDoNotBreedEventResource.json
+Compliant with v1.5.0 ICAR Animal Data Exchange standards:
+https://github.com/adewg/ICAR/blob/v1.5.0/resources/icarReproDoNotBreedEventResource.json
 """
 
 from datetime import datetime

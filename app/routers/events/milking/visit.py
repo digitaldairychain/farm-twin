@@ -4,8 +4,8 @@ Collects API calls related to an animal's visit to a robot or manual milking.
 This collection of endpoints allows for the addition, deletion
 and finding of those events.
 
-Compliant with v1.4.1 ICAR Animal Data Exchange standards:
-https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarMilkingVisitEventResource.json
+Compliant with v1.5.0 ICAR Animal Data Exchange standards:
+https://github.com/adewg/ICAR/blob/v1.5.0/resources/icarMilkingVisitEventResource.json
 """
 
 from datetime import datetime
