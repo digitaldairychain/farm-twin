@@ -5,8 +5,8 @@ Collects API calls related to an animal being dried off at the end of a
 This collection of endpoints allows for the addition, deletion
 and finding of those events.
 
-Compliant with v1.4.1 ICAR Animal Data Exchange standards:
-https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarTestDayResultEventResource.json
+Compliant with v1.5.0 ICAR Animal Data Exchange standards:
+https://github.com/adewg/ICAR/blob/v1.5.0/resources/icarTestDayResultEventResource.json
 """
 
 from datetime import datetime

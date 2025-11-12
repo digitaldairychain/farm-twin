@@ -4,8 +4,8 @@ Collects API calls related to animal repro mating recommendation events.
 This collection of endpoints allows for the addition, deletion
 and finding of those events.
 
-Compliant with v1.4.1 ICAR Animal Data Exchange standards:
-https://github.com/adewg/ICAR/blob/v1.4.1/resources/icarReproMatingRecommendationResource.json
+Compliant with v1.5.0 ICAR Animal Data Exchange standards:
+https://github.com/adewg/ICAR/blob/v1.5.0/resources/icarReproMatingRecommendationResource.json
 """
 
 from datetime import datetime
@@ -103,7 +103,7 @@ async def repro_mating_recommendation_event_query(
     sourceId: str | None = None,
 ):
     """Search for a repro mating recommendation event given the provided
-      criteria."""
+    criteria."""
     query = {
         "_id": ft,
         "animal.id": animal,

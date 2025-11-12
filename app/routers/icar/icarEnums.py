@@ -1,6 +1,6 @@
 """
 Collection of enums used in ICAR data standards.
-See here for more details: https://github.com/adewg/ICAR/blob/v1.4.1/enums
+See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/enums
 """
 
 from enum import Enum
@@ -21,6 +21,7 @@ class icarDeathMethodType(str, Enum):
     _theft = ("Theft",)
     _lost = ("Lost",)
     _accident = ("Accident",)
+    _euthanized = ("Euthanized",)
     _other = "Other"
 
 
@@ -132,7 +133,9 @@ class uncefactDoseUnitsType(str, Enum):
     _L19 = ("L19",)
     _NA = ("NA",)
     _SYR = ("SYR",)
-    _WW = "WW"
+    _WW = ("WW",)
+    _TU = ("TU",)
+    _EA = "EA"
 
 
 class icarMilkSamplingSchemeType(str, Enum):
@@ -190,6 +193,7 @@ class icarConformationTraitType(str, Enum):
     _foreUdderAttachment = ("ForeUdderAttachment",)
     _foreUdderLength = ("ForeUdderLength",)
     _frame = ("Frame",)
+    _frontFeetOrientation = ("FrontFeetOrientation",)
     _frontLegsFrontView = ("FrontLegsFrontView",)
     _frontTeatPlacement = ("FrontTeatPlacement",)
     _heightAtRump = ("HeightAtRump",)
@@ -478,6 +482,8 @@ class icarFeedCategoryType(str, Enum):
 class icarAttentionCauseType(str, Enum):
     _activity = ("Activity",)
     _animalTemperature = ("AnimalTemperature",)
+    _animalTemperatureDecrease = ("AnimalTemperatureDecrease",)
+    _animalTemperatureIncrease = ("AnimalTemperatureIncrease",)
     _bodyCondition = ("BodyCondition",)
     _eatingLess = ("EatingLess",)
     _environmentTemperature = ("EnvironmentTemperature",)
@@ -539,6 +545,7 @@ class icarObservationStatusType(str, Enum):
 class icarAnimalGenderType(str, Enum):
     _female = ("Female",)
     _femaleNeuter = ("FemaleNeuter",)
+    _freemartin = ("Freemartin",)
     _male = ("Male",)
     _maleCryptorchid = ("MaleCryptorchid",)
     _maleNeuter = ("MaleNeuter",)
@@ -762,9 +769,20 @@ class icarAggregationType(str, Enum):
     _stDev = ("StDev",)
     _min = ("Min",)
     _max = ("Max",)
-    _count = "Count"
+    _count = ("Count",)
+    _range = ("Range",)
+    _index = "Index"
 
 
 class icarCarcassStateType(str, Enum):
     _hot = ("Hot",)
     _cold = "Cold"
+
+
+class icarDurationType(str, Enum):
+    _P1D = ("P1D",)
+    _PT1H = ("PT1H",)
+    _PT24H = ("PT24H",)
+    _PT96H = ("PT96H",)
+    _P1W = ("P1W",)
+    _P1M = "P1M"

@@ -1,6 +1,6 @@
 # { farm-twin } ICAR ADE Integration Status #
 
-{ farm-twin } aligns with v1.4.1 of the [ICAR Animal Data Exchange Standard](https://github.com/adewg/ICAR/blob/v1.4.1).
+{ farm-twin } aligns with v1.5.0 of the [ICAR Animal Data Exchange Standard](https://github.com/adewg/ICAR/blob/v1.5.0).
 
 However, this is currently not a full implementation. The following sections document the [resource entities](https://github.com/adewg/ICAR/wiki/Resource-entities) that are implemented. 
 

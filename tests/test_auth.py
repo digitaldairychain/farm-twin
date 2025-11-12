@@ -3,8 +3,9 @@ import pytest
 
 class TestAuth:
     @pytest.mark.order("first")
-    def test_registration_success(self, test_client, setup_registration,
-                                  clear_user_in_db):
+    def test_registration_success(
+        self, test_client, setup_registration, clear_user_in_db
+    ):
         clear_user_in_db
         user = setup_registration
         response = test_client.post("/users/user", json=user)
