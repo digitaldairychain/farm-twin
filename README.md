@@ -55,10 +55,6 @@ This software is licensed under the [GNU Affero General Public License v3](https
 
 For any general, press and media enquiries, please email us: [contact@farm-twin.org](mailto:contact@farm-twin.org)
 
-## Development Roadmap ## 
-
-Further details on planned features within { farm-twin } can be found in the TODO.md file.
-
 ## Development Team ##
 
 + [Mazdak Salavati](https://pure.sruc.ac.uk/en/persons/mazdak-salavati)
