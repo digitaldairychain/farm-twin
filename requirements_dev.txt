@@ -44,7 +44,7 @@ pyflakes==3.4.0
 Pygments==2.19.2
 PyJWT==2.10.1
 pymongo==4.15.3
-pytest==9.0.0
+pytest==9.0.1
 pytest-order==1.3.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.1
