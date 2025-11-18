@@ -1,6 +1,8 @@
 <div align="center" >
   <img src="ft_logo.png" alt="{ farm-twin } Logo" width="300">
   <p>{ farm-twin } is a Digital Twin designed to provide a functional digital replica of an operational agricultural farm.</p>
+  
+  [![CodeQL](https://github.com/digitaldairychain/farm-twin/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/digitaldairychain/farm-twin/actions/workflows/github-code-scanning/codeql) [![pytest](https://github.com/digitaldairychain/farm-twin/actions/workflows/pytest.yml/badge.svg)](https://github.com/digitaldairychain/farm-twin/actions/workflows/pytest.yml)
 </div>
 
 
