@@ -63,10 +63,6 @@ For any general, press and media enquiries, please email us: [contact@farm-twin.
 + [Ross Muers](https://pure.sruc.ac.uk/en/persons/ross-muers)
 + [Matt Broadbent](https://pure.sruc.ac.uk/en/persons/matt-broadbent)
 
-## Contributions ##
-
-We are happy to accept issues and pull requests from anybody, via our official repository.
-
 ## Acknowledgments ## 
 
 This project is possible due to funding from the UKRI [Strength in Places Fund (SIPF)](https://www.ukri.org/what-we-do/browse-our-areas-of-investment-and-support/strength-in-places-fund/) project, [Digital Dairy Chain](https://www.digitaldairychain.co.uk/). Further funding was awarded from the [Borderlands Inclusive Growth Deal](https://www.borderlandsgrowth.com/) and [South of Scotland Enterprise](https://www.southofscotlandenterprise.com/) through the Dairy Nexus project.
