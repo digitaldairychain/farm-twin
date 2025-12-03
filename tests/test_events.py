@@ -30,6 +30,32 @@ class TestEvents:
                 path, header, _, _ = setup_feed_intake
                 common.create_wrong_payload(test_client, path, header)
 
+    class TestHealth:
+        class TestTreatment:
+            def test_create_treatment_event(
+                self, test_client, setup_treatment
+            ):
+                path, header, key, data = setup_treatment
+                common.create_get(test_client, path, header, data, key)
+
+            def test_create_delete_treatment_event(
+                self, test_client, setup_treatment
+            ):
+                path, header, key, data = setup_treatment
+                common.create_delete(test_client, path, header, data, key)
+
+            def test_get_treatment_event_not_found(
+                self, test_client, object_id, setup_treatment
+            ):
+                path, header, _, _ = setup_treatment
+                common.get_not_found(test_client, path, header, object_id)
+
+            def test_create_treatment_event_wrong_payload(
+                self, test_client, setup_treatment
+            ):
+                path, header, _, _ = setup_treatment
+                common.create_wrong_payload(test_client, path, header)
+
     class TestWithdrawal:
         def test_create_withdrawal_event(self, test_client, setup_withdrawal):
             path, header, key, data = setup_withdrawal

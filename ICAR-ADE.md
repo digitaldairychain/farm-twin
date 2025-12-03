@@ -44,7 +44,7 @@ Following that, we outline any changes that have been made to the specification 
 - [ ] icarAnimalSetJoinEventResource
 - [ ] icarAnimalSetLeaveEventResource
 - [ ] icarDiagnosisEventResource
-- [ ] icarTreatmentEventResource
+- [x] icarTreatmentEventResource
 - [ ] icarTreatmentProgramEventResource
 - [ ] icarGroupTreatmentEventResource
 - [x] icarFeedIntakeEventResource

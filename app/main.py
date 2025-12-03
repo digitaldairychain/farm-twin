@@ -10,6 +10,7 @@ from app import __version__
 from .routers import attachments, users
 from .routers.events import attention, withdrawal
 from .routers.events.feeding import feed_intake
+from .routers.events.health import treatment
 from .routers.events.milking import (
     drying_off,
     lactation_status,
@@ -94,6 +95,8 @@ app.include_router(carcass.router, prefix="/events/observations")
 app.include_router(health_status.router, prefix="/events/observations")
 app.include_router(position.router, prefix="/events/observations")
 
+app.include_router(treatment.router, prefix="/events/health")
+
 app.include_router(repro_status.router, prefix="/events/reproduction")
 app.include_router(repro_abortion.router, prefix="/events/reproduction")
 app.include_router(repro_do_not_breed.router, prefix="/events/reproduction")
@@ -153,6 +156,8 @@ async def open_db() -> AsyncMongoClient:
     app.state.carcass = _ft["events"]["observations"]["carcass"]
     app.state.health_status = _ft["events"]["observations"]["health_status"]
     app.state.position = _ft["events"]["observations"]["position"]
+
+    app.state.treatment = _ft["events"]["health"]["treatment"]
 
     app.state.repro_status = _ft["events"]["reproduction"]["repro_status"]
     app.state.repro_abortion = _ft["events"]["reproduction"]["repro_abortion"]

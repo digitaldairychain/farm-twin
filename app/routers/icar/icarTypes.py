@@ -5,14 +5,16 @@ See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/enums
 
 from typing import Optional
 
-from pydantic import BaseModel, Field, PastDatetime, FutureDatetime
+from datetime import datetime
+from pydantic import BaseModel, Field, FutureDatetime, PastDatetime
 
 from . import icarEnums
 
 
 class icarFeedDurationType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarFeedDurationType.__name__)
+        default_factory=lambda: icarFeedDurationType.__name__
+    )
     unitCode: Optional[str] = Field(
         default=None,
         json_schema_extra={
@@ -29,7 +31,8 @@ class icarFeedDurationType(BaseModel):
 
 class icarIdentifierType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarIdentifierType.__name__)
+        default_factory=lambda: icarIdentifierType.__name__
+    )
     id: str = Field(
         json_schema_extra={
             "description": "A unique identification for the resource issued under the auspices of the scheme."
@@ -51,7 +54,8 @@ class icarCarcassMetricIdentifierType(icarIdentifierType):
 
 class icarCarcassMetricType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarCarcassMetricType.__name__)
+        default_factory=lambda: icarCarcassMetricType.__name__
+    )
     id: Optional[icarCarcassMetricIdentifierType] = Field(
         default=None,
         json_schema_extra={
@@ -81,18 +85,21 @@ class icarTraitLabelIdentifierType(icarIdentifierType):
 
 class icarBreedingValueType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarBreedingValueType.__name__)
+        default_factory=lambda: icarBreedingValueType.__name__
+    )
     traitLabel: Optional[icarTraitLabelIdentifierType] = Field(
         default=None,
         json_schema_extra={
             "description": "The scheme and id of the trait for which a breeding value is calculated"
         },
     )
-    calculationType: Optional[icarEnums.icarBreedingValueCalculationType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Indicates the calculation method/type for the breeding value."
-        },
+    calculationType: Optional[icarEnums.icarBreedingValueCalculationType] = (
+        Field(
+            default=None,
+            json_schema_extra={
+                "description": "Indicates the calculation method/type for the breeding value."
+            },
+        )
     )
     value: Optional[float] = Field(
         default=None,
@@ -101,7 +108,8 @@ class icarBreedingValueType(BaseModel):
     reliability: Optional[float] = Field(
         default=None,
         json_schema_extra={
-            "description": "The reliability of the breeding value"},
+            "description": "The reliability of the breeding value"
+        },
     )
     resolution: Optional[float] = Field(
         default=None,
@@ -113,7 +121,8 @@ class icarBreedingValueType(BaseModel):
 
 class icarFeedQuantityType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarFeedQuantityType.__name__)
+        default_factory=lambda: icarFeedQuantityType.__name__
+    )
     unitCode: icarEnums.uncefactMassUnitsType = Field(
         json_schema_extra={
             "description": "Units specified in UN/CEFACT 3-letter form. Default if not specified is KGM."
@@ -121,7 +130,8 @@ class icarFeedQuantityType(BaseModel):
     )
     value: float = Field(
         json_schema_extra={
-            "description": "The feed quantity in the units specified."},
+            "description": "The feed quantity in the units specified."
+        },
     )
 
 
@@ -134,7 +144,8 @@ class icarDiagnosisIdentifierType(icarIdentifierType):
 
 class icarMilkDurationType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarMilkDurationType.__name__)
+        default_factory=lambda: icarMilkDurationType.__name__
+    )
     unitCode: Optional[str] = Field(
         default=None,
         json_schema_extra={
@@ -169,7 +180,8 @@ class icarMilkCharacteristicsType(BaseModel):
     )
     value: str = Field(
         json_schema_extra={
-            "description": "the value of the characteristic measured"},
+            "description": "the value of the characteristic measured"
+        },
     )
     unit: Optional[str] = Field(
         default=None,
@@ -202,7 +214,8 @@ class icarQuarterMilkingSampleType(BaseModel):
     bottlePosition: Optional[str] = Field(
         default=None,
         json_schema_extra={
-            "description": "Position of the bottle in the sample rack"},
+            "description": "Position of the bottle in the sample rack"
+        },
     )
     bottleIdentifier: Optional[str] = Field(
         default=None,
@@ -226,11 +239,13 @@ class icarQuarterMilkingSampleType(BaseModel):
 
 class icarQuarterMilkingType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarQuarterMilkingType.__name__)
+        default_factory=lambda: icarQuarterMilkingType.__name__
+    )
     icarQuarterId: Optional[str] = Field(
         default=None,
         json_schema_extra={
-            "description": "the unique id of the quarter milking"},
+            "description": "the unique id of the quarter milking"
+        },
     )
     xposition: Optional[float] = Field(
         default=None,
@@ -256,11 +271,15 @@ class icarQuarterMilkingType(BaseModel):
     quarterMilkingWeight: Optional[icarMilkingMilkWeightType] = Field(
         default=None,
     )
-    icarQuarterMilkingSample: Optional[list[icarQuarterMilkingSampleType]] = Field(
-        default=None,
+    icarQuarterMilkingSample: Optional[list[icarQuarterMilkingSampleType]] = (
+        Field(
+            default=None,
+        )
     )
-    icarQuarterCharacteristics: Optional[list[icarMilkCharacteristicsType]] = Field(
-        default=None,
+    icarQuarterCharacteristics: Optional[list[icarMilkCharacteristicsType]] = (
+        Field(
+            default=None,
+        )
     )
 
 
@@ -334,7 +353,8 @@ class PostalAddress(BaseModel):
     postalCode: Optional[str] = Field(
         default=None,
         json_schema_extra={
-            "description": "The postal code. For example, 94043."},
+            "description": "The postal code. For example, 94043."
+        },
     )
     streetAddress: Optional[str] = Field(
         default=None,
@@ -346,8 +366,11 @@ class PostalAddress(BaseModel):
 
 class icarOrganizationType(icarOrganizationIdentityType):
     resourceType: str = Field(
-        default_factory=lambda: icarOrganizationType.__name__)
-    establishmentIdentifiers: Optional[list[icarOrganizationIdentifierType]] = Field(
+        default_factory=lambda: icarOrganizationType.__name__
+    )
+    establishmentIdentifiers: Optional[
+        list[icarOrganizationIdentifierType]
+    ] = Field(
         default=None,
         json_schema_extra={
             "description": "Scheme and identifier combinations that provide official registrations for a business or establishment"
@@ -365,23 +388,20 @@ class icarOrganizationType(icarOrganizationIdentityType):
             "description": "The larger organization that this organization is a sub-organization of, if any."
         },
     )
-    membershipIdentifiers: Optional[list[icarOrganizationIdentifierType]] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "Scheme and identifier combinations that identity membership in programmes"
-        },
+    membershipIdentifiers: Optional[list[icarOrganizationIdentifierType]] = (
+        Field(
+            default=None,
+            json_schema_extra={
+                "description": "Scheme and identifier combinations that identity membership in programmes"
+            },
+        )
     )
-
-
-class icarDateTimeType(PastDatetime):
-    resourceType: str = Field(
-        default_factory=lambda: icarDateTimeType.__name__)
-    pass
 
 
 class icarInterestedPartyType(icarOrganizationType):
     resourceType: str = Field(
-        default_factory=lambda: icarInterestedPartyType.__name__)
+        default_factory=lambda: icarInterestedPartyType.__name__
+    )
     pass
 
 
@@ -417,11 +437,13 @@ class icarConsignmentDeclarationType(BaseModel):
 
 class icarConsignmentType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarConsignmentType.__name__)
+        default_factory=lambda: icarConsignmentType.__name__
+    )
     id: Optional[icarIdentifierType] = Field(
         default=None,
         json_schema_extra={
-            "description": "Official identifier for the movement."},
+            "description": "Official identifier for the movement."
+        },
     )
     originLocation: Optional[icarLocationIdentifierType] = Field(
         default=None,
@@ -467,13 +489,13 @@ class icarConsignmentType(BaseModel):
             "description": "The organisational details of the destination, including any necessary identifiers."
         },
     )
-    loadingDateTime: Optional[icarDateTimeType] = Field(
+    loadingDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date and time animals were loaded for transport (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    unloadingDateTime: Optional[icarDateTimeType] = Field(
+    unloadingDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date and time animals were unloaded after transport (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -500,7 +522,8 @@ class icarConsignmentType(BaseModel):
     transportReference: Optional[str] = Field(
         default=None,
         json_schema_extra={
-            "description": "Shipping or transporter reference."},
+            "description": "Shipping or transporter reference."
+        },
     )
     isolationFacilityUsed: Optional[bool] = Field(
         default=None,
@@ -560,7 +583,8 @@ class icarConsignmentType(BaseModel):
 
 class icarPlantChainType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarPlantChainType.__name__)
+        default_factory=lambda: icarPlantChainType.__name__
+    )
     plant: icarOrganizationType = Field(
         json_schema_extra={
             "description": "Identifies the plant using an Organization object."
@@ -581,7 +605,8 @@ class icarPlantChainType(BaseModel):
 
 class icarProcessingLotType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarProcessingLotType.__name__)
+        default_factory=lambda: icarProcessingLotType.__name__
+    )
     id: Optional[str] = Field(
         default=None,
         json_schema_extra={
@@ -598,7 +623,7 @@ class icarProcessingLotType(BaseModel):
             "description": "The processing plant and chain for this lot."
         },
     )
-    killDateTime: Optional[icarDateTimeType] = Field(
+    killDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The date and time at which killing on the lot started"
@@ -655,13 +680,15 @@ class icarProcessingLotType(BaseModel):
 
 class icarBreedIdentifierType(icarIdentifierType):
     resourceType: str = Field(
-        default_factory=lambda: icarBreedIdentifierType.__name__)
+        default_factory=lambda: icarBreedIdentifierType.__name__
+    )
     pass
 
 
 class icarAnimalIdentifierType(icarIdentifierType):
     resourceType: str = Field(
-        default_factory=lambda: icarAnimalIdentifierType.__name__)
+        default_factory=lambda: icarAnimalIdentifierType.__name__
+    )
     pass
 
 
@@ -672,7 +699,7 @@ class icarCarcassType(BaseModel):
             "description": "The lot in which the carcass was processed. "
         },
     )
-    killDateTime: Optional[icarDateTimeType] = Field(
+    killDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "Date/time the animal was killed. Ideally this should be a precise date and time. However, older systems may only be able to supply the date."
@@ -694,7 +721,7 @@ class icarCarcassType(BaseModel):
             "description": "The sex of the animal as assessed at the processing plant."
         },
     )
-    birthDate: Optional[icarDateTimeType] = Field(
+    birthDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "Assessed date of birth of the animal represented using RFC3339 (UTC)."
@@ -789,7 +816,8 @@ class icarAnimalSetReferenceType(icarResourceReferenceType):
 
 class icarMetaDataType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarMetaDataType.__name__)
+        default_factory=lambda: icarMetaDataType.__name__
+    )
     source: str = Field(
         json_schema_extra={
             "description": "Source where data is retrieved from. URI  or reverse DNS that identifies the source system."
@@ -840,7 +868,8 @@ class icarMetaDataType(BaseModel):
 
 class icarBVBaseIdentifierType(icarIdentifierType):
     resourceType: str = Field(
-        default_factory=lambda: icarBVBaseIdentifierType.__name__)
+        default_factory=lambda: icarBVBaseIdentifierType.__name__
+    )
     pass
 
 
@@ -861,7 +890,7 @@ class icarMedicineWithdrawalType(BaseModel):
             "description": "Product or food item affected by this withdrawal."
         },
     )
-    endDate: Optional[icarDateTimeType] = Field(
+    endDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC end date of withdrawal calculated based on treatment date and medicine rules (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -877,7 +906,8 @@ class icarMedicineWithdrawalType(BaseModel):
 
 class icarPositionType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarPositionType.__name__)
+        default_factory=lambda: icarPositionType.__name__
+    )
     position: Optional[icarEnums.icarPositionOnAnimalType] = Field(
         default=None,
         json_schema_extra={
@@ -895,7 +925,8 @@ class icarDeviceRegistrationIdentifierType(icarIdentifierType):
 
 class icarDeviceReferenceType(icarResourceReferenceType):
     resourceType: str = Field(
-        default_factory=lambda: icarDeviceReferenceType.__name__)
+        default_factory=lambda: icarDeviceReferenceType.__name__
+    )
     model: Optional[str] = Field(
         default=None,
         json_schema_extra={
@@ -956,13 +987,15 @@ class icarConformationScoreType(BaseModel):
 
 class icarFeedIdentifierType(icarIdentifierType):
     resourceType: str = Field(
-        default_factory=lambda: icarFeedIdentifierType.__name__)
+        default_factory=lambda: icarFeedIdentifierType.__name__
+    )
     pass
 
 
 class icarFeedsInRationType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarFeedsInRationType.__name__)
+        default_factory=lambda: icarFeedsInRationType.__name__
+    )
     feedId: Optional[icarFeedIdentifierType] = Field(
         default=None,
         json_schema_extra={"description": "identifies the feed"},
@@ -970,7 +1003,8 @@ class icarFeedsInRationType(BaseModel):
     percentage: Optional[float] = Field(
         default=None,
         json_schema_extra={
-            "description": "the percentage of the feed in the ration."},
+            "description": "the percentage of the feed in the ration."
+        },
     )
 
 
@@ -1019,7 +1053,8 @@ class icarCarcassObservationType(BaseModel):
 
 class icarMassMeasureType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarMassMeasureType.__name__)
+        default_factory=lambda: icarMassMeasureType.__name__
+    )
     measurement: Optional[float] = Field(
         default=None,
         json_schema_extra={
@@ -1064,10 +1099,12 @@ class icarCostType(BaseModel):
 
 class icarConsumedRationType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarConsumedRationType.__name__)
+        default_factory=lambda: icarConsumedRationType.__name__
+    )
     rationId: icarRationIdType = Field(
         json_schema_extra={
-            "description": "The identifier for the ration consumed"},
+            "description": "The identifier for the ration consumed"
+        },
     )
     entitlement: Optional[icarFeedQuantityType] = Field(
         default=None,
@@ -1103,7 +1140,8 @@ class icarConsumedRationType(BaseModel):
 
 class icarIndividualWeightType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarIndividualWeightType.__name__)
+        default_factory=lambda: icarIndividualWeightType.__name__
+    )
     animal: Optional[icarAnimalIdentifierType] = Field(
         default=None,
         json_schema_extra={
@@ -1118,18 +1156,20 @@ class icarIndividualWeightType(BaseModel):
 
 class icarReasonIdentifierType(icarIdentifierType):
     resourceType: str = Field(
-        default_factory=lambda: icarReasonIdentifierType.__name__)
+        default_factory=lambda: icarReasonIdentifierType.__name__
+    )
     pass
 
 
 class icarMedicineBatchType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarMedicineBatchType.__name__)
+        default_factory=lambda: icarMedicineBatchType.__name__
+    )
     identifier: Optional[str] = Field(
         default=None,
         json_schema_extra={"description": "The ID, batch or lot number."},
     )
-    expiryDate: Optional[icarDateTimeType] = Field(
+    expiryDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The RFC3339 UTC expiry date of the batch (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -1139,11 +1179,13 @@ class icarMedicineBatchType(BaseModel):
 
 class icarRecommendedFeedType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarRecommendedFeedType.__name__)
+        default_factory=lambda: icarRecommendedFeedType.__name__
+    )
     feedId: Optional[icarFeedIdentifierType] = Field(
         default=None,
         json_schema_extra={
-            "description": "The identifier for the feed recommended"},
+            "description": "The identifier for the feed recommended"
+        },
     )
     entitlement: Optional[icarFeedQuantityType] = Field(
         default=None,
@@ -1160,7 +1202,8 @@ class icarMetricType(icarIdentifierType):
 
 class icarStatisticsType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarStatisticsType.__name__)
+        default_factory=lambda: icarStatisticsType.__name__
+    )
     metric: Optional[icarMetricType] = Field(
         default=None,
         json_schema_extra={
@@ -1176,7 +1219,8 @@ class icarStatisticsType(BaseModel):
     aggregation: Optional[icarEnums.icarAggregationType] = Field(
         default=None,
         json_schema_extra={
-            "description": "The aggregation applied to the metric."},
+            "description": "The aggregation applied to the metric."
+        },
     )
     value: Optional[float] = Field(
         default=None,
@@ -1186,7 +1230,8 @@ class icarStatisticsType(BaseModel):
 
 class icarGroupSpecifierType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarGroupSpecifierType.__name__)
+        default_factory=lambda: icarGroupSpecifierType.__name__
+    )
     lactationNumberRangeMin: Optional[float] = Field(
         default=None,
         json_schema_extra={
@@ -1221,7 +1266,8 @@ class icarGroupSpecifierType(BaseModel):
 
 class icarStatisticsGroupType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarStatisticsGroupType.__name__)
+        default_factory=lambda: icarStatisticsGroupType.__name__
+    )
     icarGroupType: Optional[icarEnums.icarGroupType] = Field(
         default=None,
     )
@@ -1238,7 +1284,8 @@ class icarStatisticsGroupType(BaseModel):
     statistics: Optional[list[icarStatisticsType]] = Field(
         default=None,
         json_schema_extra={
-            "description": "An array of statistics for this group."},
+            "description": "An array of statistics for this group."
+        },
     )
 
 
@@ -1255,7 +1302,8 @@ class icarDateType(PastDatetime):
 
 class icarProductReferenceType(icarResourceReferenceType):
     resourceType: str = Field(
-        default_factory=lambda: icarProductReferenceType.__name__)
+        default_factory=lambda: icarProductReferenceType.__name__
+    )
     identifiers: Optional[list[icarProductIdentifierType]] = Field(
         default=None,
         json_schema_extra={
@@ -1285,11 +1333,13 @@ class icarProductReferenceType(icarResourceReferenceType):
 
 class icarFeedReferenceType(icarProductReferenceType):
     resourceType: str = Field(
-        default_factory=lambda: icarFeedReferenceType.__name__)
+        default_factory=lambda: icarFeedReferenceType.__name__
+    )
     category: Optional[icarEnums.icarFeedCategoryType] = Field(
         default=None,
         json_schema_extra={
-            "description": "Defines the category of the feed product."},
+            "description": "Defines the category of the feed product."
+        },
     )
     type: Optional[icarFeedIdentifierType] = Field(
         default=None,
@@ -1303,17 +1353,21 @@ class icarMilkRecordingMethodType(BaseModel):
     resourceType: str = Field(
         default_factory=lambda: icarMilkRecordingMethodType.__name__
     )
-    milkRecordingProtocol: Optional[icarEnums.icarMilkRecordingProtocolType] = Field(
+    milkRecordingProtocol: Optional[
+        icarEnums.icarMilkRecordingProtocolType
+    ] = Field(
         default=None,
         json_schema_extra={
             "description": "Protocol A: Official MRO representative, Protocol B: Herd owner or its nominee, Protocol C: Official MRO representative or herd owner or its nominee."
         },
     )
-    milkRecordingScheme: Optional[icarEnums.icarMilkRecordingSchemeType] = Field(
-        default=None,
-        json_schema_extra={
-            "description": "all milkings at testday, all milkings in period, one milking at testday."
-        },
+    milkRecordingScheme: Optional[icarEnums.icarMilkRecordingSchemeType] = (
+        Field(
+            default=None,
+            json_schema_extra={
+                "description": "all milkings at testday, all milkings in period, one milking at testday."
+            },
+        )
     )
     milkingsPerDay: Optional[icarEnums.icarMilkingsPerDayType] = Field(
         default=None,
@@ -1369,12 +1423,14 @@ class icarSireRecommendationType(BaseModel):
     sireOfficialName: Optional[str] = Field(
         default=None,
         json_schema_extra={
-            "description": "Official herdbook name of the sire."},
+            "description": "Official herdbook name of the sire."
+        },
     )
     sireURI: Optional[str] = Field(
         default=None,
         json_schema_extra={
-            "description": "URI to an AnimalCoreResource for the sire."},
+            "description": "URI to an AnimalCoreResource for the sire."
+        },
     )
     isSexedSemen: Optional[bool] = Field(
         default=None,
@@ -1423,7 +1479,7 @@ class icarInventoryTransactionType(BaseModel):
             "description": "The supplier of the product in this transaction.  This is particularly relevant if the transaction is a receipt."
         },
     )
-    expiryDate: Optional[icarDateTimeType] = Field(
+    expiryDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "The expiry date of the product supplied in the transaction."
@@ -1432,7 +1488,8 @@ class icarInventoryTransactionType(BaseModel):
     totalCost: Optional[float] = Field(
         default=None,
         json_schema_extra={
-            "description": "Total cost applied to this transaction"},
+            "description": "Total cost applied to this transaction"
+        },
     )
     currency: Optional[str] = Field(
         default=None,
@@ -1463,7 +1520,8 @@ class icarMedicineIdentifierType(icarIdentifierType):
 
 class icarMedicineDoseType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarMedicineDoseType.__name__)
+        default_factory=lambda: icarMedicineDoseType.__name__
+    )
     doseQuantity: Optional[float] = Field(
         default=None,
         json_schema_extra={
@@ -1500,13 +1558,13 @@ class icarMedicineCourseSummaryType(BaseModel):
     resourceType: str = Field(
         default_factory=lambda: icarMedicineCourseSummaryType.__name__
     )
-    startDate: Optional[icarDateTimeType] = Field(
+    startDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC start date of the treatment course (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)"
         },
     )
-    endDate: Optional[icarDateTimeType] = Field(
+    endDate: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC End date of the treatment course (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)"
@@ -1515,7 +1573,8 @@ class icarMedicineCourseSummaryType(BaseModel):
     medicine: Optional[icarMedicineReferenceType] = Field(
         default=None,
         json_schema_extra={
-            "description": "Medicine details used in the course."},
+            "description": "Medicine details used in the course."
+        },
     )
     procedure: Optional[str] = Field(
         default=None,
@@ -1538,7 +1597,8 @@ class icarMedicineCourseSummaryType(BaseModel):
     totalDose: Optional[icarMedicineDoseType] = Field(
         default=None,
         json_schema_extra={
-            "description": "Total dose proposed or administered."},
+            "description": "Total dose proposed or administered."
+        },
     )
     numberOfTreatments: Optional[float] = Field(
         default=None,
@@ -1606,7 +1666,9 @@ class icarInventoryClassificationType(BaseModel):
             "description": "The range of birth dates. Use YYYY (all one year), YYYY-MM (one month), or two RFC3339 date-times separated by / to represent a range."
         },
     )
-    reproductiveStatus: Optional[icarEnums.icarAnimalReproductionStatusType] = Field(
+    reproductiveStatus: Optional[
+        icarEnums.icarAnimalReproductionStatusType
+    ] = Field(
         default=None,
         json_schema_extra={
             "description": "The reproductive/pregnancy status of animals."
@@ -1616,9 +1678,11 @@ class icarInventoryClassificationType(BaseModel):
         default=None,
         json_schema_extra={"description": "The lactation status of animals."},
     )
-    productionPurposes: Optional[list[icarEnums.icarProductionPurposeType]] = Field(
-        default=None,
-        json_schema_extra={"description": "Array of production purposes."},
+    productionPurposes: Optional[list[icarEnums.icarProductionPurposeType]] = (
+        Field(
+            default=None,
+            json_schema_extra={"description": "Array of production purposes."},
+        )
     )
     reference: Optional[str] = Field(
         default=None,
@@ -1632,7 +1696,7 @@ class icarObservationStatisticsType(icarStatisticsType):
     resourceType: str = Field(
         default_factory=lambda: icarObservationStatisticsType.__name__
     )
-    startDateTime: icarDateTimeType = Field(
+    startDateTime: datetime = Field(
         json_schema_extra={
             "description": "The start date/time of the aggregation period for this particular statistic."
         },
@@ -1652,7 +1716,8 @@ class icarObservationStatisticsType(icarStatisticsType):
 
 class icarAnimalStateType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarAnimalStateType.__name__)
+        default_factory=lambda: icarAnimalStateType.__name__
+    )
     currentLactationParity: Optional[float] = Field(
         default=None,
         json_schema_extra={"description": "The current parity of the animal."},
@@ -1679,16 +1744,19 @@ class icarAnimalStateType(BaseModel):
 
 class icarAnimalIdType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarAnimalIdType.__name__)
+        default_factory=lambda: icarAnimalIdType.__name__
+    )
     pass
 
 
 class icarConsumedFeedType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarConsumedFeedType.__name__)
+        default_factory=lambda: icarConsumedFeedType.__name__
+    )
     feedId: icarFeedIdentifierType = Field(
         json_schema_extra={
-            "description": "The identifier for the feed consumed"},
+            "description": "The identifier for the feed consumed"
+        },
     )
     entitlement: Optional[icarFeedQuantityType] = Field(
         default=None,
@@ -1724,7 +1792,8 @@ class icarConsumedFeedType(BaseModel):
 
 class icarTraitAmountType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarTraitAmountType.__name__)
+        default_factory=lambda: icarTraitAmountType.__name__
+    )
     unitCode: str = Field(
         json_schema_extra={
             "description": "UN/CEFACT Common Code for Units of Measurement."
@@ -1735,7 +1804,8 @@ class icarTraitAmountType(BaseModel):
 
 class icarBreedFractionsType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarBreedFractionsType.__name__)
+        default_factory=lambda: icarBreedFractionsType.__name__
+    )
     denominator: int = Field(
         json_schema_extra={
             "description": "The denominator of breed fractions - for instance 16, 64, or 100."
@@ -1810,11 +1880,13 @@ class icarPropertyIdentifierType(icarIdentifierType):
 
 class icarFeedPropertyType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarFeedPropertyType.__name__)
+        default_factory=lambda: icarFeedPropertyType.__name__
+    )
     propertyIdentifier: Optional[icarPropertyIdentifierType] = Field(
         default=None,
         json_schema_extra={
-            "description": "identifies the property of the feed"},
+            "description": "identifies the property of the feed"
+        },
     )
     value: Optional[float] = Field(
         default=None,
@@ -1857,7 +1929,8 @@ class icarAnimalMilkingSampleType(BaseModel):
     bottlePosition: Optional[str] = Field(
         default=None,
         json_schema_extra={
-            "description": "Position of the bottle in the sample rack"},
+            "description": "Position of the bottle in the sample rack"
+        },
     )
     bottleIdentifier: Optional[str] = Field(
         default=None,
@@ -1881,11 +1954,13 @@ class icarAnimalMilkingSampleType(BaseModel):
 
 class icarDiagnosisType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarDiagnosisType.__name__)
+        default_factory=lambda: icarDiagnosisType.__name__
+    )
     id: Optional[str] = Field(
         default=None,
         json_schema_extra={
-            "description": "Unique identifier for this diagnosis."},
+            "description": "Unique identifier for this diagnosis."
+        },
     )
     name: Optional[str] = Field(
         default=None,
@@ -1896,7 +1971,8 @@ class icarDiagnosisType(BaseModel):
     description: Optional[str] = Field(
         default=None,
         json_schema_extra={
-            "description": "Description of the diagnosis or problem."},
+            "description": "Description of the diagnosis or problem."
+        },
     )
     diagnosisCode: Optional[icarDiagnosisIdentifierType] = Field(
         default=None,
@@ -1936,13 +2012,14 @@ class icarDiagnosisType(BaseModel):
 
 class icarReproHeatWindowType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarReproHeatWindowType.__name__)
-    startDateTime: icarDateTimeType = Field(
+        default_factory=lambda: icarReproHeatWindowType.__name__
+    )
+    startDateTime: datetime = Field(
         json_schema_extra={
             "description": "RFC3339 UTC date/time when the optimum insemination window starts (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
         },
     )
-    endDateTime: Optional[icarDateTimeType] = Field(
+    endDateTime: Optional[datetime] = Field(
         default=None,
         json_schema_extra={
             "description": "RFC3339 UTC date/time when the optimum insemination window ends (see https://ijmacd.github.io/rfc3339-iso8601/ for format guidance)."
@@ -1958,7 +2035,8 @@ class icarReproHeatWindowType(BaseModel):
 
 class icarParentageType(BaseModel):
     resourceType: str = Field(
-        default_factory=lambda: icarParentageType.__name__)
+        default_factory=lambda: icarParentageType.__name__
+    )
     parentOf: icarAnimalIdentifierType = Field(
         json_schema_extra={
             "description": "References the child of this parent (allowing you to build multi-generation pedigrees)."
@@ -2017,7 +2095,8 @@ class icarRecommendedRationType(BaseModel):
     rationId: Optional[icarRationIdType] = Field(
         default=None,
         json_schema_extra={
-            "description": "The identifier for the ration recommended"},
+            "description": "The identifier for the ration recommended"
+        },
     )
     entitlement: Optional[icarFeedQuantityType] = Field(
         default=None,

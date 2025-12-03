@@ -1084,3 +1084,46 @@ def semen_straw_payload_updated(object_id):
             "modified": str(datetime.now()),
         },
     }
+
+
+@pytest.fixture()
+def setup_treatment(object_id, test_client, fetch_token_admin):
+    """Generate a treatment payload."""
+    key = "treatment"
+    path = "/events/health/" + key
+    data = {
+        "medicine": {
+            "identifier": {
+                "id": object_id,
+                "scheme": "uk.gov"
+            },
+            "family": "Veterinary Supplies",
+            "name": "Metacam"
+        },
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
+        "procedure": "Oral",
+        "batches": [
+            {
+                "identifier": "00201",
+                "expiryDate": str(datetime.now() + timedelta(days=1))
+            }
+        ],
+        "withdrawals": [
+            {
+                "productType": "Meat",
+                "endDate": str(datetime.now() + timedelta(days=1))
+            }
+        ],
+        "dose": {
+            "doseQuantity": 3.5,
+            "doseUnits": "MLT"
+        },
+        "meta": {
+            "source": TEST_SOURCE,
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
+    }
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
+    clear_test_data(test_client, path, key)
