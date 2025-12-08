@@ -1127,3 +1127,38 @@ def setup_treatment(object_id, test_client, fetch_token_admin):
     header, _, _ = fetch_token_admin
     yield path, header, key, data
     clear_test_data(test_client, path, key)
+
+
+@pytest.fixture()
+def setup_diagnosis(test_client, fetch_token_admin):
+    """Generate a diagnosis payload."""
+    key = "diagnosis"
+    path = "/events/health/" + key
+    data = {
+        "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
+        "diagnoses": [
+            {
+                "id": "DEF0101",
+                "name": "Mastitis",
+                "stage": "Early",
+                "severity": "Light",
+                "severityScore": 10,
+                "positions": [
+                    {
+                        "position": "UdderFrontLeft"
+                    },
+                    {
+                        "position": "UdderFrontRight"
+                    }
+                ]
+            }
+        ],
+        "meta": {
+            "source": TEST_SOURCE,
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now())
+        }
+    }
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
+    clear_test_data(test_client, path, key)

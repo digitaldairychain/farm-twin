@@ -43,7 +43,7 @@ Following that, we outline any changes that have been made to the specification 
 - [x] icarGroupWeightEventResource
 - [ ] icarAnimalSetJoinEventResource
 - [ ] icarAnimalSetLeaveEventResource
-- [ ] icarDiagnosisEventResource
+- [x] icarDiagnosisEventResource
 - [x] icarTreatmentEventResource
 - [ ] icarTreatmentProgramEventResource
 - [ ] icarGroupTreatmentEventResource

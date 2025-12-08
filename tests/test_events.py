@@ -56,6 +56,31 @@ class TestEvents:
                 path, header, _, _ = setup_treatment
                 common.create_wrong_payload(test_client, path, header)
 
+        class TestDiagnosis:
+            def test_create_diagnosis_event(
+                self, test_client, setup_diagnosis
+            ):
+                path, header, key, data = setup_diagnosis
+                common.create_get(test_client, path, header, data, key)
+
+            def test_create_delete_diagnosis_event(
+                self, test_client, setup_diagnosis
+            ):
+                path, header, key, data = setup_diagnosis
+                common.create_delete(test_client, path, header, data, key)
+
+            def test_get_diagnosis_event_not_found(
+                self, test_client, object_id, setup_diagnosis
+            ):
+                path, header, _, _ = setup_diagnosis
+                common.get_not_found(test_client, path, header, object_id)
+
+            def test_create_diagnosis_event_wrong_payload(
+                self, test_client, setup_diagnosis
+            ):
+                path, header, _, _ = setup_diagnosis
+                common.create_wrong_payload(test_client, path, header)
+
     class TestWithdrawal:
         def test_create_withdrawal_event(self, test_client, setup_withdrawal):
             path, header, key, data = setup_withdrawal
