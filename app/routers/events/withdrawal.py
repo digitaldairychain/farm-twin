@@ -92,9 +92,7 @@ async def withdrawal_event_query(
     ft: mongo_object_id.MongoObjectId | None = None,
     animal: str | None = None,
     endDateTimeStart: datetime | None = datetime(1970, 1, 1, 0, 0, 0),
-    endDateTimeEnd: Annotated[
-        datetime, Query(default_factory=datetime.now)
-    ] = None,
+    endDateTimeEnd: datetime | None = datetime.now(),
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
     source: str | None = None,

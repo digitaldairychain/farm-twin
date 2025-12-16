@@ -1,0 +1,47 @@
+services:
+ 
+  mongodb-ft:
+    image: mongo:latest
+    container_name: mongodb-ft
+    hostname: mongodb
+    volumes:
+      - mongodb-data-ft:/data/db/
+      - mongodb-log-ft:/var/log/mongodb/
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - "27017:27017"
+    networks:
+      - ft-external
+
+  mongo-express-ft:
+    image: mongo-express:latest
+    container_name: mongo-express-ft
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_SERVER: 'mongodb'
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
+    ports:
+      - 8081:8081
+    networks:
+      - ft-external
+    depends_on:
+      - mongodb-ft
+
+volumes:
+  mongodb-data-ft:
+    driver: local
+    name: mongo-data
+  mongodb-log-ft:
+    driver: local
+    name: mongo-log
+
+networks:
+  ft-external:
+    name: ft-external
+    driver: bridge
