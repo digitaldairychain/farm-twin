@@ -14,7 +14,8 @@ services:
     ports:
       - 80:80
     networks:
-      - mongodb_network_ft
+      - ft-internal
+      - ft-external
     depends_on:
       - mongodb-ft
   
@@ -31,7 +32,7 @@ services:
     ports:
       - "27017:27017"
     networks:
-      - mongodb_network_ft
+      - ft-internal
 
   mongo-express-ft:
     image: mongo-express:latest
@@ -47,7 +48,8 @@ services:
     ports:
       - 8081:8081
     networks:
-      - mongodb_network_ft
+      - ft-internal
+      - ft-external
     depends_on:
       - mongodb-ft
 
@@ -60,6 +62,10 @@ volumes:
     name: mongo-log
 
 networks:
-  mongodb_network_ft:
+  ft-internal:
+    name: ft-internal
+    internal: true
+  
+  ft-external:
+    name: ft-external
     driver: bridge
-    name: mongo-network-ft
