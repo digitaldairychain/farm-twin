@@ -13,7 +13,7 @@ source farm-twin-env/bin/activate
 
 Install project dependencies:
 ```bash
-pip install -r requirements_dev.txt
+pip install -r dev/requirements_dev.txt
 ```
 
 ## Coding Standards ##
