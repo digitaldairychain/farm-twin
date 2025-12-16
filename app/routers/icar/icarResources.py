@@ -30,7 +30,7 @@ class icarResource(FTModel):
             "description": "Uniform resource identifier (URI) of the resource (rel=self)."
         },
     )
-    meta: Optional[icarTypes.icarMetaDataType] = Field(
+    meta: icarTypes.icarMetaDataType = Field(
         default=None,
         json_schema_extra={
             "description": "Meta-data for the resource. Mandatory if you wish to support synchronisation. Systems should maintain and provide meta data if at all possible.ICAR ADE working group intend meta to be required in the next major release of ADE."

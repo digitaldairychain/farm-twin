@@ -49,7 +49,9 @@ from .routers.objects import (
 load_dotenv()
 DB_USER = os.getenv("MONGO_INITDB_ROOT_USERNAME")
 DB_PASS = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
-DB_URL = f"mongodb://{DB_USER}:{DB_PASS}@localhost"
+DB_HOST = os.getenv("MONGO_HOST")
+DB_PORT = os.getenv("MONGO_PORT")
+DB_URL = f"mongodb://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}"
 
 app = FastAPI(title="{ farm-twin }", version=__version__)
 
@@ -184,6 +186,7 @@ async def open_db() -> AsyncMongoClient:
 
 
 async def create_indexes():
+    await app.state.withdrawal.create_index(["meta.sourceId", "meta.source"], unique=True)
     await app.state.devices.create_index(
         ["serial", "manufacturer"], unique=True
     )

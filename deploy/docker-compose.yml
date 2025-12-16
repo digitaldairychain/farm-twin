@@ -1,4 +1,23 @@
 services:
+  
+  farm-twin:
+    image: farm-twin:latest
+    container_name: farm-twin
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      FT_SECRET_KEY: ${FT_SECRET_KEY}
+      FT_ALGORITHM: ${FT_ALGORITHM}
+      FT_ACCESS_TOKEN_EXPIRE_MINUTES: ${FT_ACCESS_TOKEN_EXPIRE_MINUTES}
+    ports:
+      - 80:80
+    networks:
+      - mongodb_network_ft
+    depends_on:
+      - mongodb-ft
+  
   mongodb-ft:
     image: mongo:latest
     container_name: mongodb-ft
