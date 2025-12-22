@@ -8,7 +8,7 @@ cffi==2.0.0
 click==8.3.1
 dnspython==2.8.0
 email-validator==2.3.0
-fastapi==0.124.4
+fastapi==0.127.0
 fastapi-cli==0.0.16
 fastapi-cloud-cli==0.6.0
 geojson-pydantic==2.1.0
