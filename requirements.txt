@@ -27,7 +27,7 @@ pluggy==1.6.0
 pwdlib==0.3.0
 pycparser==2.23
 pydantic==2.12.5
-pydantic-extra-types==2.10.6
+pydantic-extra-types==2.11.0
 pydantic_core==2.41.5
 Pygments==2.19.2
 PyJWT==2.10.1
