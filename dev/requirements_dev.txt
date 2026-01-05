@@ -57,7 +57,7 @@ requests-toolbelt==1.0.0
 rich==14.2.0
 rich-toolkit==0.17.0
 rignore==0.7.6
-ruff==0.14.9
+ruff==0.14.10
 sentry-sdk==2.48.0
 shellingham==1.5.4
 six==1.17.0
