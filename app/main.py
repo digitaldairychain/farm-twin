@@ -8,6 +8,7 @@ from pymongo import AsyncMongoClient
 from app import __version__
 
 from .routers import attachments, users
+from .routers.imagery import image
 from .routers.events import attention, withdrawal
 from .routers.events.feeding import feed_intake
 from .routers.events.health import treatment, diagnosis
@@ -56,6 +57,8 @@ DB_URL = f"mongodb://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}"
 app = FastAPI(title="{ farm-twin }", version=__version__)
 
 app.include_router(users.router)
+
+app.include_router(image.router, prefix="/imagery")
 
 app.include_router(sensors.router, prefix="/measurements")
 app.include_router(samples.router, prefix="/measurements")
@@ -120,6 +123,8 @@ async def open_db() -> AsyncMongoClient:
     _ft = app.state.mongodb["farm-twin"]
 
     app.state.users = _ft["users"]
+
+    app.state.images = _ft
 
     app.state.sensors = _ft["measurements"]["sensors"]
     app.state.samples = _ft["measurements"]["samples"]

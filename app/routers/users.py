@@ -115,7 +115,9 @@ SCOPES = {
     "read_withdrawal": "Read information about a withdrawal event.",
     "write_withdrawal": "Write information about a withdrawal event.",
     "read_measurements": "Read info about sensor objects and sample events.",
-    "write_measurements": "Write info about sensor objects and sample events."
+    "write_measurements": "Write info about sensor objects and sample events.",
+    "read_imagery": "Read info about imagery.",
+    "write_imagery": "Write info about imagery."
 }
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token", scopes=SCOPES)
