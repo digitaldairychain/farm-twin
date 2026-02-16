@@ -39,7 +39,7 @@ python-dotenv==1.2.1
 python-multipart==0.0.22
 PyYAML==6.0.3
 rich==14.2.0
-rich-toolkit==0.17.0
+rich-toolkit==0.19.4
 rignore==0.7.6
 sentry-sdk==2.52.0
 shellingham==1.5.4
