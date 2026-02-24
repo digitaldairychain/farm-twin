@@ -690,6 +690,48 @@ def setup_sample(test_client, object_id, fetch_token_admin):
 
 
 @pytest.fixture()
+def setup_image(test_client, object_id, fetch_token_admin):
+    """Generate an earth observation image metadata payload."""
+    key = "images"
+    path = "/measurements/" + key
+    data = {
+        "platform": "Sentinel-2A",
+        "instrument": "MSI",
+        "timestamp": str(datetime.now()),
+        "uri": "https://example.com/eo/sentinel2-20250101.tif",
+        "resolution": 10.0,
+        "cloudCover": 5.2,
+        "bands": ["B02", "B03", "B04", "B08"],
+        "meta": {
+            "source": TEST_SOURCE,
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now()),
+        },
+    }
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
+    clear_test_data(test_client, path, key)
+
+
+@pytest.fixture()
+def image_payload_updated(object_id):
+    """Generate an updated earth observation image metadata payload."""
+    return {
+        "platform": "Landsat-8",
+        "instrument": "OLI",
+        "uri": "https://example.com/eo/landsat8-20250201.tif",
+        "resolution": 30.0,
+        "cloudCover": 12.5,
+        "bands": ["B1", "B2", "B3", "B4", "B5"],
+        "meta": {
+            "source": TEST_SOURCE,
+            "sourceId": str(uuid.uuid4()),
+            "modified": str(datetime.now()),
+        },
+    }
+
+
+@pytest.fixture()
 def setup_machine(test_client, fetch_token_admin):
     """Generate a conformation payload."""
     key = "machines"

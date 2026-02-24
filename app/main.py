@@ -30,7 +30,7 @@ from .routers.events.reproduction import (
     repro_pregnancy_check,
     repro_status,
 )
-from .routers.measurements import samples, sensors
+from .routers.measurements import images, samples, sensors
 from .routers.objects import (
     animals,
     devices,
@@ -57,6 +57,7 @@ app = FastAPI(title="{ farm-twin }", version=__version__)
 
 app.include_router(users.router)
 
+app.include_router(images.router, prefix="/measurements")
 app.include_router(sensors.router, prefix="/measurements")
 app.include_router(samples.router, prefix="/measurements")
 
@@ -120,6 +121,8 @@ async def open_db() -> AsyncMongoClient:
     _ft = app.state.mongodb["farm-twin"]
 
     app.state.users = _ft["users"]
+
+    app.state.images = _ft["measurements"]["images"]
 
     app.state.sensors = _ft["measurements"]["sensors"]
     app.state.samples = _ft["measurements"]["samples"]
