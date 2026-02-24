@@ -1,4 +1,5 @@
-import pytest
+
+from bson.objectid import ObjectId
 from . import common
 
 
@@ -10,8 +11,6 @@ class TestImagery:
         ft = response.json()["ft"]
         response = test_client.get(path + f"/?ft={ft}", headers=header)
         assert response.status_code == 200
-        #compare file to check the same
-
 
     def test_create_delete_image(self, test_client, setup_image):
         path, header, data, filename = setup_image
@@ -30,6 +29,12 @@ class TestImagery:
         response = test_client.get(path + f"/?ft={ft}", headers=header)
         assert response.status_code == 200
 
-#TODO: delete a file that doesn't exist
-#TODO: find a file that doesn't exist
-#TODO: documentation
+    def test_get_image_doesnt_exist(self, test_client, setup_image):
+        path, header, _, _ = setup_image
+        response = test_client.get(path + f"/?ft={str(ObjectId())}", headers=header)
+        assert response.status_code == 404
+
+    def test_delete_image_doesnt_exist(self, test_client, setup_image):
+        path, header, _, _ = setup_image
+        response = test_client.delete(path + f"/{str(ObjectId())}", headers=header)
+        assert response.status_code == 404

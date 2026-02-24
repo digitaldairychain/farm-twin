@@ -1177,7 +1177,7 @@ def setup_image(test_client, fetch_token_admin):
     clear_test_data(test_client, path, key)
 
 @pytest.fixture()
-def setup_image_alternative(test_client, fetch_token_admin):
+def setup_image_alternative():
     """Generate an alternative image payload."""
     filename = "ft-test.png"
     file_path = os.path.join(os.path.dirname(__file__), "images", filename)
