@@ -8,10 +8,9 @@ from pymongo import AsyncMongoClient
 from app import __version__
 
 from .routers import attachments, users
-from .routers.imagery import image, metadata
 from .routers.events import attention, withdrawal
 from .routers.events.feeding import feed_intake
-from .routers.events.health import treatment, diagnosis
+from .routers.events.health import diagnosis, treatment
 from .routers.events.milking import (
     drying_off,
     lactation_status,
@@ -31,6 +30,7 @@ from .routers.events.reproduction import (
     repro_pregnancy_check,
     repro_status,
 )
+from .routers.imagery import image, metadata
 from .routers.measurements import samples, sensors
 from .routers.objects import (
     animals,
@@ -193,7 +193,9 @@ async def open_db() -> AsyncMongoClient:
 
 
 async def create_indexes():
-    await app.state.withdrawal.create_index(["meta.sourceId", "meta.source"], unique=True)
+    await app.state.withdrawal.create_index(
+        ["meta.sourceId", "meta.source"], unique=True
+    )
     await app.state.devices.create_index(
         ["serial", "manufacturer"], unique=True
     )

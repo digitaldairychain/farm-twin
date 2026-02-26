@@ -3,9 +3,9 @@ Collection of types used in ICAR data standards.
 See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/enums
 """
 
+from datetime import datetime
 from typing import Optional
 
-from datetime import datetime
 from pydantic import BaseModel, Field, FutureDatetime, PastDatetime
 
 from . import icarEnums

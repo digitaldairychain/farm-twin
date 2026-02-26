@@ -50,7 +50,7 @@ async def create_diagnosis_event(
     diagnosis: Diagnosis,
     current_user: Annotated[
         User, Security(get_current_active_user, scopes=["write_health"])
-    ]
+    ],
 ):
     """
     Create a new diagnosis event.

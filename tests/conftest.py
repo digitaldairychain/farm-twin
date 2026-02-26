@@ -1093,36 +1093,30 @@ def setup_treatment(object_id, test_client, fetch_token_admin):
     path = "/events/health/" + key
     data = {
         "medicine": {
-            "identifier": {
-                "id": object_id,
-                "scheme": "uk.gov"
-            },
+            "identifier": {"id": object_id, "scheme": "uk.gov"},
             "family": "Veterinary Supplies",
-            "name": "Metacam"
+            "name": "Metacam",
         },
         "animal": {"id": "UK230011200123", "scheme": "uk.gov"},
         "procedure": "Oral",
         "batches": [
             {
                 "identifier": "00201",
-                "expiryDate": str(datetime.now() + timedelta(days=1))
+                "expiryDate": str(datetime.now() + timedelta(days=1)),
             }
         ],
         "withdrawals": [
             {
                 "productType": "Meat",
-                "endDate": str(datetime.now() + timedelta(days=1))
+                "endDate": str(datetime.now() + timedelta(days=1)),
             }
         ],
-        "dose": {
-            "doseQuantity": 3.5,
-            "doseUnits": "MLT"
-        },
+        "dose": {"doseQuantity": 3.5, "doseUnits": "MLT"},
         "meta": {
             "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
     header, _, _ = fetch_token_admin
     yield path, header, key, data
@@ -1144,20 +1138,16 @@ def setup_diagnosis(test_client, fetch_token_admin):
                 "severity": "Light",
                 "severityScore": 10,
                 "positions": [
-                    {
-                        "position": "UdderFrontLeft"
-                    },
-                    {
-                        "position": "UdderFrontRight"
-                    }
-                ]
+                    {"position": "UdderFrontLeft"},
+                    {"position": "UdderFrontRight"},
+                ],
             }
         ],
         "meta": {
             "source": TEST_SOURCE,
             "sourceId": str(uuid.uuid4()),
-            "modified": str(datetime.now())
-        }
+            "modified": str(datetime.now()),
+        },
     }
     header, _, _ = fetch_token_admin
     yield path, header, key, data
@@ -1171,18 +1161,20 @@ def setup_image(test_client, fetch_token_admin):
     path = "/imagery/" + key
     filename = "ft-test.tiff"
     file_path = os.path.join(os.path.dirname(__file__), "images", filename)
-    data = open(file_path, 'rb')
+    data = open(file_path, "rb")
     header, _, _ = fetch_token_admin
     yield path, header, data, filename
     clear_test_data(test_client, path, key)
+
 
 @pytest.fixture()
 def setup_image_alternative():
     """Generate an alternative image payload."""
     filename = "ft-test.png"
     file_path = os.path.join(os.path.dirname(__file__), "images", filename)
-    data = open(file_path, 'rb')
+    data = open(file_path, "rb")
     return data, filename
+
 
 @pytest.fixture()
 def setup_metadata(test_client, fetch_token_admin, object_id):
@@ -1211,10 +1203,10 @@ def setup_metadata(test_client, fetch_token_admin, object_id):
                 -3.4858570571262235,
                 55.14145207511673,
                 -3.587096658415653,
-                55.14145207511673
+                55.14145207511673,
             ],
-            "CloudCover": 0.923704
-        }
+            "CloudCover": 0.923704,
+        },
     }
     header, _, _ = fetch_token_admin
     yield path, header, key, data

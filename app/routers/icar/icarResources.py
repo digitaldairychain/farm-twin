@@ -3,9 +3,9 @@ Collection of types used in ICAR data standards.
 See here for more details: https://github.com/adewg/ICAR/tree/ADE-1/enums
 """
 
+from datetime import datetime
 from typing import Optional
 
-from datetime import datetime
 from pydantic import Field, FutureDatetime
 
 from ..ftCommon import FTModel
@@ -1393,7 +1393,9 @@ class icarInventoryTransactionResource(icarTypes.icarInventoryTransactionType):
 
 class icarLactationStatusObservedEventResource(icarAnimalEventCoreResource):
     resourceType: str = Field(
-        default_factory=lambda: icarLactationStatusObservedEventResource.__name__
+        default_factory=lambda: (
+            icarLactationStatusObservedEventResource.__name__
+        )
     )
     observedStatus: Optional[icarEnums.icarAnimalLactationStatusType] = Field(
         default=None,
@@ -2037,7 +2039,9 @@ class icarGroupPositionObservationEventResource(
     icarGroupEventCoreResource, icarTypes.icarPositionObservationType
 ):
     resourceType: str = Field(
-        default_factory=lambda: icarGroupPositionObservationEventResource.__name__
+        default_factory=lambda: (
+            icarGroupPositionObservationEventResource.__name__
+        )
     )
     pass
 
@@ -2375,7 +2379,9 @@ class icarGroupMovementDeathEventResource(icarGroupEventCoreResource):
 
 class icarGroupMovementDepartureEventResource(icarGroupEventCoreResource):
     resourceType: str = Field(
-        default_factory=lambda: icarGroupMovementDepartureEventResource.__name__
+        default_factory=lambda: (
+            icarGroupMovementDepartureEventResource.__name__
+        )
     )
     departureKind: icarEnums.icarDepartureKindType = Field(
         json_schema_extra={

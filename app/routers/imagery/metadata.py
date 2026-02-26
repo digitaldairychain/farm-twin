@@ -5,18 +5,14 @@ This collection of endpoints allows for the addition, deletion
 and finding of that metadata.
 """
 
+from typing import Any, Dict, List
+
 from fastapi import APIRouter, Request, Security, status
 from pydantic import BaseModel, Field
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
-from typing import List, Dict, Any
 
-from ..ftCommon import (
-    FTModel,
-    add_one_to_db,
-    delete_one_from_db,
-    find_in_db,
-)
+from ..ftCommon import FTModel, add_one_to_db, delete_one_from_db, find_in_db
 from ..users import User, get_current_active_user
 
 router = APIRouter(
@@ -35,12 +31,9 @@ class Metadata(FTModel):
             "example": str(mongo_object_id.MongoObjectId()),
         }
     )
-    metadata:  Dict[str, Any] = Field(
+    metadata: Dict[str, Any] = Field(
         default=None,
-        json_schema_extra={
-            "description": "Metadata relating to the image"
-
-        },
+        json_schema_extra={"description": "Metadata relating to the image"},
     )
 
 

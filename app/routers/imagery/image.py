@@ -5,18 +5,26 @@ This collection of endpoints allows for the uploading, deletion
 and downloading of those images.
 """
 
+import io
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Query, Request, Security, status, UploadFile, Response, HTTPException
+import gridfs
+from bson.objectid import ObjectId
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    Security,
+    UploadFile,
+    status,
+)
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from pydantic_extra_types import mongo_object_id
 from typing_extensions import Annotated
-
-import gridfs
-import io
-from bson.objectid import ObjectId
 
 from ..ftCommon import (
     add_one_to_db,
@@ -80,10 +88,11 @@ async def remove_image(
     except gridfs.errors.NoFile:
         raise HTTPException(status_code=404, detail=f"Image {ft} not found")
 
+
 @router.get(
     "/",
     response_description="Download an image",
-    response_class=StreamingResponse
+    response_class=StreamingResponse,
 )
 async def image_query(
     request: Request,
@@ -104,7 +113,7 @@ async def image_query(
     return StreamingResponse(
         io.BytesIO(contents),
         media_type=file.content_type,
-        headers={"Content-Disposition": f"attachment; filename={file.filename}"}
+        headers={
+            "Content-Disposition": f"attachment; filename={file.filename}"
+        },
     )
-
-
