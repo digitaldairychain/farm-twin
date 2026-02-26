@@ -1162,3 +1162,60 @@ def setup_diagnosis(test_client, fetch_token_admin):
     header, _, _ = fetch_token_admin
     yield path, header, key, data
     clear_test_data(test_client, path, key)
+
+
+@pytest.fixture()
+def setup_image(test_client, fetch_token_admin):
+    """Generate an image payload."""
+    key = "image"
+    path = "/imagery/" + key
+    filename = "ft-test.tiff"
+    file_path = os.path.join(os.path.dirname(__file__), "images", filename)
+    data = open(file_path, 'rb')
+    header, _, _ = fetch_token_admin
+    yield path, header, data, filename
+    clear_test_data(test_client, path, key)
+
+@pytest.fixture()
+def setup_image_alternative():
+    """Generate an alternative image payload."""
+    filename = "ft-test.png"
+    file_path = os.path.join(os.path.dirname(__file__), "images", filename)
+    data = open(file_path, 'rb')
+    return data, filename
+
+@pytest.fixture()
+def setup_metadata(test_client, fetch_token_admin, object_id):
+    """Generate an image metadata payload."""
+    key = "metadata"
+    path = "/imagery/" + key
+    data = {
+        "image": object_id,
+        "metadata": {
+            "TaskingId": "b877a95c-a4c3-448c-af0f-b65c07ba4aa2",
+            "ObjectName": "image_rgba",
+            "Format": "tiff",
+            "Source": "Sentinel-2A (S2MSI2A)",
+            "CreationTime": str(datetime.now()),
+            "ProjectionCode": "32630",
+            "ProjectionName": "WGS84",
+            "OriginLat": 55.19833930915355,
+            "OriginLon": -3.587096658415653,
+            "CornerLat": 55.14145207511673,
+            "CornerLon": -3.4858570571262235,
+            "BoundingBox": [
+                -3.587096658415653,
+                55.19833930915355,
+                -3.4858570571262235,
+                55.19833930915355,
+                -3.4858570571262235,
+                55.14145207511673,
+                -3.587096658415653,
+                55.14145207511673
+            ],
+            "CloudCover": 0.923704
+        }
+    }
+    header, _, _ = fetch_token_admin
+    yield path, header, key, data
+    clear_test_data(test_client, path, key)
