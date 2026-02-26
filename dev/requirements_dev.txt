@@ -7,6 +7,7 @@ certifi==2026.2.25
 cffi==2.0.0
 dnspython==2.8.0
 fastapi==0.133.1
+flake8==7.3.0
 geojson-pydantic==2.1.0
 h11==0.16.0
 httpcore==1.0.9
@@ -14,13 +15,16 @@ httpx==0.28.1
 idna==3.11
 iniconfig==2.3.0
 isort==8.0.0
+mccabe==0.7.0
 packaging==26.0
 pluggy==1.6.0
 pwdlib==0.3.0
+pycodestyle==2.14.0
 pycparser==3.0
 pydantic==2.12.5
 pydantic-extra-types==2.11.0
 pydantic_core==2.41.5
+pyflakes==3.4.0
 Pygments==2.19.2
 PyJWT==2.11.0
 pymongo==4.16.0
