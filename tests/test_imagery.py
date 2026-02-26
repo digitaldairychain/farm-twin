@@ -38,3 +38,22 @@ class TestImagery:
         path, header, _, _ = setup_image
         response = test_client.delete(path + f"/{str(ObjectId())}", headers=header)
         assert response.status_code == 404
+
+class TestMetadata:
+    def test_create_get_metadata(self, test_client, setup_metadata):
+        path, header, key, data = setup_metadata
+        common.create_get(test_client, path, header, data, key)
+
+    def test_create_delete_metadata(self, test_client, setup_metadata):
+        path, header, key, data = setup_metadata
+        common.create_delete(test_client, path, header, data, key)
+
+    def test_get_metadata_not_found(
+        self, test_client, setup_metadata, object_id
+    ):
+        path, header, _, _ = setup_metadata
+        common.get_not_found(test_client, path, header, object_id)
+
+    def test_create_metadata_wrong_payload(self, test_client, setup_metadata):
+        path, header, _, _ = setup_metadata
+        common.create_wrong_payload(test_client, path, header)
