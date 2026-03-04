@@ -49,3 +49,9 @@ class TestMedicine:
         common.update_doesnt_exist(
             test_client, path, header, medicine_payload_updated, object_id
         )
+
+    def test_create_medicine_without_metadata(
+        self, test_client, setup_medicine
+    ):
+        path, header, key, data = setup_medicine
+        common.create_without_meta(test_client, path, header, data, key)

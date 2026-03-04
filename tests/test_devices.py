@@ -63,3 +63,7 @@ class TestDevices:
     def test_create_duplicate_device(self, test_client, setup_device):
         path, header, key, data = setup_device
         common.create_duplicate(test_client, path, header, data, key)
+
+    def test_create_device_without_metadata(self, test_client, setup_device):
+        path, header, key, data = setup_device
+        common.create_without_meta(test_client, path, header, data, key)

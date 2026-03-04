@@ -62,3 +62,9 @@ class TestSemenStraw:
         common.update_doesnt_exist(
             test_client, path, header, semen_straw_payload_updated, object_id
         )
+
+    def test_create_semen_straw_without_metadata(
+        self, test_client, setup_semen_straw
+    ):
+        path, header, key, data = setup_semen_straw
+        common.create_without_meta(test_client, path, header, data, key)

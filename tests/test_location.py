@@ -50,3 +50,9 @@ class TestLocation:
         common.update_doesnt_exist(
             test_client, path, header, location_data_updated, object_id
         )
+
+    def test_create_location_without_metadata(
+        self, test_client, setup_location
+    ):
+        path, header, key, data = setup_location
+        common.create_without_meta(test_client, path, header, data, key)

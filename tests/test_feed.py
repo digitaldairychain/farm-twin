@@ -55,3 +55,7 @@ class TestFeed:
         common.update_doesnt_exist(
             test_client, path, header, feed_payload_updated, object_id
         )
+
+    def test_create_feed_without_metadata(self, test_client, setup_feed):
+        path, header, key, data = setup_feed
+        common.create_without_meta(test_client, path, header, data, key)

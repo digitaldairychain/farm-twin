@@ -55,3 +55,7 @@ class TestAnimals:
         common.update_doesnt_exist(
             test_client, path, header, animal_data_updated, object_id
         )
+
+    def test_create_animal_without_metadata(self, test_client, setup_animal):
+        path, header, key, data = setup_animal
+        common.create_without_meta(test_client, path, header, data, key)
