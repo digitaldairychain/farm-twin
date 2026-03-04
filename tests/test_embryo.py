@@ -51,3 +51,7 @@ class TestEmbryo:
         common.update_doesnt_exist(
             test_client, path, header, embryo_data_updated, object_id
         )
+
+    def test_create_embryo_without_metadata(self, test_client, setup_embryo):
+        path, header, key, data = setup_embryo
+        common.create_without_meta(test_client, path, header, data, key)

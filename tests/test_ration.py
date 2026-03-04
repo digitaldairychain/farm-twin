@@ -48,3 +48,7 @@ class TestRation:
         common.update_doesnt_exist(
             test_client, path, header, ration_payload_updated, object_id
         )
+
+    def test_create_ration_without_metadata(self, test_client, setup_ration):
+        path, header, key, data = setup_ration
+        common.create_without_meta(test_client, path, header, data, key)

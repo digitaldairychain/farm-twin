@@ -56,3 +56,9 @@ class TestFeedStorage:
         common.update_doesnt_exist(
             test_client, path, header, feed_storage_payload_updated, object_id
         )
+
+    def test_create_feed_storage_without_metadata(
+        self, test_client, setup_feed_storage
+    ):
+        path, header, key, data = setup_feed_storage
+        common.create_without_meta(test_client, path, header, data, key)
