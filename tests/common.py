@@ -122,7 +122,7 @@ def create_duplicate(test_client, path, header, payload, key):
 def create_without_meta(test_client, path, header, payload, key):
     """POST an object without metadata and verify it can be created and deleted."""
     payload_without_meta = {k: v for k, v in payload.items() if k != "meta"}
-    create_delete(test_client, path, header, payload_without_meta, key)
+    create_get(test_client, path, header, payload_without_meta, key, expected_code=422)
 
 
 def test_endpoint(tc, path, header, payload, key, oid, update):
