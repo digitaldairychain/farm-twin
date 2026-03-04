@@ -670,6 +670,7 @@ def sensor_payload_updated(
         "device": object_id,
         "serial": serial,
         "measurement": "Soil Temperature",
+        "unit": "°C",
     }
 
 

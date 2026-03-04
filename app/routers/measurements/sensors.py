@@ -60,6 +60,13 @@ class Sensor(FTModel):
             "example": "Soil Temperature",
         }
     )
+    unit: Optional[str] = Field(
+        default="",
+        json_schema_extra={
+            "description": "Unit of measurement",
+            "example": "°C",
+        },
+    )
 
 
 class SensorCollection(BaseModel):
@@ -148,6 +155,7 @@ async def sensor_query(
     device: mongo_object_id.MongoObjectId | None = None,
     serial: str | None = None,
     measurement: str | None = None,
+    unit: str | None = None,
     createdStart: datetime | None = None,
     createdEnd: datetime | None = None,
     modifiedStart: datetime | None = None,
@@ -161,6 +169,7 @@ async def sensor_query(
         "device": device,
         "serial": serial,
         "measurement": measurement,
+        "unit": unit,
         "meta.created": dateBuild(createdStart, createdEnd),
         "meta.modified": dateBuild(modifiedStart, modifiedEnd),
         "meta.source": source,
