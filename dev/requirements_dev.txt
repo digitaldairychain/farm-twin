@@ -25,7 +25,7 @@ pydantic==2.12.5
 pydantic-extra-types==2.11.1
 pydantic_core==2.41.5
 pyflakes==3.4.0
-Pygments==2.19.2
+Pygments==2.20.0
 PyJWT==2.12.1
 pymongo==4.16.0
 pytest==9.0.3
