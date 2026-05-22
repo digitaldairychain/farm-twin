@@ -1164,8 +1164,11 @@ def setup_image(test_client, fetch_token_admin):
     file_path = os.path.join(os.path.dirname(__file__), "images", filename)
     data = open(file_path, "rb")
     header, _, _ = fetch_token_admin
-    yield path, header, data, filename
-    clear_test_data(test_client, path, key)
+    try:
+        yield path, header, data, filename
+    finally:
+        data.close()
+        clear_test_data(test_client, path, key)
 
 
 @pytest.fixture()
@@ -1174,7 +1177,10 @@ def setup_image_alternative():
     filename = "ft-test.png"
     file_path = os.path.join(os.path.dirname(__file__), "images", filename)
     data = open(file_path, "rb")
-    return data, filename
+    try:
+        yield data, filename
+    finally:
+        data.close()
 
 
 @pytest.fixture()
