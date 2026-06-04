@@ -35,6 +35,6 @@ python-dotenv==1.2.2
 python-multipart==0.0.29
 ruff==0.15.14
 six==1.17.0
-starlette==0.52.1
+starlette==1.0.1
 typing-inspection==0.4.2
 typing_extensions==4.15.0
