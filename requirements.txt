@@ -4,7 +4,7 @@ anyio==4.12.1
 argon2-cffi==25.1.0
 argon2-cffi-bindings==25.1.0
 auto8==0.1.2
-certifi==2026.2.25
+certifi==2026.5.20
 cffi==2.0.0
 click==8.3.1
 dnspython==2.8.0
