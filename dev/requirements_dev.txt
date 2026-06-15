@@ -52,7 +52,7 @@ ruff==0.15.4
 sentry-sdk==2.54.0
 shellingham==1.5.4
 six==1.17.0
-starlette==0.52.1
+starlette
 typer==0.24.1
 typing-inspection==0.4.2
 typing_extensions==4.15.0

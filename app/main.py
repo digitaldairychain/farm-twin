@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 
+from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from pymongo import AsyncMongoClient
@@ -54,71 +55,14 @@ DB_HOST = os.getenv("MONGO_HOST")
 DB_PORT = os.getenv("MONGO_PORT")
 DB_URL = f"mongodb://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}"
 
-app = FastAPI(title="{ farm-twin }", version=__version__)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await open_db(app)
+    await create_indexes(app)
+    yield
+    await close_db(app)
 
-app.include_router(users.router)
-
-app.include_router(image.router, prefix="/imagery")
-app.include_router(metadata.router, prefix="/imagery")
-
-app.include_router(sensors.router, prefix="/measurements")
-app.include_router(samples.router, prefix="/measurements")
-
-app.include_router(points.router, prefix="/objects")
-app.include_router(polygons.router, prefix="/objects")
-app.include_router(animals.router, prefix="/objects")
-app.include_router(machines.router, prefix="/objects")
-app.include_router(feed.router, prefix="/objects")
-app.include_router(feed_storage.router, prefix="/objects")
-app.include_router(medicine.router, prefix="/objects")
-app.include_router(ration.router, prefix="/objects")
-app.include_router(embryo.router, prefix="/objects")
-app.include_router(semen_straw.router, prefix="/objects")
-app.include_router(devices.router, prefix="/objects")
-app.include_router(location.router, prefix="/objects")
-
-app.include_router(feed_intake.router, prefix="/events/feeding")
-
-app.include_router(attention.router, prefix="/events")
-app.include_router(withdrawal.router, prefix="/events")
-
-app.include_router(conformation.router, prefix="/events/performance")
-app.include_router(weight.router, prefix="/events/performance")
-app.include_router(group_weight.router, prefix="/events/performance")
-
-
-app.include_router(drying_off.router, prefix="/events/milking")
-app.include_router(visit.router, prefix="/events/milking")
-app.include_router(lactation_status.router, prefix="/events/milking")
-app.include_router(test_day_result.router, prefix="/events/milking")
-
-app.include_router(arrival.router, prefix="/events/movement")
-app.include_router(birth.router, prefix="/events/movement")
-app.include_router(death.router, prefix="/events/movement")
-app.include_router(departure.router, prefix="/events/movement")
-
-app.include_router(carcass.router, prefix="/events/observations")
-app.include_router(health_status.router, prefix="/events/observations")
-app.include_router(position.router, prefix="/events/observations")
-
-app.include_router(treatment.router, prefix="/events/health")
-app.include_router(diagnosis.router, prefix="/events/health")
-
-app.include_router(repro_status.router, prefix="/events/reproduction")
-app.include_router(repro_abortion.router, prefix="/events/reproduction")
-app.include_router(repro_do_not_breed.router, prefix="/events/reproduction")
-app.include_router(repro_heat.router, prefix="/events/reproduction")
-app.include_router(repro_insemination.router, prefix="/events/reproduction")
-app.include_router(
-    repro_mating_recommendation.router, prefix="/events/reproduction"
-)
-app.include_router(repro_parturition.router, prefix="/events/reproduction")
-app.include_router(repro_pregnancy_check.router, prefix="/events/reproduction")
-
-app.include_router(attachments.router)
-
-
-async def open_db() -> AsyncMongoClient:
+async def open_db(app: FastAPI) -> AsyncMongoClient:
     app.state.mongodb = AsyncMongoClient(DB_URL)
 
     _ft = app.state.mongodb["farm-twin"]
@@ -192,7 +136,7 @@ async def open_db() -> AsyncMongoClient:
     app.state.attachments = _ft["attachments"]
 
 
-async def create_indexes():
+async def create_indexes(app: FastAPI):
     await app.state.withdrawal.create_index(
         ["meta.sourceId", "meta.source"], unique=True
     )
@@ -211,14 +155,71 @@ async def create_indexes():
     await app.state.samples.create_index(_sample_index, unique=True)
 
 
-async def close_db():
+async def close_db(app: FastAPI):
     await app.state.mongodb.close()
 
+app = FastAPI(lifespan=lifespan, title="{ farm-twin }", version=__version__)
 
-app.add_event_handler("startup", open_db)
-app.add_event_handler("startup", create_indexes)
-app.add_event_handler("shutdown", close_db)
+app.include_router(users.router)
 
+app.include_router(image.router, prefix="/imagery")
+app.include_router(metadata.router, prefix="/imagery")
+
+app.include_router(sensors.router, prefix="/measurements")
+app.include_router(samples.router, prefix="/measurements")
+
+app.include_router(points.router, prefix="/objects")
+app.include_router(polygons.router, prefix="/objects")
+app.include_router(animals.router, prefix="/objects")
+app.include_router(machines.router, prefix="/objects")
+app.include_router(feed.router, prefix="/objects")
+app.include_router(feed_storage.router, prefix="/objects")
+app.include_router(medicine.router, prefix="/objects")
+app.include_router(ration.router, prefix="/objects")
+app.include_router(embryo.router, prefix="/objects")
+app.include_router(semen_straw.router, prefix="/objects")
+app.include_router(devices.router, prefix="/objects")
+app.include_router(location.router, prefix="/objects")
+
+app.include_router(feed_intake.router, prefix="/events/feeding")
+
+app.include_router(attention.router, prefix="/events")
+app.include_router(withdrawal.router, prefix="/events")
+
+app.include_router(conformation.router, prefix="/events/performance")
+app.include_router(weight.router, prefix="/events/performance")
+app.include_router(group_weight.router, prefix="/events/performance")
+
+
+app.include_router(drying_off.router, prefix="/events/milking")
+app.include_router(visit.router, prefix="/events/milking")
+app.include_router(lactation_status.router, prefix="/events/milking")
+app.include_router(test_day_result.router, prefix="/events/milking")
+
+app.include_router(arrival.router, prefix="/events/movement")
+app.include_router(birth.router, prefix="/events/movement")
+app.include_router(death.router, prefix="/events/movement")
+app.include_router(departure.router, prefix="/events/movement")
+
+app.include_router(carcass.router, prefix="/events/observations")
+app.include_router(health_status.router, prefix="/events/observations")
+app.include_router(position.router, prefix="/events/observations")
+
+app.include_router(treatment.router, prefix="/events/health")
+app.include_router(diagnosis.router, prefix="/events/health")
+
+app.include_router(repro_status.router, prefix="/events/reproduction")
+app.include_router(repro_abortion.router, prefix="/events/reproduction")
+app.include_router(repro_do_not_breed.router, prefix="/events/reproduction")
+app.include_router(repro_heat.router, prefix="/events/reproduction")
+app.include_router(repro_insemination.router, prefix="/events/reproduction")
+app.include_router(
+    repro_mating_recommendation.router, prefix="/events/reproduction"
+)
+app.include_router(repro_parturition.router, prefix="/events/reproduction")
+app.include_router(repro_pregnancy_check.router, prefix="/events/reproduction")
+
+app.include_router(attachments.router)
 
 @app.get("/version/", response_description="API Version")
 async def version():
