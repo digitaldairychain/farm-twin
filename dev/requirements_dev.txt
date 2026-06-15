@@ -11,7 +11,7 @@ dnspython==2.8.0
 email-validator==2.3.0
 fastapi==0.137.1
 fastapi-cli==0.0.24
-fastapi-cloud-cli==0.14.0
+fastapi-cloud-cli==0.20.0
 fastar==0.8.0
 flake8==7.3.0
 geojson-pydantic==2.1.0
