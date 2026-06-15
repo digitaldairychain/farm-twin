@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os
-
 from contextlib import asynccontextmanager
+
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from pymongo import AsyncMongoClient
@@ -55,12 +55,14 @@ DB_HOST = os.getenv("MONGO_HOST")
 DB_PORT = os.getenv("MONGO_PORT")
 DB_URL = f"mongodb://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}"
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await open_db(app)
     await create_indexes(app)
     yield
     await close_db(app)
+
 
 async def open_db(app: FastAPI) -> AsyncMongoClient:
     app.state.mongodb = AsyncMongoClient(DB_URL)
@@ -158,6 +160,7 @@ async def create_indexes(app: FastAPI):
 async def close_db(app: FastAPI):
     await app.state.mongodb.close()
 
+
 app = FastAPI(lifespan=lifespan, title="{ farm-twin }", version=__version__)
 
 app.include_router(users.router)
@@ -220,6 +223,7 @@ app.include_router(repro_parturition.router, prefix="/events/reproduction")
 app.include_router(repro_pregnancy_check.router, prefix="/events/reproduction")
 
 app.include_router(attachments.router)
+
 
 @app.get("/version/", response_description="API Version")
 async def version():
