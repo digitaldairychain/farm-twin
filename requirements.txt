@@ -7,12 +7,14 @@ auto8==0.1.2
 certifi==2026.5.20
 cffi==2.0.0
 click==8.3.1
+detect-installer==0.1.0
 dnspython==2.8.0
 email-validator==2.3.0
 fastapi==0.137.1
 fastapi-cli==0.0.24
-fastapi-cloud-cli==0.14.0
-fastar==0.8.0
+fastapi-cloud-cli==0.20.0
+fastar==0.11.0
+flake8==7.3.0
 geojson-pydantic==2.1.0
 h11==0.16.0
 httpcore==1.0.9
@@ -20,6 +22,7 @@ httptools==0.7.1
 httpx==0.28.1
 idna==3.18
 iniconfig==2.3.0
+isort==8.0.1
 Jinja2==3.1.6
 markdown-it-py==4.0.0
 MarkupSafe==3.0.3
@@ -45,8 +48,9 @@ python-dotenv==1.2.2
 python-multipart==0.0.32
 PyYAML==6.0.3
 rich==14.3.3
-rich-toolkit==0.19.7
+rich-toolkit==0.20.1
 rignore==0.7.6
+ruff==0.15.17
 sentry-sdk==2.54.0
 shellingham==1.5.4
 six==1.17.0
