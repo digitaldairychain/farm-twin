@@ -50,7 +50,7 @@ PyYAML==6.0.3
 rich==14.3.3
 rich-toolkit==0.20.1
 rignore==0.7.6
-ruff==0.15.17
+ruff==0.15.18
 sentry-sdk==2.54.0
 shellingham==1.5.4
 six==1.17.0
