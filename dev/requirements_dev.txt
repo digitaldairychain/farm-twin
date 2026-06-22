@@ -34,7 +34,7 @@ pwdlib==0.3.0
 pycodestyle==2.14.0
 pycparser==3.0
 pydantic==2.14.0a1
-pydantic-extra-types==2.11.0
+pydantic-extra-types==2.11.1
 pydantic-settings==2.14.1
 pydantic_core==2.47.0
 pyflakes==3.4.0
