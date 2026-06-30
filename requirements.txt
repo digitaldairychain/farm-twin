@@ -10,7 +10,7 @@ click==8.3.1
 detect-installer==0.1.0
 dnspython==2.8.0
 email-validator==2.3.0
-fastapi==0.137.1
+fastapi==0.138.2
 fastapi-cli==0.0.27
 fastapi-cloud-cli==0.20.0
 fastar==0.11.0
