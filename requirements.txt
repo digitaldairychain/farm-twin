@@ -6,7 +6,7 @@ argon2-cffi-bindings==25.1.0
 auto8==0.1.2
 certifi==2026.5.20
 cffi==2.0.0
-click==8.3.1
+click==8.4.2
 detect-installer==0.1.0
 dnspython==2.8.0
 email-validator==2.3.0
