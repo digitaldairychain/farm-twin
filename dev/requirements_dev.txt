@@ -47,7 +47,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.2.2
 python-multipart==0.0.32
 PyYAML==6.0.3
-rich==14.3.3
+rich==15.0.0
 rich-toolkit==0.20.1
 rignore==0.7.6
 ruff==0.15.20
