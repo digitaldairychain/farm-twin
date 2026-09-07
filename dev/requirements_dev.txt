@@ -2,7 +2,7 @@ annotated-doc==0.0.4
 annotated-types==0.8.0
 anyio==4.14.2
 argon2-cffi==25.1.0
-argon2-cffi-bindings==25.1.0
+argon2-cffi-bindings==26.1.0
 auto8==0.1.2
 certifi==2026.5.20
 cffi==2.1.0
