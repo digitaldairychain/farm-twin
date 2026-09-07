@@ -49,7 +49,7 @@ python-multipart==0.0.32
 PyYAML==6.0.3
 rich==15.0.0
 rich-toolkit==0.20.3
-rignore==0.7.6
+rignore==0.8.1
 ruff==0.16.1
 sentry-sdk==2.66.0
 shellingham==1.5.4
